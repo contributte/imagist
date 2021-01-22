@@ -1,0 +1,43 @@
+<h1>Image storage actions</h1>
+<table class="tracy-sortable">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Action</th>
+			<th>Source</th>
+			<th>Filter</th>
+			<th>Result</th>
+			<th>Entrypoint</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+
+		use Contributte\Imagist\Bridge\Nette\Tracy\Dto\BarEvent;
+
+		foreach ($events as $index => $event):
+				assert($event instanceof BarEvent);
+		?>
+		<tr>
+			<td>
+				<?= $index + 1 ?>
+			</td>
+			<td>
+				<?= $event->getAction() ?>
+			</td>
+			<td>
+				<?= $event->getSource() ?>
+			</td>
+			<td>
+				<?= $event->getFilter() ?>
+			</td>
+			<td>
+				<?= $event->getResult() ?>
+			</td>
+			<td>
+				<?= $event->getEntrypoint() ?>
+			</td>
+		</tr>
+		<?php endforeach; ?>
+	</tbody>
+</table>

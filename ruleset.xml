@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset>
+	<!-- Contributte Coding Standard -->
+	<rule ref="./vendor/ninjify/coding-standard/contributte.xml">
+		<exclude name="Squiz.Commenting.VariableComment.Missing" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming.SuperfluousSuffix" />
+	</rule>
+
+	<!-- Specific rules -->
+	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+		<properties>
+			<property name="rootNamespaces" type="array" value="
+				src=>Contributte\Imagist,
+				tests/src=>Contributte\Imagist\Testing,
+				tests/functional=>Contributte\Imagist\Testing\Functional,
+				tests/unit=>Contributte\Imagist\Testing\Unit,
+			"/>
+		</properties>
+	</rule>
+	<exclude-pattern>tests/_support</exclude-pattern>
+	<exclude-pattern>src/Bridge/Nette/Tracy/assets</exclude-pattern>
+</ruleset>
