@@ -1,6 +1,7 @@
 {
 	"name": "contributte/imagist",
 	"type": "library",
+	"license": ["MIT"],
 	"require": {
 		"php": ">=7.4",
 		"nette/utils": "^3.2",
