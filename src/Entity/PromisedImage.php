@@ -5,9 +5,12 @@ namespace Contributte\Imagist\Entity;
 use Contributte\Imagist\Exceptions\PromiseException;
 use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
+use Contributte\Imagist\Transaction\TransactionInterface;
 
 final class PromisedImage implements PromisedImageInterface
 {
+
+	private TransactionInterface $transaction;
 
 	private ImageInterface $source;
 
@@ -18,8 +21,9 @@ final class PromisedImage implements PromisedImageInterface
 
 	private bool $remove;
 
-	public function __construct(ImageInterface $source, bool $remove)
+	public function __construct(TransactionInterface $transaction, ImageInterface $source, bool $remove)
 	{
+		$this->transaction = $transaction;
 		$this->source = $source;
 		$this->remove = $remove;
 	}
@@ -148,6 +152,11 @@ final class PromisedImage implements PromisedImageInterface
 		}
 
 		return $this->result;
+	}
+
+	public function getTransaction(): TransactionInterface
+	{
+		return $this->transaction;
 	}
 
 	public function isPending(): bool

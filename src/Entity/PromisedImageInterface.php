@@ -2,6 +2,8 @@
 
 namespace Contributte\Imagist\Entity;
 
+use Contributte\Imagist\Transaction\TransactionInterface;
+
 interface PromisedImageInterface extends PersistentImageInterface
 {
 
@@ -12,5 +14,7 @@ interface PromisedImageInterface extends PersistentImageInterface
 	public function then(callable $callable): void;
 
 	public function getResult(): PersistentImageInterface;
+
+	public function getTransaction(): TransactionInterface;
 
 }

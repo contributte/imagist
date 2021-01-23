@@ -128,7 +128,7 @@ final class Transaction implements TransactionInterface
 			throw new InvalidArgumentException(sprintf('Cannot persist promised image twice'));
 		}
 
-		return $this->persist[] = new PromisedImage($image, false);
+		return $this->persist[] = new PromisedImage($this, $image, false);
 	}
 
 	public function remove(PersistentImageInterface $image): PromisedImageInterface
@@ -147,7 +147,7 @@ final class Transaction implements TransactionInterface
 			throw new InvalidArgumentException(sprintf('Cannot remove promised image twice'));
 		}
 
-		$promised = new PromisedImage($image, true);
+		$promised = new PromisedImage($this, $image, true);
 		$this->remove[] = new RemoveImage($image, $promised);
 
 		return $promised;
