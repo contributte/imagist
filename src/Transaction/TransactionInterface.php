@@ -12,6 +12,8 @@ use Contributte\Imagist\ImageStorageInterface;
 interface TransactionInterface extends ImageStorageInterface
 {
 
+	public function isCommitted(): bool;
+
 	public function commit(): void;
 
 	/**

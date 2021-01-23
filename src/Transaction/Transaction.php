@@ -47,6 +47,11 @@ final class Transaction implements TransactionInterface
 		$this->fileFactory = $fileFactory;
 	}
 
+	public function isCommitted(): bool
+	{
+		return $this->commited;
+	}
+
 	public function commit(): void
 	{
 		if ($this->commited) {
