@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Doctrine;
+namespace Contributte\Imagist\Bridge\Doctrine;
 
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;

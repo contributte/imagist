@@ -13,7 +13,7 @@ use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
 use Contributte\Imagist\Doctrine\Annotation\AnnotationScopeProvider;
-use Contributte\Imagist\Doctrine\ImageType;
+use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
@@ -52,6 +52,7 @@ use Contributte\Imagist\Transaction\TransactionFactory;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Driver\Connection;
+use Imagine\Image\AbstractImagine;
 use LogicException;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\DI\CompilerExtension;
@@ -222,7 +223,7 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadImageFiltersExtension(ContainerBuilder $builder): void
 	{
-		if (!interface_exists(FilterProcessorInterface::class)) {
+		if (!class_exists(AbstractImagine::class)) {
 			return;
 		}
 
@@ -244,9 +245,6 @@ final class ImageStorageExtension extends CompilerExtension
 		if (!$serviceName) {
 			return;
 		}
-
-		$builder->addDefinition($this->prefix('doctrine.annotations.scopeProvider'))
-			->setFactory(AnnotationScopeProvider::class);
 
 		$this->assertServiceDefinition($builder->getDefinition($serviceName))
 			->addSetup('?::register(?)', [ImageType::class, '@self']);

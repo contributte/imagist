@@ -5,7 +5,6 @@ namespace Contributte\Imagist\Bridge\Symfony\Extension;
 use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistryInterface;
-use Contributte\Imagist\Doctrine\Annotation\AnnotationScopeProvider;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
@@ -40,7 +39,6 @@ final class ImageStorageExtension extends Extension
 		$this->loadResolvers($container);
 		$this->loadPathInfo($container);
 		$this->loadFile($container);
-		$this->loadDoctrine($container);
 		$this->loadFilter($container);
 
 		if (interface_exists(OperationInterface::class)) {
@@ -87,14 +85,6 @@ final class ImageStorageExtension extends Extension
 			->setAutowired(true);
 
 		$container->setAlias(OperationRegistryInterface::class, 'contributte.imagist.imagine.operationRegistry');
-	}
-
-	private function loadDoctrine(ContainerBuilder $container): void
-	{
-		$container->register('contributte.imagist.doctrine.annotations.scopeProvider', AnnotationScopeProvider::class)
-			->setAutowired(true);
-
-		$container->setAlias(AnnotationScopeProvider::class, 'contributte.imagist.doctrine.annotations.scopeProvider');
 	}
 
 	private function loadFilesystem(ContainerBuilder $container): void
