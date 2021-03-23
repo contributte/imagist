@@ -2,6 +2,8 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
+use Contributte\Imagist\Bridge\Doctrine\Event\PersisterEvent;
+use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
 use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
@@ -52,6 +54,7 @@ use Contributte\Imagist\Transaction\TransactionFactory;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Image\AbstractImagine;
 use LogicException;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
@@ -60,6 +63,9 @@ use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
+use Nettrine\DBAL\DI\DbalExtension;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tracy\Bar;
@@ -67,6 +73,18 @@ use Tracy\IBarPanel;
 
 final class ImageStorageExtension extends CompilerExtension
 {
+
+	public function getConfigSchema(): Schema
+	{
+		return Expect::structure([
+			'extensions' => Expect::structure([
+				'doctrine' => Expect::structure([
+					'removeEvent' => Expect::bool(false),
+					'promisedPersistEvent' => Expect::bool(false),
+				])
+			]),
+		]);
+	}
 
 	public function loadConfiguration(): void
 	{
@@ -248,6 +266,29 @@ final class ImageStorageExtension extends CompilerExtension
 
 		$this->assertServiceDefinition($builder->getDefinition($serviceName))
 			->addSetup('?::register(?)', [ImageType::class, '@self']);
+
+		$autoRegistration = (bool) $this->compiler->getExtensions(DbalExtension::class);
+		if ($this->getConfig()->extensions->doctrine->removeEvent) {
+			$service = $builder->addDefinition($this->prefix('doctrine.events.remove'))
+				->setFactory(RemoveEvent::class)
+				->setAutowired(false);
+
+			if (!$autoRegistration) {
+				$this->assertServiceDefinition($builder->getDefinitionByType(EntityManagerInterface::class))
+					->addSetup('?->getEventManager()->addEventSubscriber(?);', ['@self', $service]);
+			}
+		}
+
+		if ($this->getConfig()->extensions->doctrine->promisedPersistEvent) {
+			$service = $builder->addDefinition($this->prefix('doctrine.events.promisedPersist'))
+				->setFactory(PersisterEvent::class)
+				->setAutowired(false);
+
+			if (!$autoRegistration) {
+				$this->assertServiceDefinition($builder->getDefinitionByType(EntityManagerInterface::class))
+					->addSetup('?->getEventManager()->addEventSubscriber(?);', ['@self', $service]);
+			}
+		}
 	}
 
 	private function loadLatte(ContainerBuilder $builder): void
