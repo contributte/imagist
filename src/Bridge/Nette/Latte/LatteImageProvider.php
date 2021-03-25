@@ -33,7 +33,11 @@ final class LatteImageProvider
 			$image = $id;
 		} else {
 			throw new InvalidArgumentException(
-				sprintf('First argument must be instance of %s or string or null', PersistentImageInterface::class)
+				sprintf(
+					'First argument must be instance of %s or string or null, %s given',
+					PersistentImageInterface::class,
+					is_object($id) ? get_class($id) : gettype($id)
+				)
 			);
 		}
 
