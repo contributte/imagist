@@ -49,6 +49,20 @@ class Scope
 		return in_array($scope, $this->scopes);
 	}
 
+	public function equals(string... $scopes): bool
+	{
+		$index = 0;
+		foreach ($scopes as $scope) {
+			if (($this->scopes[$index] ?? null) !== $scope) {
+				return false;
+			}
+
+			$index++;
+		}
+
+		return true;
+	}
+
 	protected function addScope(string $scope): void
 	{
 		$scope = trim($scope, " \t\n\r\0\v/");
