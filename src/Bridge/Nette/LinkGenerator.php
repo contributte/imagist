@@ -29,6 +29,10 @@ final class LinkGenerator implements LinkGeneratorInterface
 			return null;
 		}
 
+		if (str_starts_with($path, 'http')) {
+			return $path;
+		}
+
 		return $this->baseUrl . $path;
 	}
 
