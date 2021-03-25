@@ -5,7 +5,7 @@ namespace Contributte\Imagist\Entity;
 use Contributte\Imagist\Exceptions\EmptyImageException;
 use Contributte\Imagist\Scope\Scope;
 
-final class EmptyImage extends Image implements EmptyImageInterface
+class EmptyImage extends Image implements EmptyImageInterface
 {
 
 	public function __construct(?Scope $scope = null)
