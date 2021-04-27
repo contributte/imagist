@@ -4,4 +4,6 @@
   - [Nette](nette.md)
   - [Symfony](symfony.md)
   - [Standalone](standalone.md)
+  - Examples
+    - [Gumlet + Google Storage](examples/gumlet-googleStorage.md)
 
