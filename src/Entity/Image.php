@@ -74,7 +74,7 @@ abstract class Image implements ImageInterface
 
 	public function equalTo(ImageInterface $image): bool
 	{
-		if (!$this->isEmpty() || !$image->isEmpty()) {
+		if ($this->isEmpty() || $image->isEmpty()) {
 			return false;
 		}
 
