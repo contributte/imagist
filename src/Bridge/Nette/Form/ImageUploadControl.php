@@ -7,6 +7,7 @@ use Contributte\Imagist\Bridge\Nette\Form\Entity\UploadControlEntity;
 use Contributte\Imagist\Bridge\Nette\Form\Preview\ImagePreviewInterface;
 use Contributte\Imagist\Bridge\Nette\Form\Remove\ImageRemoveInterface;
 use Contributte\Imagist\Bridge\Nette\Uploader\FileUploadUploader;
+use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\Scope\Scope;
@@ -115,7 +116,7 @@ final class ImageUploadControl extends UploadControl
 	}
 
 	/**
-	 * @param FileUpload|PersistentImageInterface|null $value
+	 * @param FileUpload|PersistentImageInterface|string|null $value
 	 * @return static
 	 */
 	public function setValue($value)
@@ -140,12 +141,16 @@ final class ImageUploadControl extends UploadControl
 			$this->entity = $this->entity
 				->withDefault($value)
 				->withValue(null);
+		} elseif (is_string($value)) {
+			$this->entity = $this->entity
+				->withDefault(new PersistentImage($value))
+				->withValue(null);
 		} else {
 			// @phpstan-ignore-next-line $value is mixed
 			$type = is_object($value) ? get_class($value) : gettype($value);
 
 			throw new InvalidArgumentException(
-				sprintf('Value must be %s|%s|null, %s given', FileUpload::class, PersistentImageInterface::class, $type)
+				sprintf('Value must be %s|%s|string|null, %s given', FileUpload::class, PersistentImageInterface::class, $type)
 			);
 		}
 
