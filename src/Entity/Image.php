@@ -169,7 +169,7 @@ abstract class Image implements ImageInterface
 	{
 		$this->closedReason = $reason;
 		$this->closed = true;
-		$this->closeBacktrace = debug_backtrace(0, 5);
+		$this->closeBacktrace = debug_backtrace();
 	}
 
 	protected function throwIfClosed(): void
