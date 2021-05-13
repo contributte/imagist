@@ -6,6 +6,8 @@ use Contributte\Imagist\Exceptions\ClosedImageException;
 use Contributte\Imagist\Filter\Filter;
 use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
+use Nette\Utils\Arrays;
+use Nette\Utils\Strings;
 
 abstract class Image implements ImageInterface
 {
@@ -17,6 +19,9 @@ abstract class Image implements ImageInterface
 	protected Scope $scope;
 
 	private bool $closed = false;
+
+	/** @var mixed[] */
+	private array $closeBacktrace = [];
 
 	private ?string $closedReason = null;
 
@@ -164,6 +169,7 @@ abstract class Image implements ImageInterface
 	{
 		$this->closedReason = $reason;
 		$this->closed = true;
+		$this->closeBacktrace = debug_backtrace(0, 5);
 	}
 
 	protected function throwIfClosed(): void
@@ -174,7 +180,8 @@ abstract class Image implements ImageInterface
 					'Image %s is closed, reason: %s',
 					$this->scope->toStringWithTrailingSlash() . $this->name,
 					$this->closedReason ?: 'not specified'
-				)
+				),
+				$this->closeBacktrace
 			);
 		}
 	}

@@ -13,6 +13,7 @@ use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
+use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
 use Contributte\Imagist\Doctrine\Annotation\AnnotationScopeProvider;
@@ -70,6 +71,7 @@ use Nettrine\DBAL\DI\DbalExtension;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tracy\Bar;
+use Tracy\BlueScreen;
 use Tracy\IBarPanel;
 
 final class ImageStorageExtension extends CompilerExtension
@@ -144,6 +146,12 @@ final class ImageStorageExtension extends CompilerExtension
 		if ($serviceName) {
 			$this->assertServiceDefinition($builder->getDefinition($serviceName))
 				->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.bar'))]);
+		}
+
+		$serviceName = $builder->getByType(BlueScreen::class);
+		if ($serviceName) {
+			$this->assertServiceDefinition($builder->getDefinition($serviceName))
+				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
 		}
 
 		$serviceName = $builder->getByType(EventDispatcherInterface::class, false);

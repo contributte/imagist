@@ -6,7 +6,7 @@ use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\PromisedImageInterface;
 use Contributte\Imagist\Transaction\TransactionInterface;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 
 final class PersisterEvent implements EventSubscriber
