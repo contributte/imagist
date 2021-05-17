@@ -4,6 +4,7 @@ namespace Contributte\Imagist\Bridge\Nette\DI;
 
 use Contributte\Imagist\Bridge\Doctrine\Event\PersisterEvent;
 use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
+use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
 use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
@@ -16,8 +17,6 @@ use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
-use Contributte\Imagist\Doctrine\Annotation\AnnotationScopeProvider;
-use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
@@ -88,7 +87,7 @@ final class ImageStorageExtension extends CompilerExtension
 				'gumlet' => Expect::structure([
 					'bucket' => Expect::string(),
 					'token' => Expect::string()->nullable(),
-				])
+				]),
 			]),
 		]);
 	}

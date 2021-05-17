@@ -49,7 +49,7 @@ class Scope
 		return in_array($scope, $this->scopes);
 	}
 
-	public function equals(string... $scopes): bool
+	public function equals(string ...$scopes): bool
 	{
 		$index = 0;
 		foreach ($scopes as $scope) {

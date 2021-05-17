@@ -2,7 +2,6 @@
 
 namespace Contributte\Imagist\Bridge\Doctrine\Event;
 
-use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;

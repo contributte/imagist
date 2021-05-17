@@ -15,7 +15,7 @@ final class PersisterEvent implements EventSubscriber
 	/**
 	 * @return mixed[]
 	 */
-	public function getSubscribedEvents()
+	public function getSubscribedEvents(): array
 	{
 		return [
 			Events::prePersist,

@@ -5,6 +5,9 @@ namespace Contributte\Imagist\Bridge\Nette\Tracy\BlueScreen;
 interface BlueScreenBacktraceInterface
 {
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getBackTrace(): array;
 
 }

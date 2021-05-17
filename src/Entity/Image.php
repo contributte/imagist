@@ -6,8 +6,6 @@ use Contributte\Imagist\Exceptions\ClosedImageException;
 use Contributte\Imagist\Filter\Filter;
 use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
-use Nette\Utils\Arrays;
-use Nette\Utils\Strings;
 
 abstract class Image implements ImageInterface
 {

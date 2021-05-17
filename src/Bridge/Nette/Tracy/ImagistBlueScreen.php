@@ -3,7 +3,6 @@
 namespace Contributte\Imagist\Bridge\Nette\Tracy;
 
 use Contributte\Imagist\Bridge\Nette\Tracy\BlueScreen\BlueScreenBacktraceInterface;
-use Nette\Utils\Strings;
 use Throwable;
 use Tracy\BlueScreen;
 

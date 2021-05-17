@@ -2,8 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Gumlet;
 
-use Exception;
-use JetBrains\PhpStorm\ExpectedValues;
+use InvalidArgumentException;
 
 class GumletBuilder
 {
@@ -47,6 +46,9 @@ class GumletBuilder
 		return $this;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function build(): array
 	{
 		return $this->options;

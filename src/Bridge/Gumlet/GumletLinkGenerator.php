@@ -46,6 +46,9 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$this->domain = $domain;
 	}
 
+	/**
+	 * @param mixed[] $options
+	 */
 	public function link(?PersistentImageInterface $image, array $options = []): ?string
 	{
 		if (!$image || $image instanceof EmptyImageInterface) {
