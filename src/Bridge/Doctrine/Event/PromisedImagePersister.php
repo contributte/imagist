@@ -8,7 +8,7 @@ interface PromisedImagePersister
 {
 
 	/**
-	 * @return PersistentImageInterface[]
+	 * @return (PersistentImageInterface|null)[]
 	 */
 	public function _promisedImagesToPersist(): array;
 

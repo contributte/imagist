@@ -13,7 +13,7 @@ final class RemoveEvent implements EventSubscriber
 
 	private TransactionFactoryInterface $transactionFactory;
 
-	public function __construct(TransactionFactoryInterface $transactionFactory, ImageStorageInterface $imageStorage)
+	public function __construct(TransactionFactoryInterface $transactionFactory)
 	{
 		$this->transactionFactory = $transactionFactory;
 	}
@@ -24,11 +24,11 @@ final class RemoveEvent implements EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			Events::postRemove,
+			Events::preRemove,
 		];
 	}
 
-	public function postRemove(LifecycleEventArgs $args): void
+	public function preRemove(LifecycleEventArgs $args): void
 	{
 		$object = $args->getObject();
 		$em = $args->getObjectManager();
