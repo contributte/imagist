@@ -67,6 +67,7 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nettrine\DBAL\DI\DbalExtension;
+use stdClass;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tracy\Bar;
@@ -274,6 +275,8 @@ final class ImageStorageExtension extends CompilerExtension
 			return;
 		}
 
+		/** @var stdClass $config */
+		$config = $this->getConfig();
 		$serviceName = $builder->getByType(Connection::class);
 		if (!$serviceName) {
 			return;
@@ -283,7 +286,7 @@ final class ImageStorageExtension extends CompilerExtension
 			->addSetup('?::register(?)', [ImageType::class, '@self']);
 
 		$autoRegistration = (bool) $this->compiler->getExtensions(DbalExtension::class);
-		if ($this->getConfig()->extensions->doctrine->removeEvent) {
+		if ($config->extensions->doctrine->removeEvent) {
 			$service = $builder->addDefinition($this->prefix('doctrine.events.remove'))
 				->setFactory(RemoveEvent::class)
 				->setAutowired(false);
@@ -294,7 +297,7 @@ final class ImageStorageExtension extends CompilerExtension
 			}
 		}
 
-		if ($this->getConfig()->extensions->doctrine->promisedPersistEvent) {
+		if ($config->extensions->doctrine->promisedPersistEvent) {
 			$service = $builder->addDefinition($this->prefix('doctrine.events.promisedPersist'))
 				->setFactory(PersisterEvent::class)
 				->setAutowired(false);
@@ -308,7 +311,9 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadGumlet(ContainerBuilder $builder): void
 	{
-		$config = $this->getConfig()->extensions->gumlet;
+		/** @var stdClass $config */
+		$config = $this->getConfig();
+		$config = $config->extensions->gumlet;
 		if (!$config->bucket) {
 			return;
 		}

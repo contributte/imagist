@@ -3,6 +3,7 @@
 namespace Contributte\Imagist\Bridge\Gumlet;
 
 use InvalidArgumentException;
+use JetBrains\PhpStorm\ExpectedValues;
 
 class GumletBuilder
 {

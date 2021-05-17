@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#Else branch is unreachable because ternary operator condition is always true#'
+			path: src/Bridge/Nette/Latte/LatteImageProvider.php
+		- '#Attribute class JetBrains\\PhpStorm\\ExpectedValues does not exist#'
