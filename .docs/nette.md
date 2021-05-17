@@ -127,4 +127,4 @@ $form->addImageUpload('image')
 
 Package provides tracy debug bar with bluescreen extension
 
-![tracy](https://github.com/contributte/imagist/tree/master/.docs/img/tracy.png)
+![tracy](https://raw.githubusercontent.com/contributte/imagist/master/.docs/img/tracy.png)
