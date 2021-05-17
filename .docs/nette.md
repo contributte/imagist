@@ -3,6 +3,7 @@
 - [DI](#di)
 - [Forms](#forms)
 - [Latte](#latte)
+- [Tracy](#tracy)
 
 ## DI
 Register extension
@@ -122,3 +123,8 @@ $form->addImageUpload('image')
     ->setDefaultValue(new PersistentImage('image.png'));
 ```
 
+## Tracy
+
+Package provides tracy debug bar with bluescreen extension
+
+![tracy](https://github.com/contributte/imagist/tree/master/.docs/img/tracy.png)
