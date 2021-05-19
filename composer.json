@@ -15,7 +15,7 @@
     "phpstan/phpstan": "^0.12.11",
     "phpstan/extension-installer": "^1.0",
     "phpstan/phpstan-deprecation-rules": "^0.12.2",
-    "ninjify/qa": "^0.10.0",
+    "ninjify/qa": "^0.12.1",
     "codeception/module-phpbrowser": "^1.0.0",
     "ramsey/uuid": "^4.1",
     "doctrine/dbal": "^2.12",
