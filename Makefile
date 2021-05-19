@@ -17,3 +17,9 @@ phpstan:
 
 tests:
 	vendor/bin/codecept run
+
+coverage-clover:
+	vendor/bin/codecept run --coverage --coverage-xml
+
+coverage-html:
+	vendor/bin/codecept run --coverage --coverage-html

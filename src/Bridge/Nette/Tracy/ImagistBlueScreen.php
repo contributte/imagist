@@ -16,6 +16,7 @@ final class ImagistBlueScreen
 				return null;
 			}
 
+			// phpcs:disable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 			$expanded = null;
 			$stack = $exception->getBackTrace();
 			$dump = $blueScreen->getDumper();
@@ -26,6 +27,8 @@ final class ImagistBlueScreen
 					break;
 				}
 			}
+
+			// phpcs:enable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 
 			ob_start();
 			require __DIR__ . '/assets/stack.phtml';

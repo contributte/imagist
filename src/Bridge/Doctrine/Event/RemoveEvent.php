@@ -30,7 +30,6 @@ final class RemoveEvent implements EventSubscriber
 	public function preRemove(LifecycleEventArgs $args): void
 	{
 		$object = $args->getObject();
-		$em = $args->getObjectManager();
 
 		if (!$object instanceof ImageCleaner) {
 			return;
