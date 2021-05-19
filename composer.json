@@ -1,5 +1,6 @@
 {
   "name": "contributte/imagist",
+  "description": "Image library for Nette Framework",
   "type": "library",
   "license": ["MIT"],
   "require": {
