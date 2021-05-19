@@ -8,9 +8,7 @@ use LogicException;
 class ClosedImageException extends LogicException implements BlueScreenBacktraceInterface
 {
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	private array $backTrace;
 
 	/**

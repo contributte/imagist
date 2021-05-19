@@ -47,7 +47,10 @@ final class ImageBarPanel implements IBarPanel, EventSubscriberInterface
 	{
 		ob_start();
 
+		// phpcs:disable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 		$events = $this->events;
+		// phpcs:enable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+
 		require __DIR__ . '/assets/panel.phtml';
 
 		$contents = ob_get_clean();
