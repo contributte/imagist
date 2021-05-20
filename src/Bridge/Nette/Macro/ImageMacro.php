@@ -33,8 +33,8 @@ final class ImageMacro extends MacroSet
 			'%raw' .
 			');',
 			$word,
-			$filter,
-			$options
+			$options,
+			$filter
 		);
 	}
 

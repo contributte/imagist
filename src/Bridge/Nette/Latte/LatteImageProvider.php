@@ -20,10 +20,10 @@ final class LatteImageProvider
 
 	/**
 	 * @param string|PersistentImageInterface|null $id
-	 * @param mixed[] $filter
 	 * @param mixed[] $options
+	 * @param mixed[] $filters
 	 */
-	public function link($id, array $filter, array $options): ?string
+	public function link($id, array $options, array ...$filters): ?string
 	{
 		if (is_string($id)) {
 			$image = new PersistentImage($id);
@@ -41,13 +41,18 @@ final class LatteImageProvider
 			);
 		}
 
-		if (count($filter) > 1) {
-			throw new InvalidArgumentException('Cannot use two or more filters.');
+		if (count($filters) > 1) {
+			throw new InvalidArgumentException('Cannot use now two or more filters.');
 		}
 
-		$key = key($filter);
-		if ($key !== null) {
-			$image = is_int($key) ? $image->withFilter($filter[$key]) : $image->withFilter($key, $filter[$key]);
+		foreach ($filters as $options) {
+			if (count($options) === 0) {
+				throw new InvalidArgumentException('First filter does not contain filter name.');
+			}
+
+			[$name] = array_splice($options, 0, 1);
+
+			$image = $image->withFilter($name, $options);
 		}
 
 		return $this->linkGenerator->link($image, $options);
