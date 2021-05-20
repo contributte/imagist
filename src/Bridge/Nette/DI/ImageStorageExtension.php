@@ -7,6 +7,7 @@ use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
 use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
 use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
+use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistryInterface;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
@@ -137,6 +138,7 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->injectNormalizers($builder);
 		$this->injectRemovers($builder);
 		$this->injectPersisters($builder);
+		$this->injectImagineOperations($builder);
 
 		$serviceName = $builder->getByType(Bar::class);
 		if ($serviceName) {
@@ -186,6 +188,20 @@ final class ImageStorageExtension extends CompilerExtension
 
 		foreach ($builder->findByType(RemoverInterface::class) as $remover) {
 			$service->addSetup('add', [$remover]);
+		}
+	}
+
+	private function injectImagineOperations(ContainerBuilder $builder): void
+	{
+		if (!$builder->hasDefinition($this->prefix('imagine.operationRegistry'))) {
+			return;
+		}
+
+		$service = $builder->getDefinition($this->prefix('imagine.operationRegistry'));
+		assert($service instanceof ServiceDefinition);
+
+		foreach ($builder->findByType(OperationInterface::class) as $operation) {
+			$service->addSetup('add', [$operation]);
 		}
 	}
 
