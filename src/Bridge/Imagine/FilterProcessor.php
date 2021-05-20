@@ -55,7 +55,7 @@ final class FilterProcessor implements FilterProcessorInterface
 		$operation = $this->operationRegistry->get($filter, $target->getImage()->getScope());
 
 		if (!$operation) {
-			throw new OperationNotFoundException(sprintf('Operation not found for %s', $target->getImage()->getId()));
+			throw new OperationNotFoundException($target->getImage());
 		}
 
 		$operation->operate($image = $this->createImageInstance($source), $filter);

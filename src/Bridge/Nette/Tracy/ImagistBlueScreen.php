@@ -3,6 +3,7 @@
 namespace Contributte\Imagist\Bridge\Nette\Tracy;
 
 use Contributte\Imagist\Bridge\Nette\Tracy\BlueScreen\BlueScreenBacktraceInterface;
+use Contributte\Imagist\Bridge\Nette\Tracy\BlueScreen\ExceptionImageProviderInterface;
 use Throwable;
 use Tracy\BlueScreen;
 
@@ -37,6 +38,17 @@ final class ImagistBlueScreen
 			return [
 				'tab' => 'Close backtrace',
 				'panel' => $panel,
+			];
+		});
+
+		$blueScreen->addPanel(function (?Throwable $exception) use ($blueScreen): ?array {
+			if (!$exception instanceof ExceptionImageProviderInterface) {
+				return null;
+			}
+
+			return [
+				'tab' => 'Source image',
+				'panel' => ($blueScreen->getDumper())($exception->getImage()),
 			];
 		});
 	}
