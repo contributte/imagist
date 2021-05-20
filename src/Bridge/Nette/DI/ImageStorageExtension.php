@@ -144,8 +144,10 @@ final class ImageStorageExtension extends CompilerExtension
 
 		$serviceName = $builder->getByType(Bar::class);
 		if ($serviceName) {
-			$this->assertServiceDefinition($builder->getDefinition($serviceName))
-				->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.bar'))]);
+			if ($builder->hasDefinition($this->prefix('tracy.bar'))) {
+				$this->assertServiceDefinition($builder->getDefinition($serviceName))
+					->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.bar'))]);
+			}
 		}
 
 		$serviceName = $builder->getByType(BlueScreen::class);
