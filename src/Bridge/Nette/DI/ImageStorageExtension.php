@@ -156,10 +156,6 @@ final class ImageStorageExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$this->injectNormalizers($builder);
-		$this->injectRemovers($builder);
-		$this->injectPersisters($builder);
-
 		$serviceName = $builder->getByType(Bar::class);
 		if ($serviceName) {
 			if ($builder->hasDefinition($this->prefix('tracy.bar'))) {
@@ -182,36 +178,6 @@ final class ImageStorageExtension extends CompilerExtension
 
 		foreach ($this->onBeforeCompile as $callback) {
 			$callback();
-		}
-	}
-
-	private function injectNormalizers(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('filter.normalizerCollection'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(FilterNormalizerInterface::class) as $normalizer) {
-			$service->addSetup('add', [$normalizer]);
-		}
-	}
-
-	private function injectPersisters(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('persisterRegistry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(PersisterInterface::class) as $persister) {
-			$service->addSetup('add', [$persister]);
-		}
-	}
-
-	private function injectRemovers(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('removerRegistry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(RemoverInterface::class) as $remover) {
-			$service->addSetup('add', [$remover]);
 		}
 	}
 
@@ -270,9 +236,14 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadFilter(ContainerBuilder $builder): void
 	{
-		$builder->addDefinition($this->prefix('filter.normalizerCollection'))
+		$normalizerCollection = $builder->addDefinition($this->prefix('filter.normalizerCollection'))
 			->setType(FilterNormalizerCollectionInterface::class)
 			->setFactory(FilterNormalizerCollection::class);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(FilterNormalizerInterface::class),
+			fn (Definition $definition) => $normalizerCollection->addSetup('add', [$definition])
+		);
 
 		$builder->addDefinition($this->prefix('filterProcessor'))
 			->setType(FilterProcessorInterface::class)
@@ -389,9 +360,14 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadPersister(ContainerBuilder $builder): void
 	{
-		$builder->addDefinition($this->prefix('persisterRegistry'))
+		$persisterRegistry = $builder->addDefinition($this->prefix('persisterRegistry'))
 			->setType(PersisterRegistryInterface::class)
 			->setFactory(PersisterRegistry::class);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(PersisterInterface::class),
+			fn (Definition $definition) => $persisterRegistry->addSetup('add', [$definition])
+		);
 
 		$builder->addDefinition($this->prefix('persisters.emptyImage'))
 			->setType(PersisterInterface::class)
@@ -408,9 +384,14 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadRemover(ContainerBuilder $builder): void
 	{
-		$builder->addDefinition($this->prefix('removerRegistry'))
+		$removerRegistry = $builder->addDefinition($this->prefix('removerRegistry'))
 			->setType(RemoverRegistryInterface::class)
 			->setFactory(RemoverRegistry::class);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(RemoverInterface::class),
+			fn (Definition $definition) => $removerRegistry->addSetup('add', [$definition])
+		);
 
 		$builder->addDefinition($this->prefix('removers.emptyImage'))
 			->setType(RemoverInterface::class)
