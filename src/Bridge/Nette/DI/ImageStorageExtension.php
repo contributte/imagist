@@ -15,6 +15,9 @@ use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
+use Contributte\Imagist\Bridge\NetteImage\NetteFilterProcessor;
+use Contributte\Imagist\Bridge\NetteImage\NetteOperationRegistry;
+use Contributte\Imagist\Bridge\NetteImage\NetteOperationRegistryInterface;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
 use Contributte\Imagist\File\FileFactory;
@@ -77,6 +80,9 @@ use Tracy\IBarPanel;
 final class ImageStorageExtension extends CompilerExtension
 {
 
+	/** @var callable[] */
+	private array $onBeforeCompile = [];
+
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
@@ -89,6 +95,14 @@ final class ImageStorageExtension extends CompilerExtension
 					'bucket' => Expect::string(),
 					'token' => Expect::string()->nullable(),
 				]),
+				'nette' => Expect::structure([
+					'filters' => Expect::structure([
+						'enabled' => Expect::bool(false),
+					]),
+				]),
+				'imagine' => Expect::structure([
+					'enabled' => Expect::bool(class_exists(AbstractImagine::class)),
+				]),
 			]),
 		]);
 	}
@@ -96,6 +110,8 @@ final class ImageStorageExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		/** @var stdClass $config */
+		$config = $this->getConfig();
 
 		$this->loadFilesystem($builder);
 		$this->loadResolvers($builder);
@@ -106,7 +122,12 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->loadDebugger($builder);
 		$this->loadPersister($builder);
 		$this->loadRemover($builder);
-		$this->loadImageFiltersExtension($builder);
+
+		if ($config->extensions->nette->filters->enabled) {
+			$this->loadNetteImageFilters($builder);
+		} elseif ($config->extensions->imagine->enabled) {
+			$this->loadImageFiltersExtension($builder);
+		}
 
 		$builder->addDefinition($this->prefix('storage'))
 			->setType(ImageStorageInterface::class)
@@ -138,7 +159,6 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->injectNormalizers($builder);
 		$this->injectRemovers($builder);
 		$this->injectPersisters($builder);
-		$this->injectImagineOperations($builder);
 
 		$serviceName = $builder->getByType(Bar::class);
 		if ($serviceName) {
@@ -158,6 +178,10 @@ final class ImageStorageExtension extends CompilerExtension
 		if ($serviceName) {
 			$this->assertServiceDefinition($builder->getDefinition($serviceName))
 				->addSetup('addSubscriber', [$builder->getDefinition($this->prefix('tracy.bar'))]);
+		}
+
+		foreach ($this->onBeforeCompile as $callback) {
+			$callback();
 		}
 	}
 
@@ -188,20 +212,6 @@ final class ImageStorageExtension extends CompilerExtension
 
 		foreach ($builder->findByType(RemoverInterface::class) as $remover) {
 			$service->addSetup('add', [$remover]);
-		}
-	}
-
-	private function injectImagineOperations(ContainerBuilder $builder): void
-	{
-		if (!$builder->hasDefinition($this->prefix('imagine.operationRegistry'))) {
-			return;
-		}
-
-		$service = $builder->getDefinition($this->prefix('imagine.operationRegistry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(OperationInterface::class) as $operation) {
-			$service->addSetup('add', [$operation]);
 		}
 	}
 
@@ -278,9 +288,14 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
 			->setFactory(FilterProcessor::class);
 
-		$builder->addDefinition($this->prefix('imagine.operationRegistry'))
+		$registry = $builder->addDefinition($this->prefix('imagine.operationRegistry'))
 			->setType(OperationRegistryInterface::class)
 			->setFactory(OperationRegistry::class);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(OperationInterface::class),
+			fn (Definition $definition) => $registry->addSetup('add', [$definition])
+		);
 	}
 
 	private function loadDoctrine(ContainerBuilder $builder): void
@@ -406,11 +421,36 @@ final class ImageStorageExtension extends CompilerExtension
 			->setFactory(PersistentImageRemover::class);
 	}
 
+	private function loadNetteImageFilters(ContainerBuilder $builder): void
+	{
+		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
+			->setFactory(NetteFilterProcessor::class);
+
+		$registry = $builder->addDefinition($this->prefix('nette.filters.operationRegistry'))
+			->setType(NetteOperationRegistryInterface::class)
+			->setFactory(NetteOperationRegistry::class);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(OperationInterface::class),
+			fn (Definition $operation) => $registry->addSetup('add', [$operation])
+		);
+	}
+
 	private function assertServiceDefinition(Definition $definition): ServiceDefinition
 	{
 		assert($definition instanceof ServiceDefinition);
 
 		return $definition;
+	}
+
+	/**
+	 * @param mixed[] $array
+	 */
+	private function foreach(array $array, callable $func): void
+	{
+		foreach ($array as $key => $value) {
+			$func($value, $key);
+		}
 	}
 
 }

@@ -21,6 +21,13 @@ final class ImageMimeType
 		'image/webp' => 'webp',
 	];
 
+	private const IMAGE_TYPE = [
+		'image/jpeg' => IMAGETYPE_JPEG,
+		'image/gif' => IMAGETYPE_GIF,
+		'image/png' => IMAGETYPE_PNG,
+		'image/webp' => IMAGETYPE_WEBP,
+	];
+
 	private string $mimeType;
 
 	public function __construct(string $mimeType)
@@ -43,6 +50,11 @@ final class ImageMimeType
 	public function getMimeType(): string
 	{
 		return $this->mimeType;
+	}
+
+	public function getImageType(): int
+	{
+		return self::IMAGE_TYPE[$this->mimeType];
 	}
 
 	protected function assertIsImage(): void
