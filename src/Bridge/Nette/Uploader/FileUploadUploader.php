@@ -4,10 +4,11 @@ namespace Contributte\Imagist\Bridge\Nette\Uploader;
 
 use Contributte\Imagist\Bridge\Nette\Exceptions\InvalidArgumentException;
 use Contributte\Imagist\Bridge\Nette\Exceptions\InvalidFileUploadException;
+use Contributte\Imagist\Uploader\UploaderFilePathAwareInterface;
 use Contributte\Imagist\Uploader\UploaderInterface;
 use Nette\Http\FileUpload;
 
-final class FileUploadUploader implements UploaderInterface
+final class FileUploadUploader implements UploaderInterface, UploaderFilePathAwareInterface
 {
 
 	private FileUpload $fileUpload;
@@ -36,6 +37,11 @@ final class FileUploadUploader implements UploaderInterface
 		}
 
 		return $content;
+	}
+
+	public function getFilePath(): string
+	{
+		return $this->fileUpload->getTemporaryFile();
 	}
 
 }

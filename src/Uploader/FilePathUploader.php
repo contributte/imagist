@@ -5,7 +5,7 @@ namespace Contributte\Imagist\Uploader;
 use Contributte\Imagist\Exceptions\CannotSaveFileException;
 use Contributte\Imagist\Exceptions\InvalidArgumentException;
 
-class FilePathUploader implements UploaderInterface
+class FilePathUploader implements UploaderInterface, UploaderFilePathAwareInterface
 {
 
 	private string $filePath;
@@ -26,6 +26,11 @@ class FilePathUploader implements UploaderInterface
 		}
 
 		return $content;
+	}
+
+	public function getFilePath(): string
+	{
+		return $this->filePath;
 	}
 
 }

@@ -2,11 +2,12 @@
 
 namespace Contributte\Imagist\Bridge\Symfony\Uploader;
 
+use Contributte\Imagist\Uploader\UploaderFilePathAwareInterface;
 use Contributte\Imagist\Uploader\UploaderInterface;
 use LogicException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class UploadedFileUploader implements UploaderInterface
+final class UploadedFileUploader implements UploaderInterface, UploaderFilePathAwareInterface
 {
 
 	private UploadedFile $uploadedFile;
@@ -24,6 +25,11 @@ final class UploadedFileUploader implements UploaderInterface
 		}
 
 		return $content;
+	}
+
+	public function getFilePath(): string
+	{
+		return $this->uploadedFile->getPathname();
 	}
 
 }
