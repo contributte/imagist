@@ -48,7 +48,7 @@ final class NetteConfigFilterRegistry implements NetteOperationInterface
 
 			$operation = $this->operations[$configFilter->getName()];
 
-			$operation->apply($image, $filter, $options, $configFilter->getArguments());
+			$operation->operate($image, $filter, $options, $configFilter->getArguments());
 		}
 	}
 

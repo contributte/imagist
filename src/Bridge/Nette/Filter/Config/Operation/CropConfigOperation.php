@@ -19,7 +19,7 @@ final class CropConfigOperation implements NetteConfigOperationInterface
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function apply(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void
+	public function operate(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void
 	{
 		if (count($arguments) !== 4) {
 			throw new InvalidArgumentException('Operation crop must have 4 arguments exactly.');

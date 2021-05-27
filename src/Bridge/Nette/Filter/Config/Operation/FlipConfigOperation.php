@@ -19,7 +19,7 @@ final class FlipConfigOperation implements NetteConfigOperationInterface
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function apply(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void
+	public function operate(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void
 	{
 		if (!count($arguments)) {
 			throw new InvalidArgumentException('Operation flip must have one argument.');

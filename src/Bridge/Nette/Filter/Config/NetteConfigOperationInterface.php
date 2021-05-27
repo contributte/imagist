@@ -14,6 +14,6 @@ interface NetteConfigOperationInterface
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function apply(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void;
+	public function operate(Image $image, FilterInterface $filter, NetteImageOptions $options, array $arguments): void;
 
 }
