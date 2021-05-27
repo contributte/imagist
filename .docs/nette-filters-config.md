@@ -109,3 +109,7 @@ final class BlurConfigOperation implements ImagineConfigOperationInterface
 ```
 
 Register as service
+
+## Tracy
+
+![tracy](https://raw.githubusercontent.com/contributte/imagist/master/.docs/img/tracy-filters.png)
