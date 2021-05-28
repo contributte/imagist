@@ -2,6 +2,9 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
+use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\GumletConfigNormalizerInterface;
+use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\GumletConfigNormalizerRegistry;
+use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\Normalizer as GumletNormalizer;
 use Contributte\Imagist\Bridge\Imagine\Config\ImagineConfigFilterRegistry;
 use Contributte\Imagist\Bridge\Imagine\Config\ImagineConfigOperationInterface;
 use Contributte\Imagist\Bridge\Imagine\Config\Operation as ImagineOperation;
@@ -13,6 +16,7 @@ use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
 use Contributte\Imagist\Bridge\Nette\Tracy\FilterBarPanel;
 use Contributte\Imagist\Config\ConfigFilter;
 use Contributte\Imagist\Config\ConfigFilterStack;
+use Contributte\Imagist\Filter\FilterNormalizerInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -33,6 +37,11 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		'sharpen' => NetteOperation\SharpenConfigOperation::class,
 		'crop' => NetteOperation\CropConfigOperation::class,
 		'flip' => NetteOperation\FlipConfigOperation::class,
+	];
+
+	private const GUMLET_NORMALIZERS = [
+		'resize' => GumletNormalizer\ResizeConfigNormalizer::class,
+		'crop' => GumletNormalizer\CropConfigNormalizer::class,
 	];
 
 	private bool $tracyBar;
@@ -61,6 +70,10 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 			->setType(OperationInterface::class)
 			->setFactory(ImagineConfigFilterRegistry::class);
 
+		$builder->addDefinition($this->prefix('gumlet.registry'))
+			->setType(FilterNormalizerInterface::class)
+			->setFactory(GumletConfigNormalizerRegistry::class);
+
 		if ($this->tracyBar) {
 			$this->tracy = $builder->addDefinition($this->prefix('tracy'))
 				->setFactory(FilterBarPanel::class);
@@ -75,6 +88,12 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		foreach (self::IMAGINE_OPERATIONS as $name => $class) {
 			$builder->addDefinition($this->prefix('imagine.operation.' . $name))
 				->setType(ImagineConfigOperationInterface::class)
+				->setFactory($class);
+		}
+
+		foreach (self::GUMLET_NORMALIZERS as $name => $class) {
+			$builder->addDefinition($this->prefix('gumlet.normalizer.' . $name))
+				->setType(GumletConfigNormalizerInterface::class)
 				->setFactory($class);
 		}
 	}
@@ -94,6 +113,7 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 
 		$this->processImagineOperations($builder);
 		$this->processNetteOperations($builder);
+		$this->processGumletNormalizers($builder);
 
 		$this->processConfigFilters($builder, $config);
 	}
@@ -118,6 +138,16 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		}
 	}
 
+	private function processGumletNormalizers(ContainerBuilder $builder): void
+	{
+		$service = $builder->getDefinition($this->prefix('gumlet.registry'));
+		assert($service instanceof ServiceDefinition);
+
+		foreach ($builder->findByType(GumletConfigNormalizerInterface::class) as $definition) {
+			$service->addSetup('addNormalizer', [$definition]);
+		}
+	}
+
 	/**
 	 * @param mixed[] $config
 	 */
@@ -127,6 +157,7 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		$registries = [
 			$builder->getDefinition($this->prefix('nette.registry')),
 			$builder->getDefinition($this->prefix('imagine.registry')),
+			$builder->getDefinition($this->prefix('gumlet.registry')),
 		];
 
 		foreach ($config as $name => $filters) {
