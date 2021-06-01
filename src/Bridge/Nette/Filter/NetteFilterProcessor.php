@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Bridge\NetteImage;
+namespace Contributte\Imagist\Bridge\Nette\Filter;
 
-use Contributte\Imagist\Bridge\NetteImage\Exceptions\OperationNotFoundException;
+use Contributte\Imagist\Bridge\Nette\Filter\Exceptions\OperationNotFoundException;
 use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Nette\Utils\Image;

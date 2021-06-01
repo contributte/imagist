@@ -1,0 +1,27 @@
+<h1>Image filters</h1>
+
+<div class="tracy-inner">
+	<div class="tracy-inner-container">
+		<table class="tracy-sortable">
+			<thead>
+				<tr style="user-select: none">
+					<th>Name</th>
+					<th>Filters</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					/** @var \Contributte\Imagist\Bridge\Nette\Tracy\Dto\DebugFilterDto $debug */
+					foreach ($this->debug as $debug):
+				?>
+				<tr>
+					<td><?= $debug->getFilterName() ?></td>
+					<td><?= implode('<br>', $debug->getOperations()) ?></td>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+

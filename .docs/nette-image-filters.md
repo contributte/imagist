@@ -19,8 +19,8 @@ For image manipulating nette image extension uses operations. Let's go define on
 
 ```php
 
-use Contributte\Imagist\Bridge\NetteImage\NetteImageOptions;
-use Contributte\Imagist\Bridge\NetteImage\NetteOperationInterface;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteImageOptions;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
 use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
 use Nette\Utils\Image;

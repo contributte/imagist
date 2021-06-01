@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Bridge\NetteImage;
+namespace Contributte\Imagist\Bridge\Nette\Filter;
 
 use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;

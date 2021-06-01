@@ -10,14 +10,15 @@ use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistryInterface;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteFilterProcessor;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationRegistry;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationRegistryInterface;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
-use Contributte\Imagist\Bridge\NetteImage\NetteFilterProcessor;
-use Contributte\Imagist\Bridge\NetteImage\NetteOperationRegistry;
-use Contributte\Imagist\Bridge\NetteImage\NetteOperationRegistryInterface;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
 use Contributte\Imagist\File\FileFactory;
@@ -412,7 +413,7 @@ final class ImageStorageExtension extends CompilerExtension
 			->setFactory(NetteOperationRegistry::class);
 
 		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(OperationInterface::class),
+			$builder->findByType(NetteOperationInterface::class),
 			fn (Definition $operation) => $registry->addSetup('add', [$operation])
 		);
 	}

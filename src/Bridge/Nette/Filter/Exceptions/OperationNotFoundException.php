@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Bridge\NetteImage\Exceptions;
+namespace Contributte\Imagist\Bridge\Nette\Filter\Exceptions;
 
 use Contributte\Imagist\Bridge\Nette\Tracy\BlueScreen\ExceptionImageProviderInterface;
 use Contributte\Imagist\Entity\ImageInterface;
