@@ -2,7 +2,9 @@
   "name": "contributte/imagist",
   "description": "Image library for Nette Framework",
   "type": "library",
-  "license": ["MIT"],
+  "license": [
+    "MIT"
+  ],
   "require": {
     "php": ">=7.4",
     "nette/utils": "^3.2",
