@@ -12,15 +12,8 @@ use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\Scope\Scope;
 use LogicException;
-use Nette\Application\UI;
-use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\UploadControl;
-use Nette\Forms\Form;
-use Nette\Forms\Helpers;
-use Nette\Forms\Rule;
-use Nette\Forms\Validator;
 use Nette\Http\FileUpload;
-use Nette\InvalidStateException;
 use Nette\Utils\Html;
 
 final class ImageUploadControl extends UploadControl
@@ -29,10 +22,6 @@ final class ImageUploadControl extends UploadControl
 	private UploadControlEntity $entity;
 
 	private ?FileUpload $fileUpload = null;
-
-	private ?int $maxFileSize = null;
-
-	private ?string $maxFileSizeMessage = null;
 
 	private ?Scope $scope = null;
 
@@ -44,34 +33,7 @@ final class ImageUploadControl extends UploadControl
 	{
 		$this->entity = new UploadControlEntity();
 
-		BaseControl::__construct($label);
-
-		$this->control->type = 'file';
-		$this->setOption('type', 'file');
-		$this->addRule([$this, 'isOk'], Validator::$messages[self::VALID]);
-
-		$this->monitor(
-			Form::class,
-			function (Form $form): void {
-				if (!$form->isMethod('post')) {
-					throw new InvalidStateException('File upload requires method POST.');
-				}
-
-				$form->getElementPrototype()->enctype = 'multipart/form-data';
-
-				if ($form->isAnchored()) {
-					$this->formAnchored();
-				} elseif ($form instanceof UI\Form) {
-					$form->onAnchor[] = function (): void {
-						$this->formAnchored();
-					};
-				} else {
-					throw new InvalidStateException(
-						sprintf('Form is not anchored or is not instance of %s', UI\Form::class)
-					);
-				}
-			}
-		);
+		parent::__construct($label);
 	}
 
 	public function loadHttpData(): void
@@ -95,22 +57,6 @@ final class ImageUploadControl extends UploadControl
 	public function setScope(?Scope $scope)
 	{
 		$this->scope = $scope;
-
-		return $this;
-	}
-
-	/**
-	 * @return static
-	 */
-	public function setMaxFileSize(int $bytes, ?string $message = null)
-	{
-		$form = $this->getForm(false);
-		if ($form && $form->isAnchored()) {
-			throw new InvalidStateException('setMaxFileSize method must be called before form is anchored');
-		}
-
-		$this->maxFileSize = $bytes;
-		$this->maxFileSizeMessage = $message;
 
 		return $this;
 	}
@@ -252,36 +198,6 @@ final class ImageUploadControl extends UploadControl
 		$this->remove = $remove;
 
 		return $this;
-	}
-
-	private function formAnchored(): void
-	{
-		$this->addRule(
-			fn(ImageUploadControl $control, int $limit): bool => $this->validateMaxFileSize($limit),
-			$this->maxFileSizeMessage ?? Validator::$messages[Form::MAX_FILE_SIZE],
-			$this->maxFileSize ?? Helpers::iniGetSize('upload_max_filesize')
-		);
-
-		/** @var Rule $rule */
-		foreach ($this->getRules() as $rule) {
-			if ($rule->validator === Form::MAX_FILE_SIZE) {
-				throw new LogicException(
-					sprintf(
-						'Cannot use ->addRule(Form::MAX_FILE_SIZE) in %s, use ->setMaxFileSize() instead',
-						self::class
-					)
-				);
-			}
-		}
-	}
-
-	private function validateMaxFileSize(int $limit): bool
-	{
-		if (!$this->fileUpload || !$this->fileUpload->isOk()) {
-			return true;
-		}
-
-		return $this->fileUpload->getSize() <= $limit && $this->fileUpload->getError() !== UPLOAD_ERR_INI_SIZE;
 	}
 
 }
