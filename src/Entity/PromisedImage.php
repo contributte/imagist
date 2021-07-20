@@ -169,4 +169,9 @@ final class PromisedImage implements PromisedImageInterface
 		$this->getResult()->close($reason);
 	}
 
+	public static function getSourceId(PromisedImage $image): string
+	{
+		return $image->source->getId();
+	}
+
 }

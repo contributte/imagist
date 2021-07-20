@@ -7,6 +7,7 @@ use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Entity\PromisedImage;
 use Contributte\Imagist\Entity\PromisedImageInterface;
 use Contributte\Imagist\Entity\StorableImageInterface;
 use Contributte\Imagist\Exceptions\InvalidArgumentException;
@@ -35,7 +36,7 @@ final class DatabaseConverter implements DatabaseConverterInterface
 
 		if ($image instanceof PromisedImageInterface) {
 			if ($image->isPending()) {
-				throw new InvalidArgumentException(sprintf('Given image is still pending'));
+				throw new InvalidArgumentException(sprintf('Given image "%s" is still pending', PromisedImage::getSourceId($image)));
 			}
 
 			$image = $image->getResult();
