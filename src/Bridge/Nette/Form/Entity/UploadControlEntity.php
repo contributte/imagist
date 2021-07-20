@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Nette\Form\Entity;
 
+use Contributte\Imagist\Bridge\Nette\Uploader\FileUploadUploader;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\StorableImageInterface;
@@ -20,6 +21,26 @@ final class UploadControlEntity
 	{
 		$this->value = $value;
 		$this->default = $default;
+	}
+
+	public function getSize(): ?int
+	{
+		$uploader = $this->value?->getUploader();
+		if ($uploader instanceof FileUploadUploader) {
+			return $uploader->getFileUpload()->getSize();
+		}
+
+		return null;
+	}
+
+	public function getError(): ?int
+	{
+		$uploader = $this->value?->getUploader();
+		if ($uploader instanceof FileUploadUploader) {
+			return $uploader->getFileUpload()->getError();
+		}
+
+		return null;
 	}
 
 	public function getDefault(): ?PersistentImageInterface
