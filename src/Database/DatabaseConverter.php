@@ -36,7 +36,11 @@ final class DatabaseConverter implements DatabaseConverterInterface
 
 		if ($image instanceof PromisedImageInterface) {
 			if ($image->isPending()) {
-				throw new InvalidArgumentException(sprintf('Given image "%s" is still pending', PromisedImage::getSourceId($image)));
+				if ($image instanceof PromisedImage) {
+					throw new InvalidArgumentException(sprintf('Given image "%s" is still pending', PromisedImage::getSourceId($image)));
+				}
+
+				throw new InvalidArgumentException('Given image is still pending');
 			}
 
 			$image = $image->getResult();

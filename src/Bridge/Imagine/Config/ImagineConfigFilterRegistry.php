@@ -4,9 +4,9 @@ namespace Contributte\Imagist\Bridge\Imagine\Config;
 
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Config\ConfigFilterStack;
+use Contributte\Imagist\Context\ContextImageAware;
 use Contributte\Imagist\Exceptions\UnexpectedErrorException;
 use Contributte\Imagist\Filter\FilterInterface;
-use Contributte\Imagist\Scope\Scope;
 use Imagine\Image\ImageInterface;
 use InvalidArgumentException;
 
@@ -29,12 +29,16 @@ final class ImagineConfigFilterRegistry implements OperationInterface
 		$this->operations[$operation->getName()] = $operation;
 	}
 
-	public function supports(FilterInterface $filter, Scope $scope): bool
+	public function supports(FilterInterface $filter, ContextImageAware $context): bool
 	{
 		return isset($this->configFilterStacks[$filter->getName()]);
 	}
 
-	public function operate(ImageInterface $image, FilterInterface $filter): void
+	public function operate(
+		ImageInterface $image,
+		FilterInterface $filter,
+		ContextImageAware $context
+	): void
 	{
 		if (!isset($this->configFilterStacks[$filter->getName()])) {
 			throw new UnexpectedErrorException();
@@ -47,7 +51,7 @@ final class ImagineConfigFilterRegistry implements OperationInterface
 
 			$operation = $this->operations[$configFilter->getName()];
 
-			$operation->operate($image, $filter, $configFilter->getArguments());
+			$operation->operate($image, $filter, $context, $configFilter->getArguments());
 		}
 	}
 

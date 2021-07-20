@@ -4,6 +4,7 @@ namespace Contributte\Imagist\Testing\Unit;
 
 use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
 use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
@@ -38,7 +39,8 @@ class FilterTest extends FileTestCase
 
 		$content = $this->processor->process(
 			$fileFactory->create($image),
-			$fileFactory->create($image->getOriginal())
+			$fileFactory->create($image->getOriginal()),
+			new Context()
 		);
 
 		$size = getimagesizefromstring($content);

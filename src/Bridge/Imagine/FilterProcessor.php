@@ -3,6 +3,8 @@
 namespace Contributte\Imagist\Bridge\Imagine;
 
 use Contributte\Imagist\Bridge\Imagine\Exceptions\OperationNotFoundException;
+use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Context\ContextImageAware;
 use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Imagine\Gd\Imagine as GdImagine;
@@ -42,23 +44,22 @@ final class FilterProcessor implements FilterProcessorInterface
 		throw new RuntimeException('PHP extension not found, need imagick or gd or gmagick');
 	}
 
-	/**
-	 * @param mixed[] $options
-	 */
-	public function process(FileInterface $target, FileInterface $source, array $options = []): string
+	public function process(FileInterface $target, FileInterface $source, Context $context): string
 	{
 		$filter = $target->getImage()->getFilter();
 		if (!$filter) {
 			return $target->getContent();
 		}
 
-		$operation = $this->operationRegistry->get($filter, $target->getImage()->getScope());
+		$context = new ContextImageAware($target->getImage(), $context);
+
+		$operation = $this->operationRegistry->get($filter, $context);
 
 		if (!$operation) {
 			throw new OperationNotFoundException($target->getImage());
 		}
 
-		$operation->operate($image = $this->createImageInstance($source), $filter);
+		$operation->operate($image = $this->createImageInstance($source), $filter, $context);
 
 		return $image->get($source->getMimeType()->toSuffix());
 	}

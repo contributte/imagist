@@ -3,6 +3,7 @@
 namespace Contributte\Imagist\Bridge\Imagine\Config\Operation;
 
 use Contributte\Imagist\Bridge\Imagine\Config\ImagineConfigOperationInterface;
+use Contributte\Imagist\Context\ContextImageAware;
 use Contributte\Imagist\Filter\FilterInterface;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -19,7 +20,7 @@ final class ResizeConfigOperation implements ImagineConfigOperationInterface
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function operate(ImageInterface $image, FilterInterface $filter, array $arguments): void
+	public function operate(ImageInterface $image, FilterInterface $filter, ContextImageAware $context, array $arguments): void
 	{
 		if (count($arguments) !== 2) {
 			throw new InvalidArgumentException('Config filter resize must have two arguments.');

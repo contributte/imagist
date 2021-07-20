@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Persister;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\ImageInterface;
@@ -18,12 +19,12 @@ final class EmptyImagePersister implements PersisterInterface
 		$this->strict = $strict;
 	}
 
-	public function supports(ImageInterface $image): bool
+	public function supports(ImageInterface $image, Context $context): bool
 	{
 		return $image instanceof EmptyImageInterface;
 	}
 
-	public function persist(ImageInterface $image): PersistentImageInterface
+	public function persist(ImageInterface $image, Context $context): PersistentImageInterface
 	{
 		if ($this->strict) {
 			throw new InvalidArgumentException('Cannot persist empty image');

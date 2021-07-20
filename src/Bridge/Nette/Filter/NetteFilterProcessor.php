@@ -3,6 +3,7 @@
 namespace Contributte\Imagist\Bridge\Nette\Filter;
 
 use Contributte\Imagist\Bridge\Nette\Filter\Exceptions\OperationNotFoundException;
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Nette\Utils\Image;
@@ -17,7 +18,7 @@ final class NetteFilterProcessor implements FilterProcessorInterface
 		$this->operationRegistry = $operationRegistry;
 	}
 
-	public function process(FileInterface $target, FileInterface $source, array $options = []): string
+	public function process(FileInterface $target, FileInterface $source, Context $context): string
 	{
 		$filter = $target->getImage()->getFilter();
 		if (!$filter) {

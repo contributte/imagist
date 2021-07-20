@@ -2,14 +2,12 @@
 
 namespace Contributte\Imagist\Filter;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\File\FileInterface;
 
 interface FilterProcessorInterface
 {
 
-	/**
-	 * @param mixed[] $options
-	 */
-	public function process(FileInterface $target, FileInterface $source, array $options = []): string;
+	public function process(FileInterface $target, FileInterface $source, Context $context): string;
 
 }

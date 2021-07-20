@@ -2,8 +2,8 @@
 
 namespace Contributte\Imagist\Bridge\Imagine;
 
+use Contributte\Imagist\Context\ContextImageAware;
 use Contributte\Imagist\Filter\FilterInterface;
-use Contributte\Imagist\Scope\Scope;
 
 final class OperationRegistry implements OperationRegistryInterface
 {
@@ -16,10 +16,10 @@ final class OperationRegistry implements OperationRegistryInterface
 		$this->operations[] = $operation;
 	}
 
-	public function get(FilterInterface $filter, Scope $scope): ?OperationInterface
+	public function get(FilterInterface $filter, ContextImageAware $context): ?OperationInterface
 	{
 		foreach ($this->operations as $operation) {
-			if ($operation->supports($filter, $scope)) {
+			if ($operation->supports($filter, $context)) {
 				return $operation;
 			}
 		}

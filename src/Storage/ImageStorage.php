@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Storage;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImage;
@@ -33,10 +34,11 @@ class ImageStorage implements ImageStorageInterface
 		$this->dispatcher = $dispatcher;
 	}
 
-	public function persist(ImageInterface $image): PersistentImageInterface
+	public function persist(ImageInterface $image, ?Context $context = null): PersistentImageInterface
 	{
+		$context = $context ?? new Context();
 		$clone = clone $image;
-		$result = $this->persisterRegistry->persist($image);
+		$result = $this->persisterRegistry->persist($image, $context);
 		$persistent = new PersistentImage($result->getId());
 
 		if ($clone->getFilter()) {
@@ -50,14 +52,15 @@ class ImageStorage implements ImageStorageInterface
 		return $persistent;
 	}
 
-	public function remove(PersistentImageInterface $image): PersistentImageInterface
+	public function remove(PersistentImageInterface $image, ?Context $context = null): PersistentImageInterface
 	{
 		if ($image->isClosed()) {
 			return new EmptyImage();
 		}
 
+		$context = $context ?? new Context();
 		$clone = clone $image;
-		$this->removerRegistry->remove($image);
+		$this->removerRegistry->remove($image, $context);
 
 		if ($this->dispatcher) {
 			$this->dispatcher->dispatch(new RemovedImageEvent($this, $clone));

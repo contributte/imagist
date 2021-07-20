@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Testing\Filter;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use LogicException;
@@ -20,7 +21,7 @@ final class FilterProcessor implements FilterProcessorInterface
 	/**
 	 * @param mixed[] $options
 	 */
-	public function process(FileInterface $target, FileInterface $source, array $options = []): string
+	public function process(FileInterface $target, FileInterface $source, ?Context $context = null): string
 	{
 		$filter = $target->getImage()->getFilter();
 		if (!$filter) {

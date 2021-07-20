@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Persister;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\StorableImageInterface;
 use Contributte\Imagist\File\FileFactoryInterface;
@@ -23,18 +24,18 @@ final class StorableImagePersister extends ImagePersisterAbstract
 		$this->fileNameResolver = $fileNameResolver;
 	}
 
-	public function supports(ImageInterface $image): bool
+	public function supports(ImageInterface $image, Context $context): bool
 	{
 		return $image instanceof StorableImageInterface;
 	}
 
-	public function persist(ImageInterface $image): ImageInterface
+	public function persist(ImageInterface $image, Context $context): ImageInterface
 	{
 		assert($image instanceof StorableImageInterface);
 
 		$result = $image->withName($this->fileNameResolver->resolve($this->fileFactory->create($image)));
 
-		$this->save($result);
+		$this->save($result, $context);
 		$image->close('image persisted');
 
 		return $result;

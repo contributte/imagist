@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Persister;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Exceptions\InvalidArgumentException;
 
@@ -16,11 +17,11 @@ final class PersisterRegistry implements PersisterRegistryInterface
 		$this->persisters[] = $persister;
 	}
 
-	public function persist(ImageInterface $image): ImageInterface
+	public function persist(ImageInterface $image, Context $context): ImageInterface
 	{
 		foreach ($this->persisters as $persister) {
-			if ($persister->supports($image)) {
-				return $persister->persist($image);
+			if ($persister->supports($image, $context)) {
+				return $persister->persist($image, $context);
 			}
 		}
 

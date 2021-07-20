@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Transaction;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
@@ -112,7 +113,7 @@ final class Transaction implements TransactionInterface
 		}
 	}
 
-	public function persist(ImageInterface $image): PromisedImageInterface
+	public function persist(ImageInterface $image, ?Context $context = null): PromisedImageInterface
 	{
 		if ($image instanceof PromisedImageInterface) {
 			foreach ($this->remove as $key => $removed) {
@@ -131,7 +132,7 @@ final class Transaction implements TransactionInterface
 		return $this->persist[] = new PromisedImage($this, $image, false);
 	}
 
-	public function remove(PersistentImageInterface $image): PromisedImageInterface
+	public function remove(PersistentImageInterface $image, ?Context $context = null): PromisedImageInterface
 	{
 		if ($image instanceof PromisedImageInterface) {
 			foreach ($this->persist as $key => $persisted) {

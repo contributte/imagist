@@ -80,8 +80,7 @@ final class ImageMacro extends MacroSet
 			}, $node->modifiers);
 		} else {
 			$modifiers = array_map(
-				function (string $modifier) use ($writer): string
-				{
+				function (string $modifier) use ($writer): string {
 					if (!str_contains($modifier, ':')) {
 						return $modifier;
 					}

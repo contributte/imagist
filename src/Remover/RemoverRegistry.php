@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Remover;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use LogicException;
 
@@ -16,7 +17,7 @@ final class RemoverRegistry implements RemoverRegistryInterface
 		$this->removers[] = $remover;
 	}
 
-	public function remove(PersistentImageInterface $image): void
+	public function remove(PersistentImageInterface $image, Context $context): void
 	{
 		foreach ($this->removers as $remover) {
 			if ($remover->supports($image)) {

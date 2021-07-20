@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Imagine\Config;
 
+use Contributte\Imagist\Context\ContextImageAware;
 use Contributte\Imagist\Filter\FilterInterface;
 use Imagine\Image\ImageInterface;
 
@@ -13,6 +14,11 @@ interface ImagineConfigOperationInterface
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function operate(ImageInterface $image, FilterInterface $filter, array $arguments): void;
+	public function operate(
+		ImageInterface $image,
+		FilterInterface $filter,
+		ContextImageAware $context,
+		array $arguments
+	): void;
 
 }

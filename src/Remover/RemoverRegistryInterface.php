@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Remover;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 
 interface RemoverRegistryInterface
@@ -9,6 +10,6 @@ interface RemoverRegistryInterface
 
 	public function add(RemoverInterface $remover): void;
 
-	public function remove(PersistentImageInterface $image): void;
+	public function remove(PersistentImageInterface $image, Context $context): void;
 
 }
