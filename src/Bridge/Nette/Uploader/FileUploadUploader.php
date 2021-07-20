@@ -44,4 +44,9 @@ final class FileUploadUploader implements UploaderInterface, UploaderFilePathAwa
 		return $this->fileUpload->getTemporaryFile();
 	}
 
+	public function getFileUpload(): FileUpload
+	{
+		return $this->fileUpload;
+	}
+
 }
