@@ -18,8 +18,14 @@ final class PersisterEvent implements EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			Events::prePersist,
+			Events::prePersist => 'prePersist',
+			Events::preUpdate => 'preUpdate',
 		];
+	}
+
+	public function preUpdate(LifecycleEventArgs $args): void
+	{
+		$this->prePersist($args);
 	}
 
 	public function prePersist(LifecycleEventArgs $args): void
