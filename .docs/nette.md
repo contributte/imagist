@@ -30,7 +30,7 @@ Image with filter
 ```html
 {varType Contributte\Imagist\Entity\PersistentImageInterface $image}
 
-<img n:img="$image|filter:miniAvatar">
+<img n:img="$image|miniAvatar">
 ```
 
 Image with options

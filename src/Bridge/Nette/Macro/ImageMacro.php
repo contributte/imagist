@@ -23,7 +23,13 @@ final class ImageMacro extends MacroSet
 	public function beginMacro(MacroNode $node, PhpWriter $writer): string
 	{
 		$word = $node->tokenizer->fetchWord();
-		$filter = $writer->formatArray(new MacroTokens($this->extractFilter($node)));
+		$filters = $this->extractFilter($node, $writer);
+		if ($filters) {
+			$filter = $writer->formatArray(new MacroTokens($filters));
+		} else {
+			$filter = '';
+		}
+
 		$options = $writer->formatArray(new MacroTokens($node->tokenizer->nextAll()));
 
 		return $writer->write(
@@ -58,18 +64,38 @@ final class ImageMacro extends MacroSet
 		);
 	}
 
-	private function extractFilter(MacroNode $node): string
+	private function extractFilter(MacroNode $node, PhpWriter $writer): string
 	{
 		$filter = null;
-		$node->modifiers = (string) preg_replace_callback('#\|\s*filter\s*:\s*([^\|]+)#', function (array $matches) use (&$filter): string {
-			if ($filter !== null) {
-				throw new CompileException('Cannot use two or more filters.');
-			}
+		// backward compatability
+		if (str_starts_with($node->modifiers, '|filter')) {
+			$node->modifiers = (string) preg_replace_callback('#\|\s*filter\s*:\s*([^\|]+)#', function (array $matches) use (&$filter): string {
+				if ($filter !== null) {
+					throw new CompileException('Cannot use two or more filters.');
+				}
 
-			$filter = $matches[1];
+				$filter = $matches[1];
 
-			return '';
-		}, $node->modifiers);
+				return '';
+			}, $node->modifiers);
+		} else {
+			$modifiers = array_map(
+				function (string $modifier) use ($writer): string
+				{
+					if (!str_contains($modifier, ':')) {
+						return $modifier;
+					}
+
+					$options = $writer->formatArray(new MacroTokens(trim(substr($modifier, strpos($modifier, ':') + 1))));
+
+					return substr($modifier, 0, strpos($modifier, ':') + 1) . $options;
+				},
+				explode('|', ltrim($node->modifiers, '|')),
+			);
+			$filter = implode(',', $modifiers);
+
+			$node->modifiers = '';
+		}
 
 		return (string) $filter;
 	}
