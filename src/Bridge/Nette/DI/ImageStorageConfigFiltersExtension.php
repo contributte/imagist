@@ -2,56 +2,19 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
-use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\GumletConfigNormalizerInterface;
-use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\GumletConfigNormalizerRegistry;
-use Contributte\Imagist\Bridge\Gumlet\Normalizer\Config\Normalizer as GumletNormalizer;
-use Contributte\Imagist\Bridge\Imagine\Config\ImagineConfigFilterRegistry;
-use Contributte\Imagist\Bridge\Imagine\Config\ImagineConfigOperationInterface;
-use Contributte\Imagist\Bridge\Imagine\Config\Operation as ImagineOperation;
-use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Bridge\Nette\Filter\Config\NetteConfigFilterRegistry;
-use Contributte\Imagist\Bridge\Nette\Filter\Config\NetteConfigOperationInterface;
-use Contributte\Imagist\Bridge\Nette\Filter\Config\Operation as NetteOperation;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
-use Contributte\Imagist\Bridge\Nette\Tracy\FilterBarPanel;
 use Contributte\Imagist\Config\ConfigFilter;
-use Contributte\Imagist\Config\ConfigFilterStack;
-use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Config\ConfigFilterCollection;
+use Contributte\Imagist\Config\ConfigFilterOperation;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Tracy\Bar;
 
 final class ImageStorageConfigFiltersExtension extends CompilerExtension
 {
-
-	private const IMAGINE_OPERATIONS = [
-		'resize' => ImagineOperation\ResizeConfigOperation::class,
-	];
-
-	private const NETTE_OPERATIONS = [
-		'resize' => NetteOperation\ResizeConfigOperation::class,
-		'sharpen' => NetteOperation\SharpenConfigOperation::class,
-		'crop' => NetteOperation\CropConfigOperation::class,
-		'flip' => NetteOperation\FlipConfigOperation::class,
-	];
-
-	private const GUMLET_NORMALIZERS = [
-		'resize' => GumletNormalizer\ResizeConfigNormalizer::class,
-		'crop' => GumletNormalizer\CropConfigNormalizer::class,
-	];
-
-	private bool $tracyBar;
-
-	private ?ServiceDefinition $tracy = null;
-
-	public function __construct(bool $tracyBar = true)
-	{
-		$this->tracyBar = $tracyBar;
-	}
 
 	public function getConfigSchema(): Schema
 	{
@@ -62,40 +25,8 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition($this->prefix('nette.registry'))
-			->setType(NetteOperationInterface::class)
-			->setFactory(NetteConfigFilterRegistry::class);
-
-		$builder->addDefinition($this->prefix('imagine.registry'))
-			->setType(OperationInterface::class)
-			->setFactory(ImagineConfigFilterRegistry::class);
-
-		$builder->addDefinition($this->prefix('gumlet.registry'))
-			->setType(FilterNormalizerInterface::class)
-			->setFactory(GumletConfigNormalizerRegistry::class);
-
-		if ($this->tracyBar) {
-			$this->tracy = $builder->addDefinition($this->prefix('tracy'))
-				->setFactory(FilterBarPanel::class);
-		}
-
-		foreach (self::NETTE_OPERATIONS as $name => $class) {
-			$builder->addDefinition($this->prefix('nette.operation.' . $name))
-				->setType(NetteConfigOperationInterface::class)
-				->setFactory($class);
-		}
-
-		foreach (self::IMAGINE_OPERATIONS as $name => $class) {
-			$builder->addDefinition($this->prefix('imagine.operation.' . $name))
-				->setType(ImagineConfigOperationInterface::class)
-				->setFactory($class);
-		}
-
-		foreach (self::GUMLET_NORMALIZERS as $name => $class) {
-			$builder->addDefinition($this->prefix('gumlet.normalizer.' . $name))
-				->setType(GumletConfigNormalizerInterface::class)
-				->setFactory($class);
-		}
+		$builder->addDefinition($this->prefix('configFilterCollection'))
+			->setFactory(ConfigFilterCollection::class);
 	}
 
 	public function beforeCompile()
@@ -104,48 +35,7 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
-		if ($builder->hasDefinition($this->prefix('tracy')) && ($service = $builder->getByType(Bar::class))) {
-			$service = $builder->getDefinition($service);
-			assert($service instanceof ServiceDefinition);
-
-			$service->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy'))]);
-		}
-
-		$this->processImagineOperations($builder);
-		$this->processNetteOperations($builder);
-		$this->processGumletNormalizers($builder);
-
 		$this->processConfigFilters($builder, $config);
-	}
-
-	private function processImagineOperations(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('imagine.registry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(ImagineConfigOperationInterface::class) as $definition) {
-			$service->addSetup('addOperation', [$definition]);
-		}
-	}
-
-	private function processNetteOperations(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('nette.registry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(NetteConfigOperationInterface::class) as $definition) {
-			$service->addSetup('addOperation', [$definition]);
-		}
-	}
-
-	private function processGumletNormalizers(ContainerBuilder $builder): void
-	{
-		$service = $builder->getDefinition($this->prefix('gumlet.registry'));
-		assert($service instanceof ServiceDefinition);
-
-		foreach ($builder->findByType(GumletConfigNormalizerInterface::class) as $definition) {
-			$service->addSetup('addNormalizer', [$definition]);
-		}
 	}
 
 	/**
@@ -153,33 +43,31 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 	 */
 	private function processConfigFilters(ContainerBuilder $builder, array $config): void
 	{
-		/** @var ServiceDefinition[] $registries */
-		$registries = [
-			$builder->getDefinition($this->prefix('nette.registry')),
-			$builder->getDefinition($this->prefix('imagine.registry')),
-			$builder->getDefinition($this->prefix('gumlet.registry')),
-		];
+		$service = $this->assertServiceDefinition(
+			$builder->getDefinition($this->prefix('configFilterCollection'))
+		);
 
 		foreach ($config as $name => $filters) {
 			if (!is_array($filters)) {
 				$filters = [$filters];
 			}
 
-			$stack = [];
+			$operations = [];
 			foreach ($filters as $filter) {
-				$stack[] = new Statement(ConfigFilter::class, [$filter->getEntity(), $filter->arguments]);
+				$operations[] = new Statement(ConfigFilterOperation::class, [$filter->getEntity(), $filter->arguments]);
 			}
 
-			$arguments = [new Statement(ConfigFilterStack::class, [$name, $stack])];
+			$arguments = [new Statement(ConfigFilter::class, [$name, $operations])];
 
-			foreach ($registries as $registry) {
-				$registry->addSetup('addConfigFilterStack', $arguments);
-			}
-
-			if ($this->tracy) {
-				$this->tracy->addSetup('addConfigFilterStack', $arguments);
-			}
+			$service->addSetup('addFilter', $arguments);
 		}
+	}
+
+	private function assertServiceDefinition(Definition $definition): ServiceDefinition
+	{
+		assert($definition instanceof ServiceDefinition);
+
+		return $definition;
 	}
 
 }

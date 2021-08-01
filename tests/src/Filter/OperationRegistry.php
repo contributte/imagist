@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Testing\Filter;
 
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 
 final class OperationRegistry implements OperationRegistryInterface
@@ -16,7 +16,7 @@ final class OperationRegistry implements OperationRegistryInterface
 		$this->operations[] = $operation;
 	}
 
-	public function get(FilterInterface $filter, Scope $scope): ?OperationInterface
+	public function get(ImageFilter $filter, Scope $scope): ?OperationInterface
 	{
 		foreach ($this->operations as $operation) {
 			if ($operation->supports($filter, $scope)) {

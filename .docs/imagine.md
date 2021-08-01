@@ -18,19 +18,19 @@ For image manipulating imagine extension uses operations. Let's go define one an
 ```php
 
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 use Imagine\Image\ImageInterface;
 
 class SharpenOperation implements OperationInterface
 {
 
-    public function supports(FilterInterface $filter, Scope $scope): bool
+    public function supports(ImageFilter $filter, Scope $scope): bool
     {
         return $filter->getName() === 'sharpen';
     }
 
-    public function operate(ImageInterface $image, FilterInterface $filter): void
+    public function operate(ImageInterface $image, ImageFilter $filter): void
     {
         $image->effects()->sharpen();
     }

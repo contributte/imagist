@@ -2,23 +2,23 @@
 
 namespace Contributte\Imagist\Testing\Bridge\Imagine;
 
-use Contributte\Imagist\Bridge\Imagine\OperationInterface;
+use Contributte\Imagist\Bridge\Imagine\AbstractImagineFilter;
 use Contributte\Imagist\Context\ContextImageAware;
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 
-class ThumbnailOperation implements OperationInterface
+final class ThumbnailOperation extends AbstractImagineFilter
 {
 
-	public function supports(FilterInterface $filter, ContextImageAware $context): bool
+	protected function _supports(ImageInterface $source, ImageFilter $filter, ContextImageAware $context): bool
 	{
 		return $filter->getName() === 'thumbnail';
 	}
 
-	public function operate(ImageInterface $image, FilterInterface $filter, ContextImageAware $context): void
+	protected function _operate(ImageInterface $source, ImageFilter $filter, ContextImageAware $context): void
 	{
-		$image->resize(new Box(15, 15));
+		$source->resize(new Box(15, 15));
 	}
 
 }

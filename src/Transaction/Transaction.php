@@ -26,7 +26,7 @@ final class Transaction implements TransactionInterface
 
 	private ImageStorageInterface $imageStorage;
 
-	private bool $commited = false;
+	private bool $committed = false;
 
 	private FileFactoryInterface $fileFactory;
 
@@ -50,16 +50,16 @@ final class Transaction implements TransactionInterface
 
 	public function isCommitted(): bool
 	{
-		return $this->commited;
+		return $this->committed;
 	}
 
 	public function commit(): void
 	{
-		if ($this->commited) {
+		if ($this->committed) {
 			throw new TransactionException('Transaction is already commited');
 		}
 
-		$this->commited = true;
+		$this->committed = true;
 
 		$this->commitRemove();
 		$this->commitPersist();
@@ -70,7 +70,7 @@ final class Transaction implements TransactionInterface
 	 */
 	public function rollback(): void
 	{
-		if (!$this->commited) {
+		if (!$this->committed) {
 			throw new TransactionException('Transaction is not commited');
 		}
 
@@ -135,17 +135,21 @@ final class Transaction implements TransactionInterface
 	public function remove(PersistentImageInterface $image, ?Context $context = null): PromisedImageInterface
 	{
 		if ($image instanceof PromisedImageInterface) {
-			foreach ($this->persist as $key => $persisted) {
-				if ($image === $persisted) {
-					unset($this->persist[$key]);
+			if ($image->isPending()) {
+				foreach ($this->persist as $key => $persisted) {
+					if ($image === $persisted) {
+						unset($this->persist[$key]);
 
-					$image->process(fn (ImageInterface $image) => new EmptyImage(clone $image->getScope()));
+						$image->process(fn (ImageInterface $image) => new EmptyImage(clone $image->getScope()));
 
-					return $image;
+						return $image;
+					}
 				}
-			}
 
-			throw new InvalidArgumentException(sprintf('Cannot remove promised image twice'));
+				throw new InvalidArgumentException(sprintf('Cannot remove promised image twice'));
+			} else {
+				$image = $image->getResult();
+			}
 		}
 
 		$promised = new PromisedImage($this, $image, true);

@@ -2,15 +2,12 @@
 
 namespace Contributte\Imagist\Bridge\Symfony\Extension;
 
-use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
-use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Bridge\Imagine\OperationRegistryInterface;
+use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
-use Contributte\Imagist\Filter\FilterNormalizerCollection;
-use Contributte\Imagist\Filter\FilterNormalizerCollectionInterface;
+use Contributte\Imagist\Filter\FilterNormalizerProcessor;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGenerator\LinkGenerator;
@@ -40,10 +37,7 @@ final class ImageStorageExtension extends Extension
 		$this->loadPathInfo($container);
 		$this->loadFile($container);
 		$this->loadFilter($container);
-
-		if (interface_exists(OperationInterface::class)) {
-			$this->loadImagineExtension($container);
-		}
+		$this->loadImagineExtension($container);
 
 		$container->register('contributte.imagist.storage', ImageStorage::class)
 			->setAutowired(true);
@@ -76,15 +70,10 @@ final class ImageStorageExtension extends Extension
 
 	private function loadImagineExtension(ContainerBuilder $container): void
 	{
-		$container->register('contributte.imagist.imagine.filterProcessor', FilterProcessor::class)
+		$container->register('contributte.imagist.imagine.filterProcessor', ImagineFilterProcessor::class)
 			->setAutowired(true);
 
 		$container->setAlias(FilterProcessorInterface::class, 'contributte.imagist.imagine.filterProcessor');
-
-		$container->register('contributte.imagist.imagine.operationRegistry', OperationRegistryInterface::class)
-			->setAutowired(true);
-
-		$container->setAlias(OperationRegistryInterface::class, 'contributte.imagist.imagine.operationRegistry');
 	}
 
 	private function loadFilesystem(ContainerBuilder $container): void
@@ -114,10 +103,8 @@ final class ImageStorageExtension extends Extension
 
 	private function loadFilter(ContainerBuilder $container): void
 	{
-		$container->register('contributte.imagist.filter.normalizerCollection', FilterNormalizerCollection::class)
+		$container->register('contributte.imagist.filter.normalizerCollection', FilterNormalizerProcessor::class)
 			->setAutowired(true);
-
-		$container->setAlias(FilterNormalizerCollectionInterface::class, 'contributte.imagist.filter.normalizerCollection');
 	}
 
 }

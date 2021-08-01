@@ -2,13 +2,13 @@
 
 namespace Contributte\Imagist\Resolver\FilterResolvers;
 
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Resolver\FilterResolverInterface;
 
 final class OriginalFilterResolver implements FilterResolverInterface
 {
 
-	public function resolve(FilterInterface $filter): string
+	public function resolve(ImageFilter $filter): string
 	{
 		return '_' . $filter->getName();
 	}

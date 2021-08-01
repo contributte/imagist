@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Resolver\FilterResolvers;
 
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Resolver\FilterResolverInterface;
 use LogicException;
 
@@ -11,7 +11,7 @@ final class SimpleFilterResolver implements FilterResolverInterface
 
 	private const MAX_LENGTH = 255;
 
-	public function resolve(FilterInterface $filter): string
+	public function resolve(ImageFilter $filter): string
 	{
 		$options = $this->parseOptions($filter->getOptions());
 		$name = '_' . $filter->getName() . ($options ? '-' . implode('-', $options) : '');

@@ -2,8 +2,7 @@
 
 namespace Contributte\Imagist\Testing\Unit;
 
-use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
-use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
+use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
 use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\File\FileFactory;
@@ -16,15 +15,13 @@ use Contributte\Imagist\Uploader\FilePathUploader;
 class FilterTest extends FileTestCase
 {
 
-	private FilterProcessor $processor;
+	private ImagineFilterProcessor $processor;
 
 	protected function _before(): void
 	{
 		parent::_before();
 
-		$registry = new OperationRegistry();
-		$registry->add(new ThumbnailOperation());
-		$this->processor = new FilterProcessor($registry);
+		$this->processor = new ImagineFilterProcessor([new ThumbnailOperation()]);
 	}
 
 	public function testFilter(): void

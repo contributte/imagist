@@ -3,9 +3,8 @@
 namespace Contributte\Imagist\Bridge\Nette\Form\Preview;
 
 use Contributte\Imagist\Bridge\Nette\Form\ImageUploadControl;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Entity\PersistentImageInterface;
-use Contributte\Imagist\Filter\Filter;
-use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use LogicException;
 use Nette\Utils\Html;
@@ -15,7 +14,7 @@ class ImagePreview implements ImagePreviewInterface
 
 	private LinkGeneratorInterface $linkGenerator;
 
-	private ?FilterInterface $filter = null;
+	private ?ImageFilter $filter = null;
 
 	private ?PersistentImageInterface $placeholder = null;
 
@@ -29,7 +28,7 @@ class ImagePreview implements ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setFilterObject(?FilterInterface $filter)
+	public function setFilterObject(?ImageFilter $filter)
 	{
 		$this->filter = $filter;
 
@@ -42,7 +41,7 @@ class ImagePreview implements ImagePreviewInterface
 	 */
 	public function setFilter(string $name, array $options = [])
 	{
-		$this->filter = new Filter($name, $options);
+		$this->filter = new ImageFilter($name, $options);
 
 		return $this;
 	}

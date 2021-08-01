@@ -6,7 +6,7 @@ use Contributte\Imagist\Bridge\Imagine\OperationInterface;
 use Contributte\Imagist\Bridge\Symfony\Extension\CompilerPass\LoadNormalizersCompilerPass;
 use Contributte\Imagist\Bridge\Symfony\Extension\ImageStorageExtension;
 use Contributte\Imagist\Bridge\Symfony\Extension\Imagine\CompilerPass\LoadOperationsCompilerPass;
-use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -24,7 +24,7 @@ final class ImageStorageBundle extends Bundle
 			$container->addCompilerPass(new LoadOperationsCompilerPass());
 		}
 
-		$container->registerForAutoconfiguration(FilterNormalizerInterface::class)
+		$container->registerForAutoconfiguration(FilterNormalizerProcessorInterface::class)
 			->addTag(LoadNormalizersCompilerPass::NORMALIZER_TAG);
 
 		$container->addCompilerPass(new LoadNormalizersCompilerPass());

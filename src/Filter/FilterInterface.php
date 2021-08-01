@@ -2,14 +2,14 @@
 
 namespace Contributte\Imagist\Filter;
 
+use Contributte\Imagist\Context\ContextImageAware;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
+
 interface FilterInterface
 {
 
-	public function getName(): string;
+	public function supports(object $source, ImageFilter $filter, ContextImageAware $context): bool;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getOptions(): array;
+	public function operate(object $source, ImageFilter $filter, ContextImageAware $context): void;
 
 }

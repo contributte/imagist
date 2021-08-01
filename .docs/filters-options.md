@@ -37,7 +37,7 @@ services:
 ```php
 
 use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -45,12 +45,12 @@ use Imagine\Image\ImageInterface;
 class ResizeOperation implements OperationInterface
 {
 
-    public function supports(FilterInterface $filter, Scope $scope): bool
+    public function supports(ImageFilter $filter, Scope $scope): bool
     {
         return $filter->getName() === 'resize';
     }
 
-    public function operate(ImageInterface $image, FilterInterface $filter): void
+    public function operate(ImageInterface $image, ImageFilter $filter): void
     {
         $image->resize(new Box(...$filter->getOptions()));
     }

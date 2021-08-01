@@ -9,9 +9,6 @@ use LogicException;
 final class VoidFilterProcessor implements FilterProcessorInterface
 {
 
-	/**
-	 * @inheritDoc
-	 */
 	public function process(FileInterface $target, FileInterface $source, Context $context): string
 	{
 		if ($target->getImage()->getFilter()) {

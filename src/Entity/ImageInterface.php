@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Entity;
 
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 
 interface ImageInterface
@@ -37,7 +37,7 @@ interface ImageInterface
 	/**
 	 * Filter object of image
 	 */
-	public function getFilter(): ?FilterInterface;
+	public function getFilter(): ?ImageFilter;
 
 	/**
 	 * Checks if image has filter
@@ -84,6 +84,6 @@ interface ImageInterface
 	/**
 	 * @return static
 	 */
-	public function withFilterObject(?FilterInterface $filter);
+	public function withFilterObject(?ImageFilter $filter);
 
 }

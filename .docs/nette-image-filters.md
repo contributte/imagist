@@ -21,19 +21,19 @@ For image manipulating nette image extension uses operations. Let's go define on
 
 use Contributte\Imagist\Bridge\Nette\Filter\NetteImageOptions;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 use Nette\Utils\Image;
 
 class SharpenOperation implements NetteOperationInterface
 {
 
-	public function supports(FilterInterface $filter, Scope $scope): bool
+	public function supports(ImageFilter $filter, Scope $scope): bool
 	{
 		return $filter->getName() === 'sharpen';
 	}
 
-	public function operate(Image $image, FilterInterface $filter, NetteImageOptions $options): void
+	public function operate(Image $image, ImageFilter $filter, NetteImageOptions $options): void
 	{
 		$image->sharpen();
 	}

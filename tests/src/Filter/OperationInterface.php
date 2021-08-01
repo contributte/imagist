@@ -2,15 +2,15 @@
 
 namespace Contributte\Imagist\Testing\Filter;
 
-use Contributte\Imagist\Filter\FilterInterface;
+use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Scope\Scope;
 use Nette\Utils\Image;
 
 interface OperationInterface
 {
 
-	public function supports(FilterInterface $filter, Scope $scope): bool;
+	public function supports(ImageFilter $filter, Scope $scope): bool;
 
-	public function operate(Image $image, FilterInterface $filter): void;
+	public function operate(Image $image, ImageFilter $filter): void;
 
 }

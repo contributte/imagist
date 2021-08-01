@@ -8,9 +8,6 @@ use Contributte\Imagist\File\FileInterface;
 final class OriginalFilterProcessor implements FilterProcessorInterface
 {
 
-	/**
-	 * @inheritDoc
-	 */
 	public function process(FileInterface $target, FileInterface $source, Context $context): string
 	{
 		return $source->getContent();

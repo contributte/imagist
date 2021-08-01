@@ -2,23 +2,26 @@
 
 namespace Contributte\Imagist\Bridge\Nette\Tracy;
 
-use Contributte\Imagist\Bridge\Nette\Tracy\Dto\DebugFilterDto;
-use Contributte\Imagist\Config\ConfigFilter;
-use Contributte\Imagist\Config\ConfigFilterStack;
+use Contributte\Imagist\Debugger\DebugFilterObject;
+use Contributte\Imagist\Debugger\FilterDebuggerInterface;
 use Tracy\IBarPanel;
 
 final class FilterBarPanel implements IBarPanel
 {
 
-	/** @var DebugFilterDto[] */
-	private array $debug = [];
+	private FilterDebuggerInterface $debugger;
 
-	public function addConfigFilterStack(ConfigFilterStack $configFilterStack): void
+	public function __construct(FilterDebuggerInterface $debugger)
 	{
-		$this->debug[] = new DebugFilterDto($configFilterStack->getName(), array_map(
-			fn (ConfigFilter $f) => sprintf('%s(%s)', $f->getName(), implode(', ', $f->getArguments())),
-			$configFilterStack->getConfigFilters(),
-		));
+		$this->debugger = $debugger;
+	}
+
+	/**
+	 * @return DebugFilterObject[]
+	 */
+	protected function getFilters(): array
+	{
+		return $this->debugger->getAll();
 	}
 
 	public function getTab(): string

@@ -6,28 +6,23 @@ use Contributte\Imagist\Bridge\Doctrine\Event\PersisterEvent;
 use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
 use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
-use Contributte\Imagist\Bridge\Imagine\FilterProcessor;
-use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Bridge\Imagine\OperationRegistry;
-use Contributte\Imagist\Bridge\Imagine\OperationRegistryInterface;
+use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteFilterProcessor;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationInterface;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationRegistry;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationRegistryInterface;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
+use Contributte\Imagist\Bridge\Nette\Tracy\FilterBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
+use Contributte\Imagist\Debugger\FilterDebuggerInterface;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
-use Contributte\Imagist\Filter\FilterNormalizerCollection;
-use Contributte\Imagist\Filter\FilterNormalizerCollectionInterface;
-use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Filter\FilterNormalizerProcessor;
+use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\Filter\VoidFilterProcessor;
 use Contributte\Imagist\ImageStorageInterface;
@@ -127,7 +122,7 @@ final class ImageStorageExtension extends CompilerExtension
 		if ($config->extensions->nette->filters->enabled) {
 			$this->loadNetteImageFilters($builder);
 		} elseif ($config->extensions->imagine->enabled) {
-			$this->loadImageFiltersExtension($builder);
+			$this->loadImagineFiltersExtension($builder);
 		}
 
 		$builder->addDefinition($this->prefix('storage'))
@@ -162,6 +157,11 @@ final class ImageStorageExtension extends CompilerExtension
 			if ($builder->hasDefinition($this->prefix('tracy.bar'))) {
 				$this->assertServiceDefinition($builder->getDefinition($serviceName))
 					->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.bar'))]);
+			}
+
+			if ($builder->hasDefinition($this->prefix('tracy.filter.bar'))) {
+				$this->assertServiceDefinition($builder->getDefinition($serviceName))
+					->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.filter.bar'))]);
 			}
 		}
 
@@ -237,37 +237,23 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadFilter(ContainerBuilder $builder): void
 	{
-		$normalizerCollection = $builder->addDefinition($this->prefix('filter.normalizerCollection'))
-			->setType(FilterNormalizerCollectionInterface::class)
-			->setFactory(FilterNormalizerCollection::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(FilterNormalizerInterface::class),
-			fn (Definition $definition) => $normalizerCollection->addSetup('add', [$definition])
-		);
+		$builder->addDefinition($this->prefix('filter.normalizerCollection'))
+			->setType(FilterNormalizerProcessorInterface::class)
+			->setFactory(FilterNormalizerProcessor::class);
 
 		$builder->addDefinition($this->prefix('filterProcessor'))
 			->setType(FilterProcessorInterface::class)
 			->setFactory(VoidFilterProcessor::class);
 	}
 
-	private function loadImageFiltersExtension(ContainerBuilder $builder): void
+	private function loadImagineFiltersExtension(ContainerBuilder $builder): void
 	{
 		if (!class_exists(AbstractImagine::class)) {
 			return;
 		}
 
 		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
-			->setFactory(FilterProcessor::class);
-
-		$registry = $builder->addDefinition($this->prefix('imagine.operationRegistry'))
-			->setType(OperationRegistryInterface::class)
-			->setFactory(OperationRegistry::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(OperationInterface::class),
-			fn (Definition $definition) => $registry->addSetup('add', [$definition])
-		);
+			->setFactory(ImagineFilterProcessor::class);
 	}
 
 	private function loadDoctrine(ContainerBuilder $builder): void
@@ -349,14 +335,22 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadDebugger(ContainerBuilder $builder): void
 	{
-		if (!interface_exists(EventSubscriberInterface::class)) {
-			return;
+		if (interface_exists(EventSubscriberInterface::class)) {
+			$builder->addDefinition($this->prefix('tracy.bar'))
+				->setType(IBarPanel::class)
+				->setFactory(ImageBarPanel::class)
+				->setAutowired(false);
 		}
 
-		$builder->addDefinition($this->prefix('tracy.bar'))
+		$bar = $builder->addDefinition($this->prefix('tracy.filter.bar'))
 			->setType(IBarPanel::class)
-			->setFactory(ImageBarPanel::class)
+			->setFactory(FilterBarPanel::class, [[]])
 			->setAutowired(false);
+
+		$this->onBeforeCompile[] = fn () => $this->foreach(
+			$builder->findByType(FilterDebuggerInterface::class),
+			fn (Definition $definition) => $bar->addSetup('addProvider', [$definition])
+		);
 	}
 
 	private function loadPersister(ContainerBuilder $builder): void
@@ -407,15 +401,6 @@ final class ImageStorageExtension extends CompilerExtension
 	{
 		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
 			->setFactory(NetteFilterProcessor::class);
-
-		$registry = $builder->addDefinition($this->prefix('nette.filters.operationRegistry'))
-			->setType(NetteOperationRegistryInterface::class)
-			->setFactory(NetteOperationRegistry::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(NetteOperationInterface::class),
-			fn (Definition $operation) => $registry->addSetup('add', [$operation])
-		);
 	}
 
 	private function assertServiceDefinition(Definition $definition): ServiceDefinition

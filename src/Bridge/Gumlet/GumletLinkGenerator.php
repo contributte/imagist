@@ -2,9 +2,10 @@
 
 namespace Contributte\Imagist\Bridge\Gumlet;
 
+use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
-use Contributte\Imagist\Filter\FilterNormalizerCollectionInterface;
+use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
@@ -14,31 +15,16 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	public const GUMLET_CONTEXT_KEY = 'gumlet';
 
-	private ?string $token;
-
-	private string $bucket;
-
 	private string $domain = 'gumlet.io';
 
-	private FilterNormalizerCollectionInterface $normalizerCollection;
-
-	private PathInfoFactoryInterface $pathInfoFactory;
-
-	private DefaultImageResolverInterface $defaultImageResolver;
-
 	public function __construct(
-		string $bucket,
-		?string $token,
-		FilterNormalizerCollectionInterface $normalizerCollection,
-		PathInfoFactoryInterface $pathInfoFactory,
-		DefaultImageResolverInterface $defaultImageResolver
+		private string $bucket,
+		private ?string $token,
+		private PathInfoFactoryInterface $pathInfoFactory,
+		private DefaultImageResolverInterface $defaultImageResolver,
+		private FilterNormalizerProcessorInterface $filterNormalizer,
 	)
 	{
-		$this->bucket = $bucket;
-		$this->token = $token;
-		$this->normalizerCollection = $normalizerCollection;
-		$this->pathInfoFactory = $pathInfoFactory;
-		$this->defaultImageResolver = $defaultImageResolver;
 	}
 
 	public function setDomain(string $domain): void
@@ -63,9 +49,9 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$pathInfo = $this->pathInfoFactory->create($image->getOriginal());
 		$path = $pathInfo->toString($pathInfo::ALL & ~$pathInfo::FILTER);
 
-		$options = $this->normalizerCollection->normalize($image, [
+		$options = $this->filterNormalizer->normalize($image, new Context([
 			self::GUMLET_CONTEXT_KEY => true,
-		]);
+		]));
 
 		if (!$options) {
 			return $this->hashIfNeed($path, true);
