@@ -9,16 +9,20 @@ use Contributte\Imagist\Debugger\FilterDebuggerProviderInterface;
 final class ConfigFilterCollection implements FilterDebuggerProviderInterface
 {
 
+	/** @var ConfigFilter[] */
+	private array $filters;
+
 	/**
 	 * @param ConfigFilter[] $filters
 	 */
-	public function __construct(
-		private array $filters = [],
-	)
+	public function __construct(array $filters = [])
 	{
+		$this->filters = $filters;
 	}
-
-	public function addFilter(ConfigFilter $filter): self
+	/**
+	 * @return $this
+	 */
+	public function addFilter(ConfigFilter $filter)
 	{
 		$this->filters[$filter->getName()] = $filter;
 

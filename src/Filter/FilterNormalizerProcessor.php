@@ -10,16 +10,20 @@ use Contributte\Imagist\Exceptions\FilterNormalizerNotFoundException;
 class FilterNormalizerProcessor implements FilterNormalizerProcessorInterface
 {
 
+	/** @var FilterNormalizerInterface[] */
+	private array $operations;
+
 	/**
 	 * @param FilterNormalizerInterface[] $operations
 	 */
-	public function __construct(
-		private array $operations,
-	)
+	public function __construct(array $operations)
 	{
+		$this->operations = $operations;
 	}
-
-	public function addOperation(FilterNormalizerInterface $operation): self
+	/**
+	 * @return $this
+	 */
+	public function addOperation(FilterNormalizerInterface $operation)
 	{
 		$this->operations[] = $operation;
 

@@ -47,7 +47,7 @@ final class PersisterEvent implements EventSubscriber
 
 			$transaction = $this->getTransaction($image);
 
-			if ($transaction?->isCommitted() === false) {
+			if ($transaction && $transaction->isCommitted() === false) {
 				$transaction->commit();
 			}
 		}

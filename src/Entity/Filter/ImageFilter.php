@@ -5,16 +5,19 @@ namespace Contributte\Imagist\Entity\Filter;
 class ImageFilter
 {
 
+	private string $name;
+
+	/** @var mixed[] */
+	private array $options = [];
+
 	/**
 	 * @param mixed[] $options
 	 */
-	public function __construct(
-		private string $name,
-		private array $options = [],
-	)
+	public function __construct(string $name, array $options = [])
 	{
+		$this->name = $name;
+		$this->options = $options;
 	}
-
 	public function getName(): string
 	{
 		return $this->name;

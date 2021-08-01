@@ -9,16 +9,20 @@ use Contributte\Imagist\File\FileInterface;
 abstract class AbstractFilterProcessor implements FilterProcessorInterface
 {
 
+	/** @var FilterInterface[] */
+	private array $operations;
+
 	/**
 	 * @param FilterInterface[] $operations
 	 */
-	public function __construct(
-		private array $operations,
-	)
+	public function __construct(array $operations)
 	{
+		$this->operations = $operations;
 	}
-
-	public function addOperation(FilterInterface $operation): static
+	/**
+	 * @return $this
+	 */
+	public function addOperation(FilterInterface $operation)
 	{
 		$this->operations[] = $operation;
 

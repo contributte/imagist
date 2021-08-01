@@ -5,15 +5,21 @@ namespace Contributte\Imagist\Config;
 final class ConfigFilterOperation
 {
 
+	private string $name;
+
+	/** @var mixed[] */
+	private array $arguments;
+
+	private ?string $description;
+
 	/**
 	 * @param mixed[] $arguments
 	 */
-	public function __construct(
-		private string $name,
-		private array $arguments = [],
-		private ?string $description = null,
-	)
+	public function __construct(string $name, array $arguments = [], ?string $description = null)
 	{
+		$this->name = $name;
+		$this->arguments = $arguments;
+		$this->description = $description;
 	}
 
 	public function getName(): string

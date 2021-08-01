@@ -29,7 +29,7 @@ final class LinkGenerator implements LinkGeneratorInterface
 			return null;
 		}
 
-		if (str_starts_with($path, 'http')) {
+		if (strncmp($path, 'http', strlen('http')) === 0) {
 			return $path;
 		}
 

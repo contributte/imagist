@@ -11,12 +11,18 @@ class GumletBuilder
 	/** @var mixed[] */
 	private array $options = [];
 
-	public static function create(): self
+	/**
+	 * @return self
+	 */
+	public static function create()
 	{
 		return new self();
 	}
 
-	public function resize(?int $width, ?int $height = null, ?string $mode = null): self
+	/**
+	 * @return self
+	 */
+	public function resize(?int $width, ?int $height = null, ?string $mode = null)
 	{
 		if (($width ?? $height) === null) {
 			throw new InvalidArgumentException('Height or width must be set');
@@ -37,10 +43,13 @@ class GumletBuilder
 		return $this;
 	}
 
+	/**
+	 * @return self
+	 */
 	public function crop(
 		#[ExpectedValues(['entropy', 'smart', 'top', 'topleft', 'left', 'bottomleft', 'bottom', 'bottomright', 'right', 'topright', 'faces', 'center'])]
 		string $mode
-	): self
+	)
 	{
 		$this->options['crop'] = $mode;
 

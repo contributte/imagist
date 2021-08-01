@@ -5,9 +5,15 @@ namespace Contributte\Imagist\Debugger;
 interface FilterDebuggerInterface
 {
 
-	public function add(DebugFilterObject $object): self;
+	/**
+	 * @return $this
+	 */
+	public function add(DebugFilterObject $object);
 
-	public function addProvider(FilterDebuggerProviderInterface $provider): self;
+	/**
+	 * @return $this
+	 */
+	public function addProvider(FilterDebuggerProviderInterface $provider);
 
 	/**
 	 * @return DebugFilterObject[]

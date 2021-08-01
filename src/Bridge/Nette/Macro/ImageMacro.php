@@ -68,7 +68,7 @@ final class ImageMacro extends MacroSet
 	{
 		$filter = null;
 		// backward compatability
-		if (str_starts_with($node->modifiers, '|filter')) {
+		if (strncmp($node->modifiers, '|filter', strlen('|filter')) === 0) {
 			$node->modifiers = (string) preg_replace_callback('#\|\s*filter\s*:\s*([^\|]+)#', function (array $matches) use (&$filter): string {
 				if ($filter !== null) {
 					throw new CompileException('Cannot use two or more filters.');
@@ -79,18 +79,15 @@ final class ImageMacro extends MacroSet
 				return '';
 			}, $node->modifiers);
 		} else {
-			$modifiers = array_map(
-				function (string $modifier) use ($writer): string {
-					if (!str_contains($modifier, ':')) {
-						return $modifier;
-					}
+			$modifiers = array_map(function (string $modifier) use ($writer): string {
+				if (strpos($modifier, ':') === false) {
+					return $modifier;
+				}
 
 					$options = $writer->formatArray(new MacroTokens(trim(substr($modifier, strpos($modifier, ':') + 1))));
 
 					return substr($modifier, 0, strpos($modifier, ':') + 1) . $options;
-				},
-				explode('|', ltrim($node->modifiers, '|')),
-			);
+			}, explode('|', ltrim($node->modifiers, '|')));
 			$filter = implode(',', $modifiers);
 
 			$node->modifiers = '';

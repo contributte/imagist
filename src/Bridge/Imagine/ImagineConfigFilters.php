@@ -12,12 +12,12 @@ use LogicException;
 class ImagineConfigFilters extends AbstractFilterMethodMapping
 {
 
-	public function __construct(
-		private ConfigFilterCollection $collection,
-	)
-	{
-	}
+	private ConfigFilterCollection $collection;
 
+	public function __construct(ConfigFilterCollection $collection)
+	{
+		$this->collection = $collection;
+	}
 	/**
 	 * @phpstan-return array<string, callable(ImageInterface $source, ContextImageAware $context): void>
 	 * @return array<string, callable> filter => method
@@ -60,7 +60,10 @@ class ImagineConfigFilters extends AbstractFilterMethodMapping
 		}
 	}
 
-	protected function resize(ImageInterface $image, mixed ...$arguments): void
+	/**
+	 * @param mixed ...$arguments
+	 */
+	protected function resize(ImageInterface $image, ...$arguments): void
 	{
 		$image->resize(new Box(...$arguments));
 	}
