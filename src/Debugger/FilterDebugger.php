@@ -11,14 +11,20 @@ final class FilterDebugger implements FilterDebuggerInterface
 	/** @var FilterDebuggerProviderInterface[] */
 	private array $providers = [];
 
-	public function add(DebugFilterObject $object): self
+	/**
+	 * @return $this
+	 */
+	public function add(DebugFilterObject $object)
 	{
 		$this->objects[] = $object;
 
 		return $this;
 	}
 
-	public function addProvider(FilterDebuggerProviderInterface $provider): self
+	/**
+	 * @return $this
+	 */
+	public function addProvider(FilterDebuggerProviderInterface $provider)
 	{
 		$this->providers[] = $provider;
 

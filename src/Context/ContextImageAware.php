@@ -27,12 +27,19 @@ final class ContextImageAware implements ContextInterface
 		return $this->context->has($key);
 	}
 
-	public function get(string $key, mixed $default = null): mixed // phpcs:ignore SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue.NullabilitySymbolRequired
+	/**
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function get(string $key, $default = null) // phpcs:ignore SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue.NullabilitySymbolRequired
 	{
 		return $this->context->get($key, $default);
 	}
 
-	public function set(string $key, mixed $value): ContextInterface
+	/**
+	 * @param mixed $value
+	 */
+	public function set(string $key, $value): ContextInterface
 	{
 		return $this->context->set($key, $value);
 	}

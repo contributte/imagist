@@ -21,12 +21,19 @@ final class Context implements ContextInterface
 		return isset($this->context[$key]);
 	}
 
-	public function get(string $key, mixed $default = null): mixed // phpcs:ignore SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue.NullabilitySymbolRequired
+	/**
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function get(string $key, $default = null) // phpcs:ignore SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue.NullabilitySymbolRequired
 	{
 		return $this->context[$key] ?? $default;
 	}
 
-	public function set(string $key, mixed $value): ContextInterface
+	/**
+	 * @param mixed $value
+	 */
+	public function set(string $key, $value): ContextInterface
 	{
 		$this->context[$key] = $value;
 

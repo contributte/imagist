@@ -17,14 +17,23 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private string $domain = 'gumlet.io';
 
-	public function __construct(
-		private string $bucket,
-		private ?string $token,
-		private PathInfoFactoryInterface $pathInfoFactory,
-		private DefaultImageResolverInterface $defaultImageResolver,
-		private FilterNormalizerProcessorInterface $filterNormalizer,
-	)
+	private string $bucket;
+
+	private ?string $token;
+
+	private PathInfoFactoryInterface $pathInfoFactory;
+
+	private DefaultImageResolverInterface $defaultImageResolver;
+
+	private FilterNormalizerProcessorInterface $filterNormalizer;
+
+	public function __construct(string $bucket, ?string $token, PathInfoFactoryInterface $pathInfoFactory, DefaultImageResolverInterface $defaultImageResolver, FilterNormalizerProcessorInterface $filterNormalizer)
 	{
+		$this->bucket = $bucket;
+		$this->token = $token;
+		$this->pathInfoFactory = $pathInfoFactory;
+		$this->defaultImageResolver = $defaultImageResolver;
+		$this->filterNormalizer = $filterNormalizer;
 	}
 
 	public function setDomain(string $domain): void

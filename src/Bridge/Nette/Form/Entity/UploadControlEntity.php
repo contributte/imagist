@@ -25,7 +25,7 @@ final class UploadControlEntity
 
 	public function getSize(): ?int
 	{
-		$uploader = $this->value?->getUploader();
+		$uploader = ($value = $this->value) ? $value->getUploader() : null;
 		if ($uploader instanceof FileUploadUploader) {
 			return $uploader->getFileUpload()->getSize();
 		}
@@ -35,7 +35,7 @@ final class UploadControlEntity
 
 	public function getError(): ?int
 	{
-		$uploader = $this->value?->getUploader();
+		$uploader = ($value = $this->value) ? $value->getUploader() : null;
 		if ($uploader instanceof FileUploadUploader) {
 			return $uploader->getFileUpload()->getError();
 		}
@@ -53,7 +53,10 @@ final class UploadControlEntity
 		return $this->value;
 	}
 
-	public function withRemoveAnyway(bool $removeAnyway): self
+	/**
+	 * @return $this
+	 */
+	public function withRemoveAnyway(bool $removeAnyway)
 	{
 		$clone = clone $this;
 		$clone->removeAnyway = $removeAnyway;
@@ -93,7 +96,10 @@ final class UploadControlEntity
 		return $value;
 	}
 
-	public function withDefault(?PersistentImageInterface $default = null): self
+	/**
+	 * @return $this
+	 */
+	public function withDefault(?PersistentImageInterface $default = null)
 	{
 		$clone = clone $this;
 
@@ -106,7 +112,10 @@ final class UploadControlEntity
 		return $clone;
 	}
 
-	public function withValue(?StorableImageInterface $value = null): self
+	/**
+	 * @return $this
+	 */
+	public function withValue(?StorableImageInterface $value = null)
 	{
 		$clone = clone $this;
 

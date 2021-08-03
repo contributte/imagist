@@ -12,12 +12,12 @@ use Nette\Utils\Image;
 class NetteConfigFilters extends AbstractFilterMethodMapping
 {
 
-	public function __construct(
-		private ConfigFilterCollection $collection,
-	)
-	{
-	}
+	private ConfigFilterCollection $collection;
 
+	public function __construct(ConfigFilterCollection $collection)
+	{
+		$this->collection = $collection;
+	}
 	/**
 	 * @phpstan-return array<string, callable(Image $source, ContextImageAware $context): void>
 	 * @return array<string, callable> filter => method
@@ -60,39 +60,63 @@ class NetteConfigFilters extends AbstractFilterMethodMapping
 		}
 	}
 
-	protected function crop(Image $image, mixed ...$arguments): void
+	/**
+	 * @param mixed ...$arguments
+	 */
+	protected function crop(Image $image, ...$arguments): void
 	{
 		$image->crop(...$arguments);
 	}
 
 	protected function flip(Image $image, string $mode): void
 	{
-		$mode = match ($mode) {
-			'horizontal' => IMG_FLIP_HORIZONTAL,
-			'vertical' => IMG_FLIP_VERTICAL,
-			'both' => IMG_FLIP_BOTH,
-			default => throw new InvalidArgumentException(
-				'Operation flip value must be one of horizontal, vertical or both'
-			),
+		switch ($mode) {
+			case 'horizontal':
+				$mode = IMG_FLIP_HORIZONTAL;
+				break;
+			case 'vertical':
+				$mode = IMG_FLIP_VERTICAL;
+				break;
+			case 'both':
+				$mode = IMG_FLIP_BOTH;
+				break;
+			default:
+				throw new InvalidArgumentException(
+					'Operation flip value must be one of horizontal, vertical or both'
+				);
 		}
 
 		$image->flip($mode);
 	}
 
-	protected function resize(Image $image, mixed ...$arguments): void
+	/**
+	 * @param mixed ...$arguments
+	 */
+	protected function resize(Image $image, ...$arguments): void
 	{
 		[$width, $height, $flag] = array_replace([
 			1 => null,
 			2 => 'fit',
 		], $arguments);
 
-		$flag = match ($flag) {
-			'fit' => Image::FIT,
-			'fill' => Image::FILL,
-			'exact' => Image::EXACT,
-			'shrink_only' => Image::SHRINK_ONLY,
-			'stretch' => Image::STRETCH,
-			default => throw new LogicException(sprintf('Resize flag %s not exists.', $flag)),
+		switch ($flag) {
+			case 'fit':
+				$flag = Image::FIT;
+				break;
+			case 'fill':
+				$flag = Image::FILL;
+				break;
+			case 'exact':
+				$flag = Image::EXACT;
+				break;
+			case 'shrink_only':
+				$flag = Image::SHRINK_ONLY;
+				break;
+			case 'stretch':
+				$flag = Image::STRETCH;
+				break;
+			default:
+				throw new LogicException(sprintf('Resize flag %s not exists.', $flag));
 		}
 
 		$image->resize($width, $height, $flag);

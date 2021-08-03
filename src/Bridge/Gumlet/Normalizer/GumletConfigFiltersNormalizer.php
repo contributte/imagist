@@ -11,12 +11,12 @@ use LogicException;
 class GumletConfigFiltersNormalizer extends AbstractFilterNormalizerMethodMapping
 {
 
-	public function __construct(
-		private ConfigFilterCollection $collection,
-	)
-	{
-	}
+	private ConfigFilterCollection $collection;
 
+	public function __construct(ConfigFilterCollection $collection)
+	{
+		$this->collection = $collection;
+	}
 	protected function getMapping(): array
 	{
 		$mapping = [];
@@ -57,7 +57,10 @@ class GumletConfigFiltersNormalizer extends AbstractFilterNormalizerMethodMappin
 		return $builder->build();
 	}
 
-	protected function resize(GumletBuilder $builder, mixed ...$arguments): void
+	/**
+	 * @param mixed ...$arguments
+	 */
+	protected function resize(GumletBuilder $builder, ...$arguments): void
 	{
 		[$width, $height, $mode] = array_replace([
 			null,

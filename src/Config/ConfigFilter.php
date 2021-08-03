@@ -5,16 +5,19 @@ namespace Contributte\Imagist\Config;
 final class ConfigFilter
 {
 
+	private string $name;
+
+	/** @var ConfigFilterOperation[] */
+	private array $operations;
+
 	/**
 	 * @param ConfigFilterOperation[] $operations
 	 */
-	public function __construct(
-		private string $name,
-		private array $operations,
-	)
+	public function __construct(string $name, array $operations)
 	{
+		$this->name = $name;
+		$this->operations = $operations;
 	}
-
 	public function getName(): string
 	{
 		return $this->name;
