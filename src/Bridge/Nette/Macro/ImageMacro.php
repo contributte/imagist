@@ -33,6 +33,7 @@ final class ImageMacro extends MacroSet
 		$options = $writer->formatArray(new MacroTokens($node->tokenizer->nextAll()));
 
 		return $writer->write(
+			'%node.line ' .
 			'echo $this->global->images->link(' .
 			(($word[0] ?? null) === '$' ? '%raw' : '%word') . ', ' .
 			'%raw,' .
