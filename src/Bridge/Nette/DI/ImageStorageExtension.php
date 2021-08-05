@@ -16,7 +16,9 @@ use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
+use Contributte\Imagist\Debugger\FilterDebugger;
 use Contributte\Imagist\Debugger\FilterDebuggerInterface;
+use Contributte\Imagist\Debugger\FilterDebuggerProviderInterface;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
@@ -342,14 +344,18 @@ final class ImageStorageExtension extends CompilerExtension
 				->setAutowired(false);
 		}
 
-		$bar = $builder->addDefinition($this->prefix('tracy.filter.bar'))
+		$builder->addDefinition($this->prefix('tracy.filter.bar'))
 			->setType(IBarPanel::class)
-			->setFactory(FilterBarPanel::class, [[]])
+			->setFactory(FilterBarPanel::class)
 			->setAutowired(false);
 
+		$debugger = $builder->addDefinition($this->prefix('tracy.filter.bar.debugger'))
+			->setType(FilterDebuggerInterface::class)
+			->setFactory(FilterDebugger::class);
+
 		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(FilterDebuggerInterface::class),
-			fn (Definition $definition) => $bar->addSetup('addProvider', [$definition])
+			$builder->findByType(FilterDebuggerProviderInterface::class),
+			fn (Definition $definition) => $debugger->addSetup('addProvider', [$definition])
 		);
 	}
 

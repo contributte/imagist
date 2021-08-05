@@ -11,10 +11,10 @@
 			</thead>
 			<tbody>
 				<?php
-					use Contributte\Imagist\Config\ConfigFilterOperation;
-					use Contributte\Imagist\Config\ConfigFilter;
+					use Contributte\Imagist\Debugger\DebugFilterObject;
+					use Contributte\Imagist\Debugger\DebugFilterOperationObject;
 
-					/** @var ConfigFilter $filter */
+					/** @var DebugFilterObject $filter */
 					foreach ($this->getFilters() as $filter):
 				?>
 				<tr>
@@ -23,7 +23,7 @@
 					implode(
 						'<br>',
 						array_map(
-							fn (ConfigFilterOperation $op) =>
+							fn (DebugFilterOperationObject $op) =>
 								$op->getName() . ($op->getArguments() ? '(' . implode(', ', $op->getArguments()) . ')' : '') . ($op->getDescription() ? ' - ' . $op->getDescription() : ''),
 							$filter->getOperations()
 						)
