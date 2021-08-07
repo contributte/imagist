@@ -45,7 +45,7 @@ abstract class AbstractFilterProcessor implements FilterProcessorInterface
 			}
 		}
 
-		return $this->imageInstanceToString($image, $target, $context);
+		return $this->imageInstanceToString($image, $source, $context);
 	}
 
 	abstract protected function createImageInstance(FileInterface $source): object;
