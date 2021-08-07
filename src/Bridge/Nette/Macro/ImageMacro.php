@@ -27,7 +27,7 @@ final class ImageMacro extends MacroSet
 		if ($filters) {
 			$filter = $writer->formatArray(new MacroTokens($filters));
 		} else {
-			$filter = '';
+			$filter = '[]';
 		}
 
 		$options = $writer->formatArray(new MacroTokens($node->tokenizer->nextAll()));
