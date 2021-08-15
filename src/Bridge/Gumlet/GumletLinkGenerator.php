@@ -13,9 +13,10 @@ use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
 final class GumletLinkGenerator implements LinkGeneratorInterface
 {
 
+	public const DEFAULT_DOMAIN = 'gumlet.io';
 	public const GUMLET_CONTEXT_KEY = 'gumlet';
 
-	private string $domain = 'gumlet.io';
+	private string $domain = self::DEFAULT_DOMAIN;
 
 	private string $bucket;
 

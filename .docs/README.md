@@ -11,5 +11,5 @@
     - [Nette filters via neon config](nette-filters-config.md)
     - [Filters with dynamic options](filters-options.md)
   - Examples
-    - [Gumlet + Google Storage](examples/gumlet-googleStorage.md)
+    - [Nette + Gumlet + Google Storage](examples/nette-gumlet-googleStorage.md)
 
