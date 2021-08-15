@@ -83,6 +83,8 @@ final class ImageStorageExtension extends CompilerExtension
 
 	public function getConfigSchema(): Schema
 	{
+		$builder = $this->getContainerBuilder();
+
 		return Expect::structure([
 			'extensions' => Expect::structure([
 				'doctrine' => Expect::structure([
@@ -102,6 +104,7 @@ final class ImageStorageExtension extends CompilerExtension
 					'enabled' => Expect::bool(class_exists(AbstractImagine::class)),
 				]),
 			]),
+			'baseDir' => Expect::string($builder->parameters['wwwDir']),
 		]);
 	}
 
@@ -186,14 +189,13 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadFilesystem(ContainerBuilder $builder): void
 	{
-		if (!isset($builder->parameters['wwwDir'])) {
-			throw new LogicException('Neon parameter %wwwDir% must be configured');
-		}
+		/** @var stdClass $config */
+		$config = $this->getConfig();
 
 		$builder->addDefinition($this->prefix('filesystem'))
 			->setType(FilesystemInterface::class)
 			->setFactory(LocalFilesystem::class, [
-				$builder->parameters['wwwDir'],
+				$config->baseDir,
 			]);
 	}
 
