@@ -116,7 +116,7 @@ final class PromisedImage implements PromisedImageInterface
 
 	public function equalTo(ImageInterface $image): bool
 	{
-		if (!$this->isEmpty() || !$image->isEmpty()) {
+		if ($this->isEmpty() || $image->isEmpty()) {
 			return false;
 		}
 
