@@ -69,6 +69,14 @@ class ImageType extends StringType
 		return 'image';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+	{
+		return true;
+	}
+
 	public static function register(Connection $connection): void
 	{
 		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor(self::DB_TYPE)) {
