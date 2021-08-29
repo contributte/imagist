@@ -60,7 +60,7 @@ abstract class FilesystemAbstract implements FilesystemInterface
 	 */
 	public function putWithMkdir(PathInfoInterface $path, $content, array $config = []): void
 	{
-		$this->adapter->createDir($path->toString($path::ALL & ~$path::IMAGE));
+		$this->adapter->createDir($path->toString($path::BUCKET | $path::SCOPE | $path::FILTER));
 
 		$this->put($path, $content, $config);
 	}

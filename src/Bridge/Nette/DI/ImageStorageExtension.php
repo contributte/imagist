@@ -58,7 +58,6 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Image\AbstractImagine;
-use LogicException;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;

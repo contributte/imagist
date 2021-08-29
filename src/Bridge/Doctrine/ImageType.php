@@ -72,6 +72,7 @@ class ImageType extends StringType
 	/**
 	 * @inheritDoc
 	 */
+	// phpcs:ignore -- is not in camel caps
 	public function requiresSQLCommentHint(AbstractPlatform $platform): bool
 	{
 		return true;

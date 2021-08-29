@@ -57,7 +57,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 	private function createPath(PersistentImageInterface $image): string
 	{
 		$pathInfo = $this->pathInfoFactory->create($image->getOriginal());
-		$path = $pathInfo->toString($pathInfo::ALL & ~$pathInfo::FILTER);
+		$path = $pathInfo->toString($pathInfo::BUCKET | $pathInfo::SCOPE | $pathInfo::IMAGE);
 
 		$options = $this->filterNormalizer->normalize($image, new Context([
 			self::GUMLET_CONTEXT_KEY => true,
