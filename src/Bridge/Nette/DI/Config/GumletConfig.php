@@ -7,10 +7,12 @@ use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
 final class GumletConfig
 {
 
-	public string $bucket;
+	public ?string $bucket = null;
 
 	public ?string $token = null;
 
 	public string $domain = GumletLinkGenerator::DEFAULT_DOMAIN;
+
+	public ?string $customDomain = null;
 
 }

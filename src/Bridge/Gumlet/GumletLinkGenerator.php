@@ -9,6 +9,7 @@ use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
+use InvalidArgumentException;
 
 final class GumletLinkGenerator implements LinkGeneratorInterface
 {
@@ -18,9 +19,11 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private string $domain = self::DEFAULT_DOMAIN;
 
-	private string $bucket;
+	private ?string $bucket;
 
 	private ?string $token;
+
+	private ?string $customDomain;
 
 	private PathInfoFactoryInterface $pathInfoFactory;
 
@@ -28,13 +31,25 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private FilterNormalizerProcessorInterface $filterNormalizer;
 
-	public function __construct(string $bucket, ?string $token, PathInfoFactoryInterface $pathInfoFactory, DefaultImageResolverInterface $defaultImageResolver, FilterNormalizerProcessorInterface $filterNormalizer)
+	public function __construct(
+		?string $bucket,
+		?string $token,
+		?string $customDomain,
+		PathInfoFactoryInterface $pathInfoFactory,
+		DefaultImageResolverInterface $defaultImageResolver,
+		FilterNormalizerProcessorInterface $filterNormalizer
+	)
 	{
 		$this->bucket = $bucket;
 		$this->token = $token;
+		$this->customDomain = $customDomain;
 		$this->pathInfoFactory = $pathInfoFactory;
 		$this->defaultImageResolver = $defaultImageResolver;
 		$this->filterNormalizer = $filterNormalizer;
+
+		if (!$this->bucket && $this->customDomain) {
+			throw new InvalidArgumentException('Bucket or customDomain must be set.');
+		}
 	}
 
 	public function setDomain(string $domain): void
@@ -51,7 +66,12 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 			return $this->defaultImageResolver->resolve($this, $image, $options);
 		}
 
-		return sprintf('https://%s.%s/%s', $this->bucket, $this->domain, $this->createPath($image));
+		$domain = $this->customDomain;
+		if (!$domain) {
+			$domain = sprintf('%s.%s', $this->bucket, $this->domain);
+		}
+		
+		return sprintf('https://%s/%s', $domain, $this->createPath($image));
 	}
 
 	private function createPath(PersistentImageInterface $image): string

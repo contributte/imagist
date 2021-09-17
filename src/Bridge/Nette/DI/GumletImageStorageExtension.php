@@ -9,6 +9,7 @@ use Contributte\Imagist\Filter\FilterNormalizerInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nette\DI\InvalidConfigurationException;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 
@@ -35,6 +36,10 @@ final class GumletImageStorageExtension extends CompilerExtension
 		$config = $this->getConfig();
 		assert($config instanceof GumletConfig);
 
+		if (!$config->bucket && !$config->customDomain) {
+			throw new InvalidConfigurationException('bucket or customDomain must be set.');
+		}
+		
 		$definition = $builder->getDefinitionByType(LinkGeneratorInterface::class);
 		assert($definition instanceof ServiceDefinition);
 
@@ -42,6 +47,7 @@ final class GumletImageStorageExtension extends CompilerExtension
 			->setArguments([
 				'bucket' => $config->bucket,
 				'token' => $config->token,
+				'customDomain' => $config->customDomain,
 			]);
 
 		$definition->addSetup('setDomain', [$config->domain]);
