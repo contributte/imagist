@@ -47,7 +47,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$this->defaultImageResolver = $defaultImageResolver;
 		$this->filterNormalizer = $filterNormalizer;
 
-		if (!$this->bucket && $this->customDomain) {
+		if (!$this->bucket && !$this->customDomain) {
 			throw new InvalidArgumentException('Bucket or customDomain must be set.');
 		}
 	}
@@ -70,7 +70,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		if (!$domain) {
 			$domain = sprintf('%s.%s', $this->bucket, $this->domain);
 		}
-		
+
 		return sprintf('https://%s/%s', $domain, $this->createPath($image));
 	}
 
