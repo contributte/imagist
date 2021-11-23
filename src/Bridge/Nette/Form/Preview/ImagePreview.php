@@ -12,6 +12,10 @@ use Nette\Utils\Html;
 class ImagePreview implements ImagePreviewInterface
 {
 
+	private Html $imagePrototype;
+
+	private Html $wrapperPrototype;
+
 	private LinkGeneratorInterface $linkGenerator;
 
 	private ?ImageFilter $filter = null;
@@ -23,6 +27,18 @@ class ImagePreview implements ImagePreviewInterface
 	public function __construct(LinkGeneratorInterface $linkGenerator)
 	{
 		$this->linkGenerator = $linkGenerator;
+		$this->imagePrototype = Html::el('img', ['class' => 'image-upload-preview']);
+		$this->wrapperPrototype = Html::el('div', ['class' => 'image-upload-preview-wrapper']);
+	}
+
+	public function getImagePart(): Html
+	{
+		return $this->imagePrototype;
+	}
+
+	public function getWrapperPart(): Html
+	{
+		return $this->wrapperPrototype;
 	}
 
 	/**
@@ -88,24 +104,22 @@ class ImagePreview implements ImagePreviewInterface
 			$placeholder = $this->linkGenerator->link($this->placeholder);
 		}
 
-		$wrapper = Html::el('div', [
-			'class' => ['image-upload-preview-wrapper'],
-		]);
+		$wrapper = clone $this->wrapperPrototype;
 
 		if ($default = $value->getDefault()) {
-			$wrapper->create('img', [
-				'src' => $this->linkGenerator->link(
-					$default->withFilterObject($this->filter)
-				),
-				'class' => ['image-upload-preview'],
-				'data-placeholder' => $placeholder,
-			]);
+			$img = clone $this->imagePrototype;
+
+			$img->setAttribute('src', $this->linkGenerator->link($default->withFilterObject($this->filter)));
+			$img->setAttribute('data-placeholder', $placeholder);
+
+			$wrapper->insert(0, $img);
 		} elseif ($placeholder) {
-			$wrapper->create('img', [
-				'src' => $placeholder,
-				'class' => ['image-upload-preview'],
-				'data-placeholder' => $placeholder,
-			]);
+			$img = clone $this->imagePrototype;
+
+			$img->setAttribute('src', $placeholder);
+			$img->setAttribute('data-placeholder', $placeholder);
+
+			$wrapper->insert(0, $img);
 		} else {
 			$wrapper->appendAttribute('class', 'empty');
 		}

@@ -10,11 +10,36 @@ use Nette\Utils\Html;
 class ImageRemove implements ImageRemoveInterface
 {
 
+	private Html $wrapperPart;
+
+	private Html $labelPart;
+
+	private Html $controlPart;
+
 	private string $caption;
 
 	public function __construct(string $caption)
 	{
 		$this->caption = $caption;
+
+		$this->wrapperPart = Html::el('div', ['class' => 'image-upload-remove-wrapper']);
+		$this->labelPart = Html::el('label');
+		$this->controlPart = Html::el('input', ['type' => 'checkbox']);
+	}
+
+	public function getWrapperPart(): Html
+	{
+		return $this->wrapperPart;
+	}
+
+	public function getLabelPart(): Html
+	{
+		return $this->labelPart;
+	}
+
+	public function getControlPart(): Html
+	{
+		return $this->controlPart;
 	}
 
 	public function getHttpData(ImageUploadControl $input): bool
@@ -35,18 +60,18 @@ class ImageRemove implements ImageRemoveInterface
 			return null;
 		}
 
-		$wrapper = Html::el('div', [
-			'class' => ['image-upload-remove-wrapper'],
-		]);
+		$wrapper = clone $this->wrapperPart;
+		$label = clone $this->labelPart;
+		$control = clone $this->controlPart;
 
-		$label = $wrapper->create('label');
-		$label->create('input', [
-			'type' => 'checkbox',
-			'id' => $input->getHtmlId() . '_remove',
-			'name' => $input->getName() . '_remove',
-			'checked' => $this->getHttpData($input),
-		]);
+		$control->setAttribute('id', $input->getHtmlId() . '_remove');
+		$control->setAttribute('name', $input->getName() . '_remove');
+		$control->setAttribute('checked', $this->getHttpData($input));
+
+		$label->insert(null, $control);
 		$label->create('')->setText(' ' . $this->caption);
+
+		$wrapper->insert(null, $label);
 
 		return $wrapper;
 	}

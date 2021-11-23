@@ -10,6 +10,10 @@ use Nette\Utils\Html;
 interface ImagePreviewInterface
 {
 
+	public function getWrapperPart(): Html;
+
+	public function getImagePart(): Html;
+
 	/**
 	 * @return static
 	 */
@@ -26,9 +30,6 @@ interface ImagePreviewInterface
 	 */
 	public function setFilter(string $name, array $options = []);
 
-	/**
-	 * @phpstan-return Html<Html|string>|null
-	 */
 	public function getHtml(ImageUploadControl $input): ?Html;
 
 	public function hasImage(ImageUploadControl $input): bool;

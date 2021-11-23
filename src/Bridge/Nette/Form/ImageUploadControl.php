@@ -21,6 +21,8 @@ final class ImageUploadControl extends UploadControl
 
 	private UploadControlEntity $entity;
 
+	private Html $containerPart;
+
 	private ?FileUpload $fileUpload = null;
 
 	private ?Scope $scope = null;
@@ -32,6 +34,7 @@ final class ImageUploadControl extends UploadControl
 	public function __construct(?string $label = null)
 	{
 		$this->entity = new UploadControlEntity();
+		$this->containerPart = Html::el('div', ['class' => 'image-upload-container']);
 
 		parent::__construct($label);
 	}
@@ -108,9 +111,6 @@ final class ImageUploadControl extends UploadControl
 		return $this->entity;
 	}
 
-	/**
-	 * @phpstan-return Html<Html|string>|null
-	 */
 	public function getControlPart(): ?Html
 	{
 		$control = parent::getControl();
@@ -124,28 +124,27 @@ final class ImageUploadControl extends UploadControl
 		return $control;
 	}
 
-	/**
-	 * @phpstan-return Html<Html|string>|null
-	 */
-	public function getRemovePart(): ?Html
+	public function getContainerPart(): Html
+	{
+		return $this->containerPart;
+	}
+
+	public function getRemovePart(): ?ImageRemoveInterface
 	{
 		if (!$this->remove) {
 			return null;
 		}
 
-		return $this->remove->getHtml($this);
+		return $this->remove;
 	}
 
-	/**
-	 * @phpstan-return Html<Html|string>|null
-	 */
-	public function getPreviewPart(): ?Html
+	public function getPreviewPart(): ?ImagePreviewInterface
 	{
 		if (!$this->preview) {
 			return null;
 		}
 
-		return $this->preview->getHtml($this);
+		return $this->preview;
 	}
 
 	public function hasPreviewImage(): bool
@@ -157,24 +156,20 @@ final class ImageUploadControl extends UploadControl
 		return $this->preview->hasImage($this);
 	}
 
-	/**
-	 * @phpstan-return Html<Html|string>
-	 */
 	public function getControl(): Html
 	{
-		$container = Html::el(
-			'div',
-			[
-				'class' => ['image-upload-container'],
-			]
-		);
+		$container = clone $this->containerPart;
 
 		if ($preview = $this->getPreviewPart()) {
-			$container->insert(null, $preview);
+			if ($previewHtml = $preview->getHtml($this)) {
+				$container->insert(null, $previewHtml);
+			}
 		}
 
 		if ($remove = $this->getRemovePart()) {
-			$container->insert(null, $remove);
+			if ($removeHtml = $remove->getHtml($this)) {
+				$container->insert(null, $removeHtml);
+			}
 		}
 
 		return $container->insert(null, parent::getControl());

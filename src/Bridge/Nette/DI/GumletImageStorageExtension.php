@@ -39,7 +39,7 @@ final class GumletImageStorageExtension extends CompilerExtension
 		if (!$config->bucket && !$config->customDomain) {
 			throw new InvalidConfigurationException('bucket or customDomain must be set.');
 		}
-		
+
 		$definition = $builder->getDefinitionByType(LinkGeneratorInterface::class);
 		assert($definition instanceof ServiceDefinition);
 

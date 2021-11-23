@@ -8,11 +8,14 @@ use Nette\Utils\Html;
 interface ImageRemoveInterface
 {
 
+	public function getWrapperPart(): Html;
+
+	public function getLabelPart(): Html;
+
+	public function getControlPart(): Html;
+
 	public function getHttpData(ImageUploadControl $input): bool;
 
-	/**
-	 * @phpstan-return Html<Html|string>|null
-	 */
 	public function getHtml(ImageUploadControl $input): ?Html;
 
 }
