@@ -16,16 +16,26 @@ That's all. We use [nette/utils](nette-processor.md) or [imagine/imagine](imagin
 
 ```yaml
 imagist.filters:
-  siteS: Contributte\Imagist\Filter\Operation\ResizeOperation(100, 100)
-  siteXS: Contributte\Imagist\Filter\CompositeFilter(
-    'siteXS', # name of filter,
-    Contributte\Imagist\Filter\Operation\ResizeOperation(100, 100),
-    Contributte\Imagist\Filter\Operation\CropOperation(20, 20, 20, 20),
-  ) ## Multiple operations, first resize, second crop, ...
+  ## shortcuts for class names
+  ## defaults are: composite, dynamic
+  aliases:
+    resize: Contributte\Imagist\Filter\Operation\ResizeOperation
+  filters:
+    siteS: Contributte\Imagist\Filter\Operation\ResizeOperation(100, 100)
+    siteXS: composite(
+      resize(100, 100), ## same as Contributte\Imagist\Filter\Operation\ResizeOperation(100, 100)
+      Contributte\Imagist\Filter\Operation\CropOperation(20, 20, 20, 20),
+    ) ## Multiple operations, first resize, second crop, ...
+
+    ## dynamic filter, supports passing arguments in latte
+    ## can be only in root level and with one operation
+    resize: dynamic(Contributte\Imagist\Filter\Operation\ResizeOperation)
 ```
 
 Usage in latte:
 
 ```html
-<img n:img="$image|filter:siteS">
+<img n:img="$image, filter: siteS">
+{* dynamic filter *}
+<img n:img="$image, filter: [resize, 200, 200]">
 ```

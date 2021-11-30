@@ -2,7 +2,6 @@
 
 namespace Contributte\Imagist\Filter\StringFilter;
 
-use Contributte\Imagist\Filter\DynamicFilterFactory;
 use Contributte\Imagist\Filter\FilterInterface;
 use LogicException;
 
@@ -13,12 +12,20 @@ final class StringFilterCollection implements StringFilterCollectionInterface
 	private array $filters = [];
 
 	/**
-	 * @param string $name
 	 * @param FilterInterface|DynamicFilterFactory<FilterInterface> $filter
-	 * @return static
 	 */
-	public function add(string $name, $filter): self
+	public function add($filter, ?string $name = null): self
 	{
+		if ($name === null) {
+			if (!$filter instanceof FilterInterface) {
+				throw new LogicException(
+					sprintf('Argument name must be passed or filter must be instance of %s.', FilterInterface::class)
+				);
+			}
+
+			$name = $filter->getIdentifier()->getName();
+		}
+
 		$this->filters[$name] = $filter;
 
 		return $this;

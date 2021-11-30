@@ -68,7 +68,6 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nettrine\DBAL\DI\DbalExtension;
 use stdClass;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tracy\Bar;
 use Tracy\BlueScreen;
 
@@ -172,12 +171,6 @@ final class ImageStorageExtension extends CompilerExtension
 		if ($serviceName) {
 			$this->assertServiceDefinition($builder->getDefinition($serviceName))
 				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
-		}
-
-		$serviceName = $builder->getByType(EventDispatcherInterface::class, false);
-		if ($serviceName) {
-			$this->assertServiceDefinition($builder->getDefinition($serviceName))
-				->addSetup('addSubscriber', [$builder->getDefinition($this->prefix('tracy.bar'))]);
 		}
 
 		foreach ($this->onBeforeCompile as $callback) {

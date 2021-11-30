@@ -2,6 +2,9 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
+use Contributte\Imagist\Filter\CompositeFilter;
+use Contributte\Imagist\Filter\StringFilter\CompositeStringFilter;
+use Contributte\Imagist\Filter\StringFilter\DynamicFilterFactory;
 use Contributte\Imagist\Filter\StringFilter\StringFilterCollection;
 use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
 use Nette\DI\CompilerExtension;
@@ -11,13 +14,17 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use stdClass;
 
 final class ImageStorageConfigFiltersExtension extends CompilerExtension
 {
 
 	public function getConfigSchema(): Schema
 	{
-		return Expect::arrayOf(Expect::type(Statement::class));
+		return Expect::structure([
+			'aliases' => Expect::arrayOf(Expect::string()),
+			'filters' => Expect::arrayOf(Expect::anyOf(Expect::type(Statement::class), Expect::string())),
+		]);
 	}
 
 	public function loadConfiguration()
@@ -31,17 +38,84 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 
 	public function beforeCompile()
 	{
-		/** @var Statement[] $config */
+		/** @var stdClass $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+
+		/** @var array<string, string> $aliases */
+		$aliases = $config->aliases;
+		$aliases['composite'] ??= CompositeStringFilter::class;
+		$aliases['dynamic'] ??= DynamicFilterFactory::class;
+
+		$filters = $this->processFilters($config->filters, $aliases);
 
 		$service = $builder->getDefinition($this->prefix('configFilterCollection'));
 		assert($service instanceof ServiceDefinition);
 
-		foreach ($config as $name => $statement) {
-			$service->addSetup('add', [$name, $statement]);
+		foreach ($filters as $arguments) {
+			$service->addSetup('add', $arguments);
 		}
-//		$this->processConfigFilters($builder, $config);
 	}
+
+	/**
+	 * @param array<string|int, Statement|string> $statements
+	 * @param array<string, string> $aliases
+	 * @return array{Statement, string|null}[]
+	 */
+	private function processFilters(array $statements, array $aliases): array
+	{
+		$return = [];
+
+		foreach ($statements as $name => $statement) {
+			if (is_string($statement)) {
+				$statement = new Statement($statement);
+			} else {
+				$statement = $this->processStatement($statement, $aliases);
+			}
+
+			if (is_string($name)) {
+				if ($statement->getEntity() === DynamicFilterFactory::class) {
+					if (!isset($statement->arguments[1])) {
+						$statement->arguments[1] = $name;
+					}
+				} else {
+					$statement = new Statement(CompositeFilter::class, [$name, $statement]);
+				}
+			} else {
+				$name = null;
+			}
+
+			$return[] = [$statement, $name];
+		}
+
+		return $return;
+	}
+
+	/**
+	 * @param Statement $statement
+	 * @param array<string, string> $aliases
+	 * @return Statement
+	 */
+	private function processStatement(Statement $statement, array $aliases): Statement
+	{
+		$entity = $statement->getEntity();
+		$alias = null;
+
+		if (is_string($entity) && isset($aliases[$entity])) {
+			$alias = $aliases[$entity];
+		}
+
+		foreach ($statement->arguments as $key => $argument) {
+			if ($argument instanceof Statement) {
+				$statement->arguments[$key] = $this->processStatement($argument, $aliases);
+			}
+		}
+
+		if ($alias) {
+			return new Statement($alias, $statement->arguments);
+		}
+
+		return $statement;
+ 	}
 
 }

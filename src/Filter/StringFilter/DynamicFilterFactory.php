@@ -1,8 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Filter;
+namespace Contributte\Imagist\Filter\StringFilter;
+
+use Contributte\Imagist\Filter\CompositeFilter;
+use Contributte\Imagist\Filter\FilterInterface;
 
 /**
+ * @internal
  * @template T of FilterInterface
  */
 final class DynamicFilterFactory
@@ -26,15 +30,16 @@ final class DynamicFilterFactory
 
 	/**
 	 * @param mixed[] $arguments
-	 * @return T
+	 * @return T|DecorateDynamicFilter
 	 */
 	public function create(array $arguments): FilterInterface
 	{
 		$filter = new ($this->className)(...$arguments);
 		if ($this->name) {
-			return new CompositeFilter($this->name, );
+			return new DecorateDynamicFilter($this->name, $filter, $arguments);
 		}
-		return new ($this->className)(...$arguments);
+
+		return $filter;
 	}
 
 }
