@@ -2,14 +2,14 @@
 
 namespace Contributte\Imagist\Persister;
 
-use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 interface PersisterRegistryInterface
 {
 
 	public function add(PersisterInterface $persister): void;
 
-	public function persist(ImageInterface $image, Context $context): ImageInterface;
+	public function persist(ImageInterface $image, ContextInterface $context): ImageInterface;
 
 }

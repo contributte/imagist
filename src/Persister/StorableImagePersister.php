@@ -2,10 +2,10 @@
 
 namespace Contributte\Imagist\Persister;
 
-use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\StorableImageInterface;
 use Contributte\Imagist\File\FileFactoryInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\Resolver\FileNameResolverInterface;
 
@@ -24,12 +24,12 @@ final class StorableImagePersister extends ImagePersisterAbstract
 		$this->fileNameResolver = $fileNameResolver;
 	}
 
-	public function supports(ImageInterface $image, Context $context): bool
+	public function supports(ImageInterface $image, ContextInterface $context): bool
 	{
 		return $image instanceof StorableImageInterface;
 	}
 
-	public function persist(ImageInterface $image, Context $context): ImageInterface
+	public function persist(ImageInterface $image, ContextInterface $context): ImageInterface
 	{
 		assert($image instanceof StorableImageInterface);
 

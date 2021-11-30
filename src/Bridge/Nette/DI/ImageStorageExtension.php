@@ -6,26 +6,26 @@ use Contributte\Imagist\Bridge\Doctrine\Event\PersisterEvent;
 use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
 use Contributte\Imagist\Bridge\Doctrine\ImageType;
 use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
-use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteFilterProcessor;
+use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
+use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
-use Contributte\Imagist\Bridge\Nette\Tracy\FilterBarPanel;
-use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
-use Contributte\Imagist\Debugger\FilterDebugger;
-use Contributte\Imagist\Debugger\FilterDebuggerInterface;
-use Contributte\Imagist\Debugger\FilterDebuggerProviderInterface;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
-use Contributte\Imagist\Filter\FilterNormalizerProcessor;
-use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
+use Contributte\Imagist\Filter\FilterNormalizer;
+use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
+use Contributte\Imagist\Filter\Operation\OperationProcessorInterface;
+use Contributte\Imagist\Filter\Resource\ResourceFactoryInterface;
 use Contributte\Imagist\Filter\VoidFilterProcessor;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGenerator\LinkGenerator as LegacyLinkGenerator;
@@ -69,10 +69,8 @@ use Nette\Schema\Schema;
 use Nettrine\DBAL\DI\DbalExtension;
 use stdClass;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tracy\Bar;
 use Tracy\BlueScreen;
-use Tracy\IBarPanel;
 
 final class ImageStorageExtension extends CompilerExtension
 {
@@ -96,7 +94,7 @@ final class ImageStorageExtension extends CompilerExtension
 				]),
 				'nette' => Expect::structure([
 					'filters' => Expect::structure([
-						'enabled' => Expect::bool(false),
+						'enabled' => Expect::bool(true),
 					]),
 				]),
 				'imagine' => Expect::structure([
@@ -119,14 +117,15 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->loadFile($builder);
 		$this->loadDatabase($builder);
 		$this->loadFilter($builder);
-		$this->loadDebugger($builder);
 		$this->loadPersister($builder);
 		$this->loadRemover($builder);
 
 		if ($config->extensions->nette->filters->enabled) {
-			$this->loadNetteImageFilters($builder);
-		} elseif ($config->extensions->imagine->enabled) {
-			$this->loadImagineFiltersExtension($builder);
+			$this->loadNette($builder);
+		}
+
+		if ($config->extensions->imagine->enabled) {
+			$this->loadImagine($builder);
 		}
 
 		$builder->addDefinition($this->prefix('storage'))
@@ -241,22 +240,27 @@ final class ImageStorageExtension extends CompilerExtension
 	private function loadFilter(ContainerBuilder $builder): void
 	{
 		$builder->addDefinition($this->prefix('filter.normalizerCollection'))
-			->setType(FilterNormalizerProcessorInterface::class)
-			->setFactory(FilterNormalizerProcessor::class);
+			->setType(FilterNormalizerInterface::class)
+			->setFactory(FilterNormalizer::class);
 
 		$builder->addDefinition($this->prefix('filterProcessor'))
 			->setType(FilterProcessorInterface::class)
 			->setFactory(VoidFilterProcessor::class);
 	}
 
-	private function loadImagineFiltersExtension(ContainerBuilder $builder): void
+	private function loadImagine(ContainerBuilder $builder): void
 	{
-		if (!class_exists(AbstractImagine::class)) {
-			return;
-		}
+		$builder->addDefinition($this->prefix('imagine.resource.factory'))
+			->setType(ResourceFactoryInterface::class)
+			->setFactory(ImagineResourceFactory::class);
 
-		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
-			->setFactory(ImagineFilterProcessor::class);
+		$builder->addDefinition($this->prefix('imagine.operation.processor'))
+			->setType(OperationProcessorInterface::class)
+			->setFactory(ImagineOperationProcessor::class);
+
+		$this->assertServiceDefinition(
+			$builder->getDefinition($this->prefix('filterProcessor'))
+		)->setFactory(FilterProcessor::class);
 	}
 
 	private function loadDoctrine(ContainerBuilder $builder): void
@@ -336,30 +340,6 @@ final class ImageStorageExtension extends CompilerExtension
 			->addSetup('addProvider', ['images', $this->prefix('@latte.provider')]);
 	}
 
-	private function loadDebugger(ContainerBuilder $builder): void
-	{
-		if (interface_exists(EventSubscriberInterface::class)) {
-			$builder->addDefinition($this->prefix('tracy.bar'))
-				->setType(IBarPanel::class)
-				->setFactory(ImageBarPanel::class)
-				->setAutowired(false);
-		}
-
-		$builder->addDefinition($this->prefix('tracy.filter.bar'))
-			->setType(IBarPanel::class)
-			->setFactory(FilterBarPanel::class)
-			->setAutowired(false);
-
-		$debugger = $builder->addDefinition($this->prefix('tracy.filter.bar.debugger'))
-			->setType(FilterDebuggerInterface::class)
-			->setFactory(FilterDebugger::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(FilterDebuggerProviderInterface::class),
-			fn (Definition $definition) => $debugger->addSetup('addProvider', [$definition])
-		);
-	}
-
 	private function loadPersister(ContainerBuilder $builder): void
 	{
 		$persisterRegistry = $builder->addDefinition($this->prefix('persisterRegistry'))
@@ -404,10 +384,19 @@ final class ImageStorageExtension extends CompilerExtension
 			->setFactory(PersistentImageRemover::class);
 	}
 
-	private function loadNetteImageFilters(ContainerBuilder $builder): void
+	private function loadNette(ContainerBuilder $builder): void
 	{
-		$this->assertServiceDefinition($builder->getDefinition($this->prefix('filterProcessor')))
-			->setFactory(NetteFilterProcessor::class);
+		$builder->addDefinition($this->prefix('nette.resource.factory'))
+			->setType(ResourceFactoryInterface::class)
+			->setFactory(NetteResourceFactory::class);
+
+		$builder->addDefinition($this->prefix('nette.operation.processor'))
+			->setType(OperationProcessorInterface::class)
+			->setFactory(NetteOperationProcessor::class);
+
+		$this->assertServiceDefinition(
+			$builder->getDefinition($this->prefix('filterProcessor'))
+		)->setFactory(FilterProcessor::class);
 	}
 
 	private function assertServiceDefinition(Definition $definition): ServiceDefinition

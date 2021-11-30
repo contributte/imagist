@@ -3,8 +3,8 @@
 namespace Contributte\Imagist\Bridge\Nette\Form\Preview;
 
 use Contributte\Imagist\Bridge\Nette\Form\ImageUploadControl;
-use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Filter\FilterInterface;
 use Nette\Utils\Html;
 
 interface ImagePreviewInterface
@@ -22,13 +22,7 @@ interface ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setFilterObject(?ImageFilter $filter);
-
-	/**
-	 * @param mixed[] $options
-	 * @return static
-	 */
-	public function setFilter(string $name, array $options = []);
+	public function setFilter(FilterInterface $filter);
 
 	public function getHtml(ImageUploadControl $input): ?Html;
 

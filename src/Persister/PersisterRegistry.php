@@ -2,9 +2,9 @@
 
 namespace Contributte\Imagist\Persister;
 
-use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Exceptions\InvalidArgumentException;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 final class PersisterRegistry implements PersisterRegistryInterface
 {
@@ -17,7 +17,7 @@ final class PersisterRegistry implements PersisterRegistryInterface
 		$this->persisters[] = $persister;
 	}
 
-	public function persist(ImageInterface $image, Context $context): ImageInterface
+	public function persist(ImageInterface $image, ContextInterface $context): ImageInterface
 	{
 		foreach ($this->persisters as $persister) {
 			if ($persister->supports($image, $context)) {

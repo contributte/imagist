@@ -3,7 +3,6 @@
 namespace Contributte\Imagist\Bridge\Gumlet;
 
 use InvalidArgumentException;
-use JetBrains\PhpStorm\ExpectedValues; // phpcs:ignore
 
 class GumletBuilder
 {
@@ -20,9 +19,11 @@ class GumletBuilder
 	}
 
 	/**
+	 * @param int|string|null $width
+	 * @param int|string|null $height
 	 * @return self
 	 */
-	public function resize(?int $width, ?int $height = null, ?string $mode = null)
+	public function resize($width = null, $height = null, ?string $mode = null)
 	{
 		if (($width ?? $height) === null) {
 			throw new InvalidArgumentException('Height or width must be set');
@@ -46,10 +47,7 @@ class GumletBuilder
 	/**
 	 * @return self
 	 */
-	public function crop(
-		#[ExpectedValues(['entropy', 'smart', 'top', 'topleft', 'left', 'bottomleft', 'bottom', 'bottomright', 'right', 'topright', 'faces', 'center'])]
-		string $mode
-	)
+	public function crop(string $mode)
 	{
 		$this->options['crop'] = $mode;
 
@@ -62,6 +60,19 @@ class GumletBuilder
 	public function mask(string $mask)
 	{
 		$this->options['mask'] = $mask;
+
+		return $this;
+	}
+
+	/**
+	 * @param int|string $left
+	 * @param int|string $top
+	 * @param int|string $width
+	 * @param int|string $height
+	 */
+	public function extract($left, $top, $width, $height): self
+	{
+		$this->options['extract'] = implode(',', [$left, $top, $width, $height]);
 
 		return $this;
 	}

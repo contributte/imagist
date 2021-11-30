@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Resolver\FilterResolvers;
 
-use Contributte\Imagist\Entity\Filter\ImageFilter;
+use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Resolver\FilterResolverInterface;
 use LogicException;
 use Nette\Utils\Json;
@@ -12,9 +12,11 @@ final class MD5FilterResolver implements FilterResolverInterface
 
 	private const MAX_LENGTH = 255;
 
-	public function resolve(ImageFilter $filter): string
+	public function resolve(FilterInterface $filter): string
 	{
-		$name = '_' . $filter->getName() . $this->optionsToString($filter->getOptions());
+		$name = '_' . $filter->getIdentifier()->getName() . '_' . $this->argumentsToString(
+			$filter->getIdentifier()->getArguments()
+		);
 		$length = strlen($name);
 
 		if ($length > self::MAX_LENGTH) {
@@ -29,7 +31,7 @@ final class MD5FilterResolver implements FilterResolverInterface
 	/**
 	 * @param mixed[] $options
 	 */
-	private function optionsToString(array $options): string
+	private function argumentsToString(array $options): string
 	{
 		return $options ? '-' . md5(Json::encode($options)) : '';
 	}

@@ -2,26 +2,31 @@
 
 namespace Contributte\Imagist\Testing\Unit;
 
-use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
-use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
+use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
+use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
-use Contributte\Imagist\Testing\Bridge\Imagine\ThumbnailOperation;
 use Contributte\Imagist\Testing\FileTestCase;
+use Contributte\Imagist\Testing\Filter\ImagineThumbnailFilter;
 use Contributte\Imagist\Uploader\FilePathUploader;
 
 class FilterTest extends FileTestCase
 {
 
-	private ImagineFilterProcessor $processor;
+	private FilterProcessor $processor;
 
 	protected function _before(): void
 	{
 		parent::_before();
 
-		$this->processor = new ImagineFilterProcessor([new ThumbnailOperation()]);
+		$this->processor = new FilterProcessor(
+			new ImagineResourceFactory(),
+			[new ImagineOperationProcessor()],
+		);
 	}
 
 	public function testFilter(): void
@@ -30,7 +35,7 @@ class FilterTest extends FileTestCase
 			new FilePathUploader($this->imageJpg),
 			'name.jpg'
 		);
-		$image = $image->withFilter('thumbnail');
+		$image = $image->withFilter(new ImagineThumbnailFilter());
 
 		$fileFactory = new FileFactory(new LocalFilesystem($this->getAbsolutePath()), new PathInfoFactory());
 
@@ -41,8 +46,8 @@ class FilterTest extends FileTestCase
 		);
 
 		$size = getimagesizefromstring($content);
-		$this->assertSame(15, $size[0], 'width is not same');
-		$this->assertSame(15, $size[1], 'height is not same');
+		$this->assertSame(15, $size[0]);
+		$this->assertSame(15, $size[1]);
 	}
 
 }

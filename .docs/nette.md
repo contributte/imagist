@@ -30,20 +30,26 @@ Image with filter
 ```html
 {varType Contributte\Imagist\Entity\PersistentImageInterface $image}
 
-<img n:img="$image|miniAvatar">
+<img n:img="$image, filter: new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20)">
+{* or with neon filters *}
+<img n:img="$image, filter: siteXS">
+{* neon filters with arguments *}
+<img n:img="$image, filter: [siteXS, 20, 20]">
 ```
 
-Image with options
+Image with custom options
 ```html
 {varType Contributte\Imagist\Entity\PersistentImageInterface $image}
 
 <img n:img="$image, scope => 'avatar'">
+{* with filter *}
+<img n:img="$image, filter: new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20), scope => 'avatar'">
 ```
 
 same in php
 
 ```php
-$linkGenerator->link($image, ['scope' => 'avatar']);
+$linkGenerator->link($image->withFilter(new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20)), ['scope' => 'avatar']);
 ```
 
 ## Forms

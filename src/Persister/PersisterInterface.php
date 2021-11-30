@@ -2,14 +2,14 @@
 
 namespace Contributte\Imagist\Persister;
 
-use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 interface PersisterInterface
 {
 
-	public function supports(ImageInterface $image, Context $context): bool;
+	public function supports(ImageInterface $image, ContextInterface $context): bool;
 
-	public function persist(ImageInterface $image, Context $context): ImageInterface;
+	public function persist(ImageInterface $image, ContextInterface $context): ImageInterface;
 
 }

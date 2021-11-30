@@ -2,11 +2,11 @@
 
 namespace Contributte\Imagist\Resolver;
 
-use Contributte\Imagist\Entity\Filter\ImageFilter;
+use Contributte\Imagist\Filter\FilterInterface;
 
 interface FilterResolverInterface
 {
 
-	public function resolve(ImageFilter $filter): string;
+	public function resolve(FilterInterface $filter): string;
 
 }

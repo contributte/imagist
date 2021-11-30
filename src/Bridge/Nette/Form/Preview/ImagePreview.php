@@ -3,8 +3,8 @@
 namespace Contributte\Imagist\Bridge\Nette\Form\Preview;
 
 use Contributte\Imagist\Bridge\Nette\Form\ImageUploadControl;
-use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use LogicException;
 use Nette\Utils\Html;
@@ -18,7 +18,7 @@ class ImagePreview implements ImagePreviewInterface
 
 	private LinkGeneratorInterface $linkGenerator;
 
-	private ?ImageFilter $filter = null;
+	private ?FilterInterface $filter = null;
 
 	private ?PersistentImageInterface $placeholder = null;
 
@@ -44,20 +44,9 @@ class ImagePreview implements ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setFilterObject(?ImageFilter $filter)
+	public function setFilter(FilterInterface $filter)
 	{
 		$this->filter = $filter;
-
-		return $this;
-	}
-
-	/**
-	 * @param mixed[] $options
-	 * @return static
-	 */
-	public function setFilter(string $name, array $options = [])
-	{
-		$this->filter = new ImageFilter($name, $options);
 
 		return $this;
 	}
@@ -109,7 +98,7 @@ class ImagePreview implements ImagePreviewInterface
 		if ($default = $value->getDefault()) {
 			$img = clone $this->imagePrototype;
 
-			$img->setAttribute('src', $this->linkGenerator->link($default->withFilterObject($this->filter)));
+			$img->setAttribute('src', $this->linkGenerator->link($default->withFilter($this->filter)));
 			$img->setAttribute('data-placeholder', $placeholder);
 
 			$wrapper->insert(0, $img);

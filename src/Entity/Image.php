@@ -2,8 +2,8 @@
 
 namespace Contributte\Imagist\Entity;
 
-use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Exceptions\ClosedImageException;
+use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
 
 abstract class Image implements ImageInterface
@@ -11,7 +11,7 @@ abstract class Image implements ImageInterface
 
 	protected string $name;
 
-	protected ?ImageFilter $filter = null;
+	protected ?FilterInterface $filter = null;
 
 	protected Scope $scope;
 
@@ -60,7 +60,7 @@ abstract class Image implements ImageInterface
 		return $this->scope;
 	}
 
-	public function getFilter(): ?ImageFilter
+	public function getFilter(): ?FilterInterface
 	{
 		$this->throwIfClosed();
 
@@ -110,23 +110,9 @@ abstract class Image implements ImageInterface
 	}
 
 	/**
-	 * @param mixed[] $options
 	 * @return static
 	 */
-	public function withFilter(string $name, array $options = [])
-	{
-		$this->throwIfClosed();
-
-		$clone = clone $this;
-		$clone->filter = new ImageFilter($name, $options);
-
-		return $clone;
-	}
-
-	/**
-	 * @return static
-	 */
-	public function withFilterObject(?ImageFilter $filter)
+	public function withFilter(?FilterInterface $filter)
 	{
 		$this->throwIfClosed();
 

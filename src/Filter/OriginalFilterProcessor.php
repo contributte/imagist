@@ -2,13 +2,13 @@
 
 namespace Contributte\Imagist\Filter;
 
-use Contributte\Imagist\Context\Context;
 use Contributte\Imagist\File\FileInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 final class OriginalFilterProcessor implements FilterProcessorInterface
 {
 
-	public function process(FileInterface $target, FileInterface $source, Context $context): string
+	public function process(FileInterface $target, FileInterface $source, ContextInterface $context): string
 	{
 		return $source->getContent();
 	}

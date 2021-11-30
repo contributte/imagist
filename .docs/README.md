@@ -5,11 +5,10 @@
   - [Symfony](symfony.md)
   - [Standalone](standalone.md)
   - [Doctrine](doctrine.md)
-  - Filters (image manipulation)
-    - [Imagine filters (uses imagine/imagine)](imagine.md)
-    - [Nette image filters (uses nette/utils)](nette-image-filters.md)
-    - [Nette filters via neon config](nette-filters-config.md)
-    - [Filters with dynamic options](filters-options.md)
+  - [Filters](filters.md) (image manipulation)
+    - [Imagine filter processor (uses imagine/imagine)](imagine.md)
+    - [Nette filter processor (uses nette/utils)](nette-processor.md)
+    - [Filters in neon and latte](neon-filters.md)
   - Examples
     - [Nette + Gumlet + Google Storage](examples/nette-gumlet-googleStorage.md)
 

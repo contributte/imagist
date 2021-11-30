@@ -6,12 +6,11 @@ use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
-use Contributte\Imagist\Utility\RecursionGuard;
 
 final class ScopeDefaultImageResolver implements DefaultImageResolverInterface
 {
 
-	use RecursionGuard;
+	private const RECURSION_GUARD = 'scopeDefaultImageRecursion';
 
 	/** @var string[] */
 	private array $lookup;
@@ -33,7 +32,7 @@ final class ScopeDefaultImageResolver implements DefaultImageResolverInterface
 		array $options = []
 	): ?string
 	{
-		if ($this->isRecursion($options)) {
+		if (isset($options[self::RECURSION_GUARD])) {
 			return null;
 		}
 
@@ -49,10 +48,12 @@ final class ScopeDefaultImageResolver implements DefaultImageResolverInterface
 
 		$result = new PersistentImage($this->lookup[$default]);
 		if ($image && $image->hasFilter()) {
-			$result = $result->withFilterObject($image->getFilter());
+			$result = $result->withFilter($image->getFilter());
 		}
 
-		return $linkGenerator->link($result, $this->setRecursion($options));
+		$options[self::RECURSION_GUARD] = true;
+
+		return $linkGenerator->link($result, $options);
 	}
 
 	private function getScopeFromImage(?PersistentImageInterface $image): ?string

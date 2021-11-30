@@ -2,9 +2,12 @@
 
 namespace Contributte\Imagist\Testing\Functional;
 
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
+use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\Persister\EmptyImagePersister;
 use Contributte\Imagist\Persister\PersistentImagePersister;
@@ -16,9 +19,6 @@ use Contributte\Imagist\Remover\RemoverRegistry;
 use Contributte\Imagist\Resolver\FileNameResolvers\OriginalFileNameResolver;
 use Contributte\Imagist\Storage\ImageStorage;
 use Contributte\Imagist\Testing\FileTestCase;
-use Contributte\Imagist\Testing\Filter\FilterProcessor;
-use Contributte\Imagist\Testing\Filter\OperationRegistry;
-use Contributte\Imagist\Testing\Filter\ThumbnailOperation;
 use Contributte\Imagist\Transaction\TransactionFactory;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Contributte\Imagist\Uploader\FilePathUploader;
@@ -34,10 +34,10 @@ class TransactionTest extends FileTestCase
 	{
 		parent::_before();
 
-		$registry = new OperationRegistry();
-		$registry->add(new ThumbnailOperation());
-
-		$processor = new FilterProcessor($registry);
+		$processor = new FilterProcessor(
+			new NetteResourceFactory(),
+			[new NetteOperationProcessor()]
+		);
 		$fileFactory = new FileFactory(
 			$filesystem = new LocalFilesystem($this->getAbsolutePath()),
 			$pathInfoFactory = new PathInfoFactory()

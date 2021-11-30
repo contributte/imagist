@@ -20,8 +20,7 @@ class ImageTest extends Unit
 		$this->assertSame('bar/foo.jpg', $image->getId());
 		$this->assertSame('jpg', $image->getSuffix());
 		$this->assertSame($scope, $image->getScope());
-		$this->assertNotSame($image, $new = $image->withFilter('bar'));
-		$this->assertSame('bar', $new->getFilter()->getName());
+		$this->assertNotSame($image, $new = $image->withName('bar'));
 	}
 
 	public function testClose(): void

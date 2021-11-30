@@ -34,7 +34,7 @@ final class BarEvent
 			$this->action = $filter ? '<span style="color:blue">filtering</span>' : '<span style="color:green">persist</span>';
 
 			$this->result = $event->getResult()->getId();
-			$this->filter = $filter ? $filter->getName() : '<span style="color:grey">none</span>';
+			$this->filter = $filter ? get_class($filter) : '<span style="color:grey">none</span>';
 			$this->source = $event->getSource()->getId();
 		}
 

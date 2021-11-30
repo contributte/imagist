@@ -2,6 +2,8 @@
 
 namespace Contributte\Imagist\Testing\Functional;
 
+use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
+use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
@@ -9,6 +11,7 @@ use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\Entity\StorableImageInterface;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
+use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\LinkGenerator\LinkGenerator;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\Persister\EmptyImagePersister;
@@ -23,10 +26,8 @@ use Contributte\Imagist\Resolver\DefaultImageResolvers\ScopeDefaultImageResolver
 use Contributte\Imagist\Resolver\FileNameResolvers\OriginalFileNameResolver;
 use Contributte\Imagist\Scope\Scope;
 use Contributte\Imagist\Storage\ImageStorage;
+use Contributte\Imagist\Testing\Filter\ThumbnailFilter;
 use Contributte\Imagist\Testing\FileTestCase;
-use Contributte\Imagist\Testing\Filter\FilterProcessor;
-use Contributte\Imagist\Testing\Filter\OperationRegistry;
-use Contributte\Imagist\Testing\Filter\ThumbnailOperation;
 use Contributte\Imagist\Uploader\FilePathUploader;
 
 class LocalStorageTest extends FileTestCase
@@ -42,10 +43,10 @@ class LocalStorageTest extends FileTestCase
 	{
 		parent::_before();
 
-		$registry = new OperationRegistry();
-		$registry->add(new ThumbnailOperation());
-
-		$processor = new FilterProcessor($registry);
+		$processor = new FilterProcessor(
+			new NetteResourceFactory(),
+			[new NetteOperationProcessor()]
+		);
 		$this->fileFactory = new FileFactory(
 			$filesystem = new LocalFilesystem($this->getAbsolutePath()),
 			$pathInfoFactory = new PathInfoFactory()
@@ -123,7 +124,7 @@ class LocalStorageTest extends FileTestCase
 	public function testFiltersWithNewUpload(): void
 	{
 		$image = new StorableImage(new FilePathUploader($this->imageJpg), 'name.jpg');
-		$image = $image->withFilter('thumbnail');
+		$image = $image->withFilter(new ThumbnailFilter());
 
 		$this->storage->persist($image);
 
@@ -138,7 +139,7 @@ class LocalStorageTest extends FileTestCase
 		$image = new StorableImage(new FilePathUploader($this->imageJpg), 'name.jpg');
 		$persistent = $this->storage->persist($image);
 
-		$this->storage->persist($persistent->withFilter('thumbnail'));
+		$this->storage->persist($persistent->withFilter(new ThumbnailFilter()));
 
 		$this->assertTempFileExists('media/name.jpg');
 		$this->assertTempFileExists('cache/_thumbnail/name.jpg');
@@ -152,7 +153,7 @@ class LocalStorageTest extends FileTestCase
 		$image = new StorableImage(new FilePathUploader($this->imageJpg), 'name.jpg');
 		$persistent = $this->storage->persist($image);
 
-		$this->storage->persist($persistent->withFilter('thumbnail'));
+		$this->storage->persist($persistent->withFilter(new ThumbnailFilter()));
 
 		$this->assertTempFileExists('media/name.jpg');
 		$this->assertTempFileExists('cache/_thumbnail/name.jpg');
@@ -168,7 +169,7 @@ class LocalStorageTest extends FileTestCase
 		$image = new StorableImage(new FilePathUploader($this->imageJpg), 'name.jpg');
 		$persistent = $this->storage->persist($image);
 
-		$link = $this->linkGenerator->link($persistent->withFilter('thumbnail'));
+		$link = $this->linkGenerator->link($persistent->withFilter(new ThumbnailFilter()));
 
 		$this->assertSame('/cache/_thumbnail/name.jpg', $link);
 		$this->assertTempFileExists('media/name.jpg');
@@ -182,7 +183,7 @@ class LocalStorageTest extends FileTestCase
 	{
 		$persistent = new PersistentImage('image.jpg');
 
-		$link = $this->linkGenerator->link($persistent->withFilter('thumbnail'));
+		$link = $this->linkGenerator->link($persistent->withFilter(new ThumbnailFilter()));
 
 		$this->assertNull($link);
 	}

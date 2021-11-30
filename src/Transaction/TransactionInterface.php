@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Transaction;
 
-use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\PromisedImageInterface;
@@ -23,8 +23,14 @@ interface TransactionInterface extends ImageStorageInterface
 	 */
 	public function rollback(): void;
 
-	public function persist(ImageInterface $image, ?Context $context = null): PromisedImageInterface;
+	/**
+	 * @param mixed[] $context
+	 */
+	public function persist(ImageInterface $image, array $context = []): PromisedImageInterface;
 
-	public function remove(PersistentImageInterface $image, ?Context $context = null): PromisedImageInterface;
+	/**
+	 * @param mixed[] $context
+	 */
+	public function remove(PersistentImageInterface $image, array $context = []): PromisedImageInterface;
 
 }

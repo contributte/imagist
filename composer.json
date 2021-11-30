@@ -9,7 +9,8 @@
     "php": ">=7.4",
     "nette/utils": "^3.2",
     "league/flysystem": "^1.1",
-    "psr/event-dispatcher": "^1.0"
+    "psr/event-dispatcher": "^1.0",
+    "utilitte/asserts": "^1.1"
   },
   "require-dev": {
     "codeception/codeception": "^4.1.20",

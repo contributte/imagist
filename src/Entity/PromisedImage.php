@@ -2,8 +2,8 @@
 
 namespace Contributte\Imagist\Entity;
 
-use Contributte\Imagist\Entity\Filter\ImageFilter;
 use Contributte\Imagist\Exceptions\PromiseException;
+use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Scope\Scope;
 use Contributte\Imagist\Transaction\TransactionInterface;
 
@@ -48,7 +48,7 @@ final class PromisedImage implements PromisedImageInterface
 		return $this->getResult()->getScope();
 	}
 
-	public function getFilter(): ?ImageFilter
+	public function getFilter(): ?FilterInterface
 	{
 		return $this->getResult()->getFilter();
 	}
@@ -77,17 +77,9 @@ final class PromisedImage implements PromisedImageInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function withFilter(string $name, array $options = []): PersistentImageInterface
+	public function withFilter(?FilterInterface $filter): PersistentImageInterface
 	{
-		return $this->getResult()->withFilter($name, $options);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function withFilterObject(?ImageFilter $filter): PersistentImageInterface
-	{
-		return $this->getResult()->withFilterObject($filter);
+		return $this->getResult()->withFilter($filter);
 	}
 
 	public function getOriginal(): PersistentImageInterface

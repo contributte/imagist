@@ -8,7 +8,7 @@ interface ImageCleaner
 {
 
 	/**
-	 * @return (PersistentImageInterface|null)[]
+	 * @return array<PersistentImageInterface|null>
 	 */
 	public function _imagesToClean(): array;
 

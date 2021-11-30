@@ -2,7 +2,7 @@
 
 namespace Contributte\Imagist\Resolver\FilterResolvers;
 
-use Contributte\Imagist\Entity\Filter\ImageFilter;
+use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Resolver\FilterResolverInterface;
 use LogicException;
 
@@ -11,10 +11,10 @@ final class SimpleFilterResolver implements FilterResolverInterface
 
 	private const MAX_LENGTH = 255;
 
-	public function resolve(ImageFilter $filter): string
+	public function resolve(FilterInterface $filter): string
 	{
-		$options = $this->parseOptions($filter->getOptions());
-		$name = '_' . $filter->getName() . ($options ? '-' . implode('-', $options) : '');
+		$options = $this->parseArguments($filter->getIdentifier()->getArguments());
+		$name = '_' . $filter->getIdentifier()->getName() . ($options ? '-' . implode('-', $options) : '');
 		$length = strlen($name);
 
 		if ($length > self::MAX_LENGTH) {
@@ -30,7 +30,7 @@ final class SimpleFilterResolver implements FilterResolverInterface
 	 * @param mixed[] $options
 	 * @return mixed[]
 	 */
-	private function parseOptions(array $options): array
+	private function parseArguments(array $options): array
 	{
 		$listKey = 0;
 		foreach ($options as $key => &$value) {

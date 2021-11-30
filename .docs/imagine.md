@@ -1,51 +1,32 @@
-# Imagine filters
+# Imagine
 
-- [Registration](#registration)
-  - [Nette registration](#nette)
-- [Operations](#operations)
+- [Standalone](#standalone)
+- [Nette](#nette)
 
-## Registration
+## Standalone
 
-### Nette
-
-Just install imagine package `composer require imagine/imagine`, nette extension automatically register
-it and will use
-
-## Operations
-
-For image manipulating imagine extension uses operations. Let's go define one and register it as service.
+`composer require imagine/imagine`
 
 ```php
+use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
+use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
+use Contributte\Imagist\Filter\FilterProcessor;
 
-use Contributte\Imagist\Bridge\Imagine\OperationInterface;
-use Contributte\Imagist\Entity\Filter\ImageFilter;
-use Contributte\Imagist\Scope\Scope;
-use Imagine\Image\ImageInterface;
-
-class SharpenOperation implements OperationInterface
-{
-
-    public function supports(ImageFilter $filter, Scope $scope): bool
-    {
-        return $filter->getName() === 'sharpen';
-    }
-
-    public function operate(ImageInterface $image, ImageFilter $filter): void
-    {
-        $image->effects()->sharpen();
-    }
-
-}
-
+$processor = new FilterProcessor(new ImagineResourceFactory(), [
+    new ImagineOperationProcessor(),
+]);
 ```
 
-```yaml
-services:
-  - SharpenOperation
+## Nette
+
+`composer require imagine/imagine`
+
+```neon
+imagist:
+	extensions:
+		imagine:
+			enabled: true
+		nette:
+			enabled: false
 ```
 
-Now we can use filter 'sharpen':
-
-```html
-<img n:img="$image|filter:sharpen">
-```

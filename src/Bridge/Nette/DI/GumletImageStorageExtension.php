@@ -3,9 +3,9 @@
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
 use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
-use Contributte\Imagist\Bridge\Gumlet\Normalizer\GumletConfigFiltersNormalizer;
+use Contributte\Imagist\Bridge\Gumlet\GumletOperationProcessor;
 use Contributte\Imagist\Bridge\Nette\DI\Config\GumletConfig;
-use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Filter\Operation\OperationProcessorInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -26,8 +26,8 @@ final class GumletImageStorageExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('normalizer'))
-			->setFactory(GumletConfigFiltersNormalizer::class)
-			->setType(FilterNormalizerInterface::class);
+			->setFactory(GumletOperationProcessor::class)
+			->setType(OperationProcessorInterface::class);
 	}
 
 	public function beforeCompile(): void

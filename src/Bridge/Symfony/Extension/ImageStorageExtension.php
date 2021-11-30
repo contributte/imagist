@@ -2,12 +2,11 @@
 
 namespace Contributte\Imagist\Bridge\Symfony\Extension;
 
-use Contributte\Imagist\Bridge\Imagine\ImagineFilterProcessor;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
-use Contributte\Imagist\Filter\FilterNormalizerProcessor;
+use Contributte\Imagist\Filter\FilterNormalizer;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGenerator\LinkGenerator;
@@ -70,10 +69,7 @@ final class ImageStorageExtension extends Extension
 
 	private function loadImagineExtension(ContainerBuilder $container): void
 	{
-		$container->register('contributte.imagist.imagine.filterProcessor', ImagineFilterProcessor::class)
-			->setAutowired(true);
-
-		$container->setAlias(FilterProcessorInterface::class, 'contributte.imagist.imagine.filterProcessor');
+		// TODO
 	}
 
 	private function loadFilesystem(ContainerBuilder $container): void
@@ -103,7 +99,7 @@ final class ImageStorageExtension extends Extension
 
 	private function loadFilter(ContainerBuilder $container): void
 	{
-		$container->register('contributte.imagist.filter.normalizerCollection', FilterNormalizerProcessor::class)
+		$container->register('contributte.imagist.filter.normalizerCollection', FilterNormalizer::class)
 			->setAutowired(true);
 	}
 

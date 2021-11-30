@@ -2,15 +2,21 @@
 
 namespace Contributte\Imagist;
 
-use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 
 interface ImageStorageInterface
 {
 
-	public function persist(ImageInterface $image, ?Context $context = null): PersistentImageInterface;
+	/**
+	 * @param mixed[] $context
+	 */
+	public function persist(ImageInterface $image, array $context = []): PersistentImageInterface;
 
-	public function remove(PersistentImageInterface $image, ?Context $context = null): PersistentImageInterface;
+	/**
+	 * @param mixed[] $context
+	 */
+	public function remove(PersistentImageInterface $image, array $context = []): PersistentImageInterface;
 
 }

@@ -2,13 +2,15 @@
 
 namespace Contributte\Imagist\Storage;
 
-use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Event\PersistedImageEvent;
 use Contributte\Imagist\Event\RemovedImageEvent;
+use Contributte\Imagist\Filter\Context\ContextFactory;
+use Contributte\Imagist\Filter\Context\ContextFactoryInterface;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\Persister\PersisterRegistryInterface;
 use Contributte\Imagist\Remover\RemoverRegistryInterface;
@@ -23,26 +25,33 @@ class ImageStorage implements ImageStorageInterface
 
 	private ?EventDispatcherInterface $dispatcher;
 
+	private ContextFactoryInterface $contextFactory;
+
 	public function __construct(
 		PersisterRegistryInterface $persisterRegistry,
 		RemoverRegistryInterface $removerRegistry,
+		?ContextFactoryInterface $contextFactory = null,
 		?EventDispatcherInterface $dispatcher = null
 	)
 	{
 		$this->persisterRegistry = $persisterRegistry;
 		$this->removerRegistry = $removerRegistry;
+		$this->contextFactory = $contextFactory ?? new ContextFactory();
 		$this->dispatcher = $dispatcher;
 	}
 
-	public function persist(ImageInterface $image, ?Context $context = null): PersistentImageInterface
+	/**
+	 * @param mixed[] $context
+	 */
+	public function persist(ImageInterface $image, array $context = []): PersistentImageInterface
 	{
-		$context = $context ?? new Context();
+		$context = $this->contextFactory->create($context);
 		$clone = clone $image;
 		$result = $this->persisterRegistry->persist($image, $context);
 		$persistent = new PersistentImage($result->getId());
 
 		if ($clone->getFilter()) {
-			$persistent = $persistent->withFilterObject($clone->getFilter());
+			$persistent = $persistent->withFilter($clone->getFilter());
 		}
 
 		if ($this->dispatcher) {
@@ -52,13 +61,16 @@ class ImageStorage implements ImageStorageInterface
 		return $persistent;
 	}
 
-	public function remove(PersistentImageInterface $image, ?Context $context = null): PersistentImageInterface
+	/**
+	 * @param mixed[] $context
+	 */
+	public function remove(PersistentImageInterface $image, array $context = []): PersistentImageInterface
 	{
 		if ($image->isClosed()) {
 			return new EmptyImage();
 		}
 
-		$context = $context ?? new Context();
+		$context = $this->contextFactory->create($context);
 		$clone = clone $image;
 		$this->removerRegistry->remove($image, $context);
 

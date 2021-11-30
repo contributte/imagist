@@ -2,9 +2,8 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
-use Contributte\Imagist\Config\ConfigFilter;
-use Contributte\Imagist\Config\ConfigFilterCollection;
-use Contributte\Imagist\Config\ConfigFilterOperation;
+use Contributte\Imagist\Filter\StringFilter\StringFilterCollection;
+use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
@@ -18,7 +17,7 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 
 	public function getConfigSchema(): Schema
 	{
-		return Expect::arrayOf(Expect::anyOf(Expect::type(Statement::class), Expect::listOf(Statement::class)));
+		return Expect::arrayOf(Expect::type(Statement::class));
 	}
 
 	public function loadConfiguration()
@@ -26,48 +25,23 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('configFilterCollection'))
-			->setFactory(ConfigFilterCollection::class);
+			->setType(StringFilterCollectionInterface::class)
+			->setFactory(StringFilterCollection::class);
 	}
 
 	public function beforeCompile()
 	{
-		/** @var mixed[] $config */
+		/** @var Statement[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
-		$this->processConfigFilters($builder, $config);
-	}
+		$service = $builder->getDefinition($this->prefix('configFilterCollection'));
+		assert($service instanceof ServiceDefinition);
 
-	/**
-	 * @param mixed[] $config
-	 */
-	private function processConfigFilters(ContainerBuilder $builder, array $config): void
-	{
-		$service = $this->assertServiceDefinition(
-			$builder->getDefinition($this->prefix('configFilterCollection'))
-		);
-
-		foreach ($config as $name => $filters) {
-			if (!is_array($filters)) {
-				$filters = [$filters];
-			}
-
-			$operations = [];
-			foreach ($filters as $filter) {
-				$operations[] = new Statement(ConfigFilterOperation::class, [$filter->getEntity(), $filter->arguments]);
-			}
-
-			$arguments = [new Statement(ConfigFilter::class, [$name, $operations])];
-
-			$service->addSetup('addFilter', $arguments);
+		foreach ($config as $name => $statement) {
+			$service->addSetup('add', [$name, $statement]);
 		}
-	}
-
-	private function assertServiceDefinition(Definition $definition): ServiceDefinition
-	{
-		assert($definition instanceof ServiceDefinition);
-
-		return $definition;
+//		$this->processConfigFilters($builder, $config);
 	}
 
 }

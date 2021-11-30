@@ -2,17 +2,15 @@
 
 namespace Contributte\Imagist\Filter;
 
-use Contributte\Imagist\Context\ContextImageAware;
-use Contributte\Imagist\Entity\Filter\ImageFilter;
+use Contributte\Imagist\Filter\Context\ContextInterface;
+use Contributte\Imagist\Entity\ImageInterface;
 
 interface FilterNormalizerInterface
 {
 
-	public function supports(ImageFilter $filter, ContextImageAware $context): bool;
-
 	/**
 	 * @return mixed[]
 	 */
-	public function normalize(ImageFilter $filter, ContextImageAware $context): array;
+	public function normalize(ImageInterface $image, ContextInterface $context): array;
 
 }

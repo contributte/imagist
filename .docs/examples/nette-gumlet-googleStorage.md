@@ -12,11 +12,11 @@ extensions:
 	image.gumlet: Contributte\Imagist\Bridge\Nette\DI\GumletImageStorageExtension
 
 image.gumlet:
-	bucket: bulios
-	token: 26982c29aeb19ac8ae94721a096dbe91
+	bucket: string
+	token: string|null
 ```
 
-And that's all. Now we use google storage instead of default filesystem storage.
+And that's all. Now we use Google storage instead of default filesystem storage.
 
 ```neon
 services:
@@ -24,70 +24,27 @@ services:
         factory: Contributte\Imagist\Filesystem\GoogleStorageFilesystem('bucket', %appDir%/config/gcs.json)
 ```
 
-## Gumlet - filters
-
-GumletLinkGenerator uses Normalizers (converts filters to array) instead of Filters. So let's create one:
+## Gumlet operation processor
 
 ```php
-use Contributte\Imagist\Bridge\Gumlet\GumletBuilder;
-use InvalidArgumentException;
-use Contributte\Imagist\Entity\ImageInterface;
-use Contributte\Imagist\Entity\Filter\ImageFilter;
-use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
-
-final class ImageNormalizer implements FilterNormalizerProcessorInterface
+final class GumletOperationProcessor implements OperationProcessorInterface
 {
 
-    public function avatar(ImageInterface $image): array
+	public function process(object $resource, OperationCollection $collection, ContextInterface $context): void
 	{
-	    // resize to 200x200 and crop image
-		$gumlet = GumletBuilder::create()
-			->resize(200, 200, 'crop');
-
-        // if image matches scope avatar[/*]
-		if ($image->getScope()->startsWith('avatar')) {
-			$gumlet->crop('faces');
+		if (!$resource instanceof ArrayResource) {
+			return;
 		}
 
-		return $gumlet->build();
-	}
+		$builder = new GumletBuilder();
 
-	public function supports(ImageFilter $filter, ContextImageAware $context): bool
-	{
-		$method = $filter->getName();
+		if ($crop = $collection->get(CropOperation::class)) {
+			$builder->extract($crop->getLeft(), $crop->getTop(), $crop->getWidth(), $crop->getHeight());
+		}
 
-		return $context->has('gumlet') && !in_array($method, ['supports', 'normalize']) && method_exists($this, $method);
-	}
-
-	public function normalize(ImageFilter $filter, ContextImageAware $context): array
-	{
-		$method = $filter->getName();
-
-		return $this->$method($context->getImage());
+		$resource->merge($builder->build());
 	}
 
 }
-```
 
-```neon
-services:
-    - App\Images\Normalizer\ImageNormalizer
-```
-
-or with built-in config style configuration:
-```neon
-extensions:
-	image.filters: Contributte\Imagist\Bridge\Nette\DI\ImageStorageConfigFiltersExtension
-
-image.filters:
-	sizeM: resize(600)
-	avatar:
-		- resize(200, 200, crop)
-		- crop(faces)
-```
-
-We can use image storage as we are used to:
-
-```html
-<img n:img="$image|filter:avatar">
 ```

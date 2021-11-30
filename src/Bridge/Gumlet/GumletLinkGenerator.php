@@ -2,10 +2,10 @@
 
 namespace Contributte\Imagist\Bridge\Gumlet;
 
-use Contributte\Imagist\Context\Context;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
-use Contributte\Imagist\Filter\FilterNormalizerProcessorInterface;
+use Contributte\Imagist\Filter\FilterNormalizerInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
@@ -29,7 +29,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private DefaultImageResolverInterface $defaultImageResolver;
 
-	private FilterNormalizerProcessorInterface $filterNormalizer;
+	private FilterNormalizerInterface $filterNormalizer;
 
 	public function __construct(
 		?string $bucket,
@@ -37,7 +37,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		?string $customDomain,
 		PathInfoFactoryInterface $pathInfoFactory,
 		DefaultImageResolverInterface $defaultImageResolver,
-		FilterNormalizerProcessorInterface $filterNormalizer
+		FilterNormalizerInterface $filterNormalizer
 	)
 	{
 		$this->bucket = $bucket;

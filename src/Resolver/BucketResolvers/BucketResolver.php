@@ -11,7 +11,7 @@ final class BucketResolver implements BucketResolverInterface
 
 	public function resolve(ImageInterface $image): string
 	{
-		if ($image instanceof StorableImageInterface || !$image->getFilter()) {
+		if ($image instanceof StorableImageInterface || !$image->hasFilter()) {
 			return 'media';
 		}
 

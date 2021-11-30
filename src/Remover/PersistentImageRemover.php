@@ -6,6 +6,8 @@ use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
+use Contributte\Imagist\Filter\Internal\VoidFilter;
+use Contributte\Imagist\Filter\Operation\QualityOperation;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 
 final class PersistentImageRemover implements RemoverInterface
@@ -39,7 +41,7 @@ final class PersistentImageRemover implements RemoverInterface
 
 	private function removeFiltered(PersistentImageInterface $image): void
 	{
-		$path = $this->pathInfoFactory->create($image->withFilter('void'));
+		$path = $this->pathInfoFactory->create($image->withFilter(new VoidFilter('void')));
 
 		foreach ($this->filesystem->listContents($path->toString($path::BUCKET | $path::SCOPE)) as $path) {
 			if ($path['type'] !== 'dir') {
@@ -50,7 +52,7 @@ final class PersistentImageRemover implements RemoverInterface
 				continue;
 			}
 
-			$this->fileFactory->create($image->withFilter(substr($path['filename'], 1)))
+			$this->fileFactory->create($image->withFilter(new VoidFilter(substr($path['filename'], 1))))
 				->delete();
 		}
 	}
