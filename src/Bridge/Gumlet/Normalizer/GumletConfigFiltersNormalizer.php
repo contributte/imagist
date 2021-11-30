@@ -71,6 +71,11 @@ class GumletConfigFiltersNormalizer extends AbstractFilterNormalizerMethodMappin
 		$builder->resize($width, $height, $mode);
 	}
 
+	protected function mask(GumletBuilder $builder, string $mask): void
+	{
+		$builder->mask($mask);
+	}
+
 	protected function crop(GumletBuilder $builder, string $mode): void
 	{
 		$builder->crop($mode);

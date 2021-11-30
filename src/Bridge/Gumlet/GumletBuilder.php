@@ -57,6 +57,16 @@ class GumletBuilder
 	}
 
 	/**
+	 * @return self
+	 */
+	public function mask(string $mask)
+	{
+		$this->options['mask'] = $mask;
+
+		return $this;
+	}
+
+	/**
 	 * @return mixed[]
 	 */
 	public function build(): array
