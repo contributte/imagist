@@ -11,6 +11,8 @@ use Contributte\Imagist\Event\PersistedImageEvent;
 use Contributte\Imagist\Event\RemovedImageEvent;
 use Contributte\Imagist\Filter\Context\ContextFactory;
 use Contributte\Imagist\Filter\Context\ContextFactoryInterface;
+use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
+use Contributte\Imagist\Filter\StringFilter\StringFilterFacade;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\Persister\PersisterRegistryInterface;
 use Contributte\Imagist\Remover\RemoverRegistryInterface;
@@ -25,18 +27,22 @@ class ImageStorage implements ImageStorageInterface
 
 	private ?EventDispatcherInterface $dispatcher;
 
+	private ?StringFilterCollectionInterface $stringFilterCollection;
+
 	private ContextFactoryInterface $contextFactory;
 
 	public function __construct(
 		PersisterRegistryInterface $persisterRegistry,
 		RemoverRegistryInterface $removerRegistry,
 		?ContextFactoryInterface $contextFactory = null,
+		?StringFilterCollectionInterface $stringFilterCollection = null,
 		?EventDispatcherInterface $dispatcher = null
 	)
 	{
 		$this->persisterRegistry = $persisterRegistry;
 		$this->removerRegistry = $removerRegistry;
 		$this->contextFactory = $contextFactory ?? new ContextFactory();
+		$this->stringFilterCollection = $stringFilterCollection;
 		$this->dispatcher = $dispatcher;
 	}
 
@@ -45,6 +51,8 @@ class ImageStorage implements ImageStorageInterface
 	 */
 	public function persist(ImageInterface $image, array $context = []): PersistentImageInterface
 	{
+		$image = StringFilterFacade::resolveByImage($this->stringFilterCollection, $image);
+
 		$context = $this->contextFactory->create($context);
 		$clone = clone $image;
 		$result = $this->persisterRegistry->persist($image, $context);

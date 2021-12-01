@@ -7,26 +7,28 @@ use Contributte\Imagist\Filter\FilterInterface;
 use Contributte\Imagist\Filter\Operation\OperationInterface;
 
 /**
- * @internal
+ * @internal Use only in classes which implement StringFilterCollectionInterface
  */
-final class DecorateDynamicFilter implements FilterInterface
+final class ParsedStringFilter implements FilterInterface
 {
 
 	private string $name;
 
-	private FilterInterface $filter;
-
 	/** @var mixed[] */
 	private array $arguments;
 
+	/** @var OperationInterface[] */
+	private array $operations;
+
 	/**
 	 * @param mixed[] $arguments
+	 * @param OperationInterface[] $operations
 	 */
-	public function __construct(string $name, FilterInterface $filter, array $arguments)
+	public function __construct(string $name, array $arguments, array $operations)
 	{
 		$this->name = $name;
-		$this->filter = $filter;
 		$this->arguments = $arguments;
+		$this->operations = $operations;
 	}
 
 	public function getIdentifier(): FilterIdentifier
@@ -34,12 +36,9 @@ final class DecorateDynamicFilter implements FilterInterface
 		return new FilterIdentifier($this->name, $this->arguments);
 	}
 
-	/**
-	 * @return OperationInterface[]
-	 */
 	public function getOperations(): array
 	{
-		return $this->filter->getOperations();
+		return $this->operations;
 	}
 
 }

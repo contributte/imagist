@@ -6,7 +6,7 @@ use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Filter\FilterInterface;
-use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
+use Contributte\Imagist\Filter\StringFilter\StringFilter;
 use Contributte\Imagist\LinkGeneratorInterface;
 use LogicException;
 use Nette\Utils\Arrays;
@@ -16,15 +16,9 @@ final class LatteImageProvider
 
 	private LinkGeneratorInterface $linkGenerator;
 
-	private ?StringFilterCollectionInterface $stringFilterCollection;
-
-	public function __construct(
-		LinkGeneratorInterface $linkGenerator,
-		?StringFilterCollectionInterface $stringFilterCollection = null
-	)
+	public function __construct(LinkGeneratorInterface $linkGenerator)
 	{
 		$this->linkGenerator = $linkGenerator;
-		$this->stringFilterCollection = $stringFilterCollection;
 	}
 
 	/**
@@ -48,33 +42,15 @@ final class LatteImageProvider
 			if ($filter instanceof FilterInterface) {
 				$image = $image->withFilter($filter);
 			} else if (is_string($filter)) {
-				if (!$this->stringFilterCollection) {
-					throw new LogicException(
-						sprintf(
-							'Class %s have to be set if you want use string filters.',
-							StringFilterCollectionInterface::class
-						)
-					);
-				}
-
-				$image = $image->withFilter($this->stringFilterCollection->get($filter));
+				$image = $image->withFilter(new StringFilter($filter));
 			} else if (is_array($filter)) {
-				if (!$this->stringFilterCollection) {
-					throw new LogicException(
-						sprintf(
-							'Class %s have to be set if you want use string filters.',
-							StringFilterCollectionInterface::class
-						)
-					);
-				}
-
 				$first = Arrays::first($filter);
 
 				if (!$first) {
 					throw new LogicException('Filter cannot be an empty array.');
 				}
 
-				$image = $image->withFilter($this->stringFilterCollection->get($first, array_slice($filter, 1)));
+				$image = $image->withFilter(new StringFilter($first, array_slice($filter, 1)));
 			} else {
 				throw new LogicException(
 					sprintf(

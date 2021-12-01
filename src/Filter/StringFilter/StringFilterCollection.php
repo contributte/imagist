@@ -45,10 +45,8 @@ final class StringFilterCollection implements StringFilterCollectionInterface
 		}
 
 		if ($filter instanceof DynamicFilterFactory) {
-			return $filter->create($arguments);
-		}
-
-		if ($arguments) {
+			$filter = $filter->create($arguments);
+		} else if ($arguments) {
 			throw new LogicException(
 				sprintf(
 					'Cannot pass arguments to %s, passing arguments are allowed only for class of type %s.',
@@ -58,7 +56,7 @@ final class StringFilterCollection implements StringFilterCollectionInterface
 			);
 		}
 
-		return $filter;
+		return new ParsedStringFilter($name, $arguments, $filter->getOperations());
 	}
 
 }

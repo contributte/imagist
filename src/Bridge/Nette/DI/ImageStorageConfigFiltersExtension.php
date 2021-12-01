@@ -2,14 +2,11 @@
 
 namespace Contributte\Imagist\Bridge\Nette\DI;
 
-use Contributte\Imagist\Filter\CompositeFilter;
 use Contributte\Imagist\Filter\StringFilter\CompositeStringFilter;
 use Contributte\Imagist\Filter\StringFilter\DynamicFilterFactory;
 use Contributte\Imagist\Filter\StringFilter\StringFilterCollection;
 use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
 use Nette\DI\CompilerExtension;
-use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
@@ -73,16 +70,10 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 				$statement = $this->processStatement($statement, $aliases);
 			}
 
-			if (is_string($name)) {
-				if ($statement->getEntity() === DynamicFilterFactory::class) {
-					if (!isset($statement->arguments[1])) {
-						$statement->arguments[1] = $name;
-					}
-				} else {
-					$statement = new Statement(CompositeFilter::class, [$name, $statement]);
-				}
-			} else {
+			if (!is_string($name)) {
 				$name = null;
+			} else if ($statement->getEntity() === DynamicFilterFactory::class && !isset($statement->arguments[1])) {
+				$statement->arguments[1] = $name;
 			}
 
 			$return[] = [$statement, $name];

@@ -4,8 +4,11 @@ namespace Contributte\Imagist\Bridge\Gumlet;
 
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Filter\Context\ContextFactory;
 use Contributte\Imagist\Filter\Context\ContextFactoryInterface;
 use Contributte\Imagist\Filter\FilterNormalizerInterface;
+use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
+use Contributte\Imagist\Filter\StringFilter\StringFilterFacade;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
@@ -31,6 +34,8 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private FilterNormalizerInterface $filterNormalizer;
 
+	private ?StringFilterCollectionInterface $stringFilterCollection;
+
 	private ContextFactoryInterface $contextFactory;
 
 	public function __construct(
@@ -40,7 +45,8 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		PathInfoFactoryInterface $pathInfoFactory,
 		DefaultImageResolverInterface $defaultImageResolver,
 		FilterNormalizerInterface $filterNormalizer,
-		ContextFactoryInterface $contextFactory
+		?StringFilterCollectionInterface $stringFilterCollection = null,
+		?ContextFactoryInterface $contextFactory = null
 	)
 	{
 		$this->bucket = $bucket;
@@ -49,7 +55,8 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$this->pathInfoFactory = $pathInfoFactory;
 		$this->defaultImageResolver = $defaultImageResolver;
 		$this->filterNormalizer = $filterNormalizer;
-		$this->contextFactory = $contextFactory;
+		$this->stringFilterCollection = $stringFilterCollection;
+		$this->contextFactory = $contextFactory ?? new ContextFactory();
 
 		if (!$this->bucket && !$this->customDomain) {
 			throw new InvalidArgumentException('Bucket or customDomain must be set.');
@@ -66,6 +73,8 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 	 */
 	public function link(?PersistentImageInterface $image, array $options = []): ?string
 	{
+		$image = StringFilterFacade::resolveByNullableImage($this->stringFilterCollection, $image);
+
 		if (!$image || $image instanceof EmptyImageInterface) {
 			return $this->defaultImageResolver->resolve($this, $image, $options);
 		}

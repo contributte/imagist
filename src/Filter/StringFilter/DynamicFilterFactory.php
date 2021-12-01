@@ -2,7 +2,6 @@
 
 namespace Contributte\Imagist\Filter\StringFilter;
 
-use Contributte\Imagist\Filter\CompositeFilter;
 use Contributte\Imagist\Filter\FilterInterface;
 
 /**
@@ -12,8 +11,6 @@ use Contributte\Imagist\Filter\FilterInterface;
 final class DynamicFilterFactory
 {
 
-	private ?string $name;
-
 	/**
 	 * @var class-string<T>
 	 */
@@ -22,24 +19,18 @@ final class DynamicFilterFactory
 	/**
 	 * @param class-string<T> $className
 	 */
-	public function __construct(string $className, ?string $name = null)
+	public function __construct(string $className)
 	{
 		$this->className = $className;
-		$this->name = $name;
 	}
 
 	/**
 	 * @param mixed[] $arguments
-	 * @return T|DecorateDynamicFilter
+	 * @return T
 	 */
 	public function create(array $arguments): FilterInterface
 	{
-		$filter = new ($this->className)(...$arguments);
-		if ($this->name) {
-			return new DecorateDynamicFilter($this->name, $filter, $arguments);
-		}
-
-		return $filter;
+		return new ($this->className)(...$arguments);
 	}
 
 }
