@@ -2,8 +2,7 @@
 
 namespace Contributte\Imagist\Testing\Functional;
 
-use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
-use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
+use Contributte\Imagist\Builder\LocalImageStorageBuilder;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
@@ -11,31 +10,22 @@ use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\Entity\StorableImageInterface;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
-use Contributte\Imagist\Filter\FilterProcessor;
+use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGenerator\LinkGenerator;
+use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
-use Contributte\Imagist\Persister\EmptyImagePersister;
-use Contributte\Imagist\Persister\PersistentImagePersister;
-use Contributte\Imagist\Persister\PersisterRegistry;
-use Contributte\Imagist\Persister\StorableImagePersister;
-use Contributte\Imagist\Remover\EmptyImageRemover;
-use Contributte\Imagist\Remover\PersistentImageRemover;
-use Contributte\Imagist\Remover\RemoverRegistry;
-use Contributte\Imagist\Resolver\DefaultImageResolvers\NullDefaultImageResolver;
 use Contributte\Imagist\Resolver\DefaultImageResolvers\ScopeDefaultImageResolver;
-use Contributte\Imagist\Resolver\FileNameResolvers\OriginalFileNameResolver;
 use Contributte\Imagist\Scope\Scope;
-use Contributte\Imagist\Storage\ImageStorage;
-use Contributte\Imagist\Testing\Filter\ThumbnailFilter;
 use Contributte\Imagist\Testing\FileTestCase;
+use Contributte\Imagist\Testing\Filter\ThumbnailFilter;
 use Contributte\Imagist\Uploader\FilePathUploader;
 
 class LocalStorageTest extends FileTestCase
 {
 
-	private ImageStorage $storage;
+	private ImageStorageInterface $storage;
 
-	private LinkGenerator $linkGenerator;
+	private LinkGeneratorInterface $linkGenerator;
 
 	private FileFactory $fileFactory;
 
@@ -43,27 +33,13 @@ class LocalStorageTest extends FileTestCase
 	{
 		parent::_before();
 
-		$processor = new FilterProcessor(
-			new NetteResourceFactory(),
-			[new NetteOperationProcessor()]
-		);
-		$this->fileFactory = new FileFactory(
-			$filesystem = new LocalFilesystem($this->getAbsolutePath()),
-			$pathInfoFactory = new PathInfoFactory()
-		);
-		$defaultImageResolver = new NullDefaultImageResolver();
+		$builder = new LocalImageStorageBuilder($this->getAbsolutePath());
+		$builder->withNetteFilterProcessor();
+		$result = $builder->build();
 
-		$persisterRegistry = new PersisterRegistry();
-		$persisterRegistry->add(new EmptyImagePersister());
-		$persisterRegistry->add(new PersistentImagePersister($this->fileFactory, $processor));
-		$persisterRegistry->add(new StorableImagePersister($this->fileFactory, $processor, new OriginalFileNameResolver()));
-
-		$removerRegistry = new RemoverRegistry();
-		$removerRegistry->add(new EmptyImageRemover());
-		$removerRegistry->add(new PersistentImageRemover($this->fileFactory, $pathInfoFactory, $filesystem));
-
-		$this->storage = new ImageStorage($persisterRegistry, $removerRegistry);
-		$this->linkGenerator = new LinkGenerator($this->storage, $this->fileFactory, $defaultImageResolver);
+		$this->fileFactory = new FileFactory(new LocalFilesystem($this->getAbsolutePath()), new PathInfoFactory());
+		$this->storage = $result->getImageStorage();
+		$this->linkGenerator = $result->getLinkGenerator();
 	}
 
 	public function testPersist(): void
