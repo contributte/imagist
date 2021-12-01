@@ -30,6 +30,11 @@ final class StringFilterFacade
 		return $filter;
 	}
 
+	/**
+	 * @template T of ImageInterface
+	 * @param T $image
+	 * @return T
+	 */
 	public static function resolveByImage(
 		?StringFilterCollectionInterface $collection,
 		ImageInterface $image
@@ -42,6 +47,11 @@ final class StringFilterFacade
 		return $image;
 	}
 
+	/**
+	 * @template T of ImageInterface
+	 * @param T|null $image
+	 * @return T|null
+	 */
 	public static function resolveByNullableImage(
 		?StringFilterCollectionInterface $collection,
 		?ImageInterface $image
