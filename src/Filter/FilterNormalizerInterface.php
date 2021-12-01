@@ -2,8 +2,8 @@
 
 namespace Contributte\Imagist\Filter;
 
-use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Entity\ImageInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 interface FilterNormalizerInterface
 {

@@ -4,10 +4,10 @@ namespace Contributte\Imagist\Testing\Unit;
 
 use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
 use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
-use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
+use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\Testing\FileTestCase;

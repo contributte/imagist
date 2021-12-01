@@ -3,6 +3,7 @@
 	<!-- Contributte Coding Standard -->
 	<rule ref="./vendor/ninjify/coding-standard/contributte.xml">
 		<exclude name="Squiz.Commenting.VariableComment.Missing" />
+		<exclude name="SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable" />
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix" />
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming.SuperfluousSuffix" />
 	</rule>

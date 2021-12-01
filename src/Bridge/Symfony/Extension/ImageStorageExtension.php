@@ -7,7 +7,6 @@ use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filesystem\LocalFilesystem;
 use Contributte\Imagist\Filter\FilterNormalizer;
-use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGenerator\LinkGenerator;
 use Contributte\Imagist\LinkGeneratorInterface;

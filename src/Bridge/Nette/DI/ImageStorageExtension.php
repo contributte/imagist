@@ -335,6 +335,7 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadPersister(ContainerBuilder $builder): void
 	{
+		$chain = [];
 		$chain[] = $builder->addDefinition($this->prefix('persisters.emptyImage'))
 			->setType(PersisterInterface::class)
 			->setFactory(EmptyImagePersister::class)
@@ -357,6 +358,7 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadRemover(ContainerBuilder $builder): void
 	{
+		$chain = [];
 		$chain[] = $builder->addDefinition($this->prefix('removers.emptyImage'))
 			->setType(RemoverInterface::class)
 			->setFactory(EmptyImageRemover::class)

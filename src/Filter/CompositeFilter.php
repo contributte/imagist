@@ -15,7 +15,7 @@ final class CompositeFilter implements FilterInterface
 	/**
 	 * @param OperationInterface|FilterInterface ...$operations
 	 */
-	public function __construct(string $name, ... $operations)
+	public function __construct(string $name, ...$operations)
 	{
 		$this->name = $name;
 

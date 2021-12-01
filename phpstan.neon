@@ -1,6 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Method Contributte\\\\Imagist\\\\Filter\\\\DynamicFilterFactory\\:\\:create\\(\\) should return T of Contributte\\\\Imagist\\\\Filter\\\\FilterInterface but returns Contributte\\\\Imagist\\\\Filter\\\\CompositeFilter\\.$#"
-			count: 1
-			path: src/Filter/DynamicFilterFactory.php

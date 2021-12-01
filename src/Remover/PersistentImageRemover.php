@@ -8,7 +8,6 @@ use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
-use Contributte\Imagist\Filter\Operation\QualityOperation;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 
 final class PersistentImageRemover implements RemoverInterface

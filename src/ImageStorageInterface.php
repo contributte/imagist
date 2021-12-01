@@ -2,7 +2,6 @@
 
 namespace Contributte\Imagist;
 
-use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 

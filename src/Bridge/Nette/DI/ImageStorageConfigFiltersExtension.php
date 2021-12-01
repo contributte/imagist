@@ -72,7 +72,7 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 
 			if (!is_string($name)) {
 				$name = null;
-			} else if ($statement->getEntity() === DynamicFilterFactory::class && !isset($statement->arguments[1])) {
+			} elseif ($statement->getEntity() === DynamicFilterFactory::class && !isset($statement->arguments[1])) {
 				$statement->arguments[1] = $name;
 			}
 
@@ -107,6 +107,6 @@ final class ImageStorageConfigFiltersExtension extends CompilerExtension
 		}
 
 		return $statement;
- 	}
+	}
 
 }

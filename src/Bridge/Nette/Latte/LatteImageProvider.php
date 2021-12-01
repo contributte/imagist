@@ -41,9 +41,9 @@ final class LatteImageProvider
 		if ($filter !== null) {
 			if ($filter instanceof FilterInterface) {
 				$image = $image->withFilter($filter);
-			} else if (is_string($filter)) {
+			} elseif (is_string($filter)) {
 				$image = $image->withFilter(new StringFilter($filter));
-			} else if (is_array($filter)) {
+			} elseif (is_array($filter)) {
 				$first = Arrays::first($filter);
 
 				if (!$first) {

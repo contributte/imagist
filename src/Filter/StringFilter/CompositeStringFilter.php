@@ -19,7 +19,7 @@ final class CompositeStringFilter implements FilterInterface
 	/**
 	 * @param OperationInterface|FilterInterface ...$operations
 	 */
-	public function __construct(... $operations)
+	public function __construct(...$operations)
 	{
 		foreach ($operations as $operation) {
 			if ($operation instanceof OperationInterface) {

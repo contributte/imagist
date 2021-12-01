@@ -11,9 +11,7 @@ use Contributte\Imagist\Filter\FilterInterface;
 final class DynamicFilterFactory
 {
 
-	/**
-	 * @var class-string<T>
-	 */
+	/** @var class-string<T> */ // phpcs:ignore -- bug
 	private string $className;
 
 	/**
@@ -30,7 +28,7 @@ final class DynamicFilterFactory
 	 */
 	public function create(array $arguments): FilterInterface
 	{
-		return new ($this->className)(...$arguments);
+		return new ($this->className)(...$arguments); // phpcs:ignore -- bug
 	}
 
 }
