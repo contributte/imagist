@@ -39,3 +39,11 @@ Usage in latte:
 {* dynamic filter *}
 <img n:img="$image, filter: [resize, 200, 200]">
 ```
+
+Usage in php:
+
+```php
+use Contributte\Imagist\Filter\StringFilter\StringFilter;
+
+$image->withFilter(new StringFilter('siteS'));
+```
