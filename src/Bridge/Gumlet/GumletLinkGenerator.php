@@ -2,9 +2,9 @@
 
 namespace Contributte\Imagist\Bridge\Gumlet;
 
-use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Filter\Context\ContextFactoryInterface;
 use Contributte\Imagist\Filter\FilterNormalizerInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
@@ -31,13 +31,16 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 
 	private FilterNormalizerInterface $filterNormalizer;
 
+	private ContextFactoryInterface $contextFactory;
+
 	public function __construct(
 		?string $bucket,
 		?string $token,
 		?string $customDomain,
 		PathInfoFactoryInterface $pathInfoFactory,
 		DefaultImageResolverInterface $defaultImageResolver,
-		FilterNormalizerInterface $filterNormalizer
+		FilterNormalizerInterface $filterNormalizer,
+		ContextFactoryInterface $contextFactory
 	)
 	{
 		$this->bucket = $bucket;
@@ -46,6 +49,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$this->pathInfoFactory = $pathInfoFactory;
 		$this->defaultImageResolver = $defaultImageResolver;
 		$this->filterNormalizer = $filterNormalizer;
+		$this->contextFactory = $contextFactory;
 
 		if (!$this->bucket && !$this->customDomain) {
 			throw new InvalidArgumentException('Bucket or customDomain must be set.');
@@ -79,7 +83,7 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 		$pathInfo = $this->pathInfoFactory->create($image->getOriginal());
 		$path = $pathInfo->toString($pathInfo::BUCKET | $pathInfo::SCOPE | $pathInfo::IMAGE);
 
-		$options = $this->filterNormalizer->normalize($image, new Context([
+		$options = $this->filterNormalizer->normalize($image, $this->contextFactory->create([
 			self::GUMLET_CONTEXT_KEY => true,
 		]));
 
