@@ -11,6 +11,7 @@ use Contributte\Imagist\Filter\StringFilter\StringFilterFacade;
 use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
+use Contributte\Imagist\Resolver\DefaultImageResolvers\NullDefaultImageResolver;
 
 final class LinkGenerator implements LinkGeneratorInterface
 {
@@ -26,14 +27,14 @@ final class LinkGenerator implements LinkGeneratorInterface
 	public function __construct(
 		ImageStorageInterface $imageStorage,
 		FileFactoryInterface $fileFactory,
-		DefaultImageResolverInterface $defaultImageResolver,
+		?DefaultImageResolverInterface $defaultImageResolver = null,
 		?StringFilterCollectionInterface $stringFilterCollection = null
 	)
 	{
 		$this->imageStorage = $imageStorage;
 		$this->fileFactory = $fileFactory;
 		$this->stringFilterCollection = $stringFilterCollection;
-		$this->defaultImageResolver = $defaultImageResolver;
+		$this->defaultImageResolver = $defaultImageResolver ?? new NullDefaultImageResolver();
 	}
 
 	/**
