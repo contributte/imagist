@@ -6,6 +6,7 @@ use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
 use Contributte\Imagist\Filter\Operation\QualityOperation;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
@@ -26,12 +27,12 @@ final class PersistentImageRemover implements RemoverInterface
 		$this->filesystem = $filesystem;
 	}
 
-	public function supports(PersistentImageInterface $image): bool
+	public function supports(PersistentImageInterface $image, ContextInterface $context): bool
 	{
 		return !$image instanceof EmptyImageInterface;
 	}
 
-	public function remove(PersistentImageInterface $image): void
+	public function remove(PersistentImageInterface $image, ContextInterface $context): void
 	{
 		$this->removeOriginal($image);
 		$this->removeFiltered($image);

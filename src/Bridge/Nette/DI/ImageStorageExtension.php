@@ -32,17 +32,15 @@ use Contributte\Imagist\LinkGenerator\LinkGenerator as LegacyLinkGenerator;
 use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
+use Contributte\Imagist\Persister\ChainImagePersister;
 use Contributte\Imagist\Persister\EmptyImagePersister;
 use Contributte\Imagist\Persister\PersistentImagePersister;
 use Contributte\Imagist\Persister\PersisterInterface;
-use Contributte\Imagist\Persister\PersisterRegistry;
-use Contributte\Imagist\Persister\PersisterRegistryInterface;
 use Contributte\Imagist\Persister\StorableImagePersister;
+use Contributte\Imagist\Remover\ChainImageRemover;
 use Contributte\Imagist\Remover\EmptyImageRemover;
 use Contributte\Imagist\Remover\PersistentImageRemover;
 use Contributte\Imagist\Remover\RemoverInterface;
-use Contributte\Imagist\Remover\RemoverRegistry;
-use Contributte\Imagist\Remover\RemoverRegistryInterface;
 use Contributte\Imagist\Resolver\BucketResolverInterface;
 use Contributte\Imagist\Resolver\BucketResolvers\BucketResolver;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
@@ -57,7 +55,6 @@ use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Imagine\Image\AbstractImagine;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
@@ -73,9 +70,6 @@ use Tracy\BlueScreen;
 
 final class ImageStorageExtension extends CompilerExtension
 {
-
-	/** @var callable[] */
-	private array $onBeforeCompile = [];
 
 	public function getConfigSchema(): Schema
 	{
@@ -97,8 +91,12 @@ final class ImageStorageExtension extends CompilerExtension
 					]),
 				]),
 				'imagine' => Expect::structure([
-					'enabled' => Expect::bool(class_exists(AbstractImagine::class)),
+					'enabled' => Expect::bool(false),
 				]),
+			]),
+			'registration' => Expect::structure([
+				'persisters' => Expect::bool(true),
+				'removers' => Expect::bool(true),
 			]),
 			'baseDir' => Expect::string($builder->parameters['wwwDir']),
 		]);
@@ -116,8 +114,14 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->loadFile($builder);
 		$this->loadDatabase($builder);
 		$this->loadFilter($builder);
-		$this->loadPersister($builder);
-		$this->loadRemover($builder);
+
+		if ($config->registration->persisters) {
+			$this->loadPersister($builder);
+		}
+
+		if ($config->registration->removers) {
+			$this->loadRemover($builder);
+		}
 
 		if ($config->extensions->nette->filters->enabled) {
 			$this->loadNette($builder);
@@ -171,10 +175,6 @@ final class ImageStorageExtension extends CompilerExtension
 		if ($serviceName) {
 			$this->assertServiceDefinition($builder->getDefinition($serviceName))
 				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
-		}
-
-		foreach ($this->onBeforeCompile as $callback) {
-			$callback();
 		}
 	}
 
@@ -335,46 +335,41 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadPersister(ContainerBuilder $builder): void
 	{
-		$persisterRegistry = $builder->addDefinition($this->prefix('persisterRegistry'))
-			->setType(PersisterRegistryInterface::class)
-			->setFactory(PersisterRegistry::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(PersisterInterface::class),
-			fn (Definition $definition) => $persisterRegistry->addSetup('add', [$definition])
-		);
-
-		$builder->addDefinition($this->prefix('persisters.emptyImage'))
+		$chain[] = $builder->addDefinition($this->prefix('persisters.emptyImage'))
 			->setType(PersisterInterface::class)
-			->setFactory(EmptyImagePersister::class);
+			->setFactory(EmptyImagePersister::class)
+			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('persisters.storableImage'))
+		$chain[] = $builder->addDefinition($this->prefix('persisters.storableImage'))
 			->setType(PersisterInterface::class)
-			->setFactory(StorableImagePersister::class);
+			->setFactory(StorableImagePersister::class)
+			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('persisters.persistentImage'))
+		$chain[] = $builder->addDefinition($this->prefix('persisters.persistentImage'))
 			->setType(PersisterInterface::class)
-			->setFactory(PersistentImagePersister::class);
+			->setFactory(PersistentImagePersister::class)
+			->setAutowired(false);
+
+		$builder->addDefinition($this->prefix('persisterRegistry'))
+			->setType(PersisterInterface::class)
+			->setFactory(ChainImagePersister::class, [$chain]);
 	}
 
 	private function loadRemover(ContainerBuilder $builder): void
 	{
-		$removerRegistry = $builder->addDefinition($this->prefix('removerRegistry'))
-			->setType(RemoverRegistryInterface::class)
-			->setFactory(RemoverRegistry::class);
-
-		$this->onBeforeCompile[] = fn () => $this->foreach(
-			$builder->findByType(RemoverInterface::class),
-			fn (Definition $definition) => $removerRegistry->addSetup('add', [$definition])
-		);
-
-		$builder->addDefinition($this->prefix('removers.emptyImage'))
+		$chain[] = $builder->addDefinition($this->prefix('removers.emptyImage'))
 			->setType(RemoverInterface::class)
-			->setFactory(EmptyImageRemover::class);
+			->setFactory(EmptyImageRemover::class)
+			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('removers.persisterImage'))
+		$chain[] = $builder->addDefinition($this->prefix('removers.persisterImage'))
 			->setType(RemoverInterface::class)
-			->setFactory(PersistentImageRemover::class);
+			->setFactory(PersistentImageRemover::class)
+			->setAutowired(false);
+
+		$builder->addDefinition($this->prefix('removerRegistry'))
+			->setType(RemoverInterface::class)
+			->setFactory(ChainImageRemover::class, [$chain]);
 	}
 
 	private function loadNette(ContainerBuilder $builder): void

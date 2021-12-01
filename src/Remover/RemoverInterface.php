@@ -3,12 +3,13 @@
 namespace Contributte\Imagist\Remover;
 
 use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Filter\Context\ContextInterface;
 
 interface RemoverInterface
 {
 
-	public function supports(PersistentImageInterface $image): bool;
+	public function supports(PersistentImageInterface $image, ContextInterface $context): bool;
 
-	public function remove(PersistentImageInterface $image): void;
+	public function remove(PersistentImageInterface $image, ContextInterface $context): void;
 
 }

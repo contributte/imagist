@@ -6,15 +6,23 @@ use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Exceptions\InvalidArgumentException;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 
-final class PersisterRegistry implements PersisterRegistryInterface
+final class ChainImagePersister implements PersisterInterface
 {
 
 	/** @var PersisterInterface[] */
-	private array $persisters = [];
+	private array $persisters;
 
-	public function add(PersisterInterface $persister): void
+	/**
+	 * @param PersisterInterface[] $persisters
+	 */
+	public function __construct(array $persisters)
 	{
-		$this->persisters[] = $persister;
+		$this->persisters = $persisters;
+	}
+
+	public function supports(ImageInterface $image, ContextInterface $context): bool
+	{
+		return true;
 	}
 
 	public function persist(ImageInterface $image, ContextInterface $context): ImageInterface
@@ -25,7 +33,7 @@ final class PersisterRegistry implements PersisterRegistryInterface
 			}
 		}
 
-		throw new InvalidArgumentException(sprintf('Persist not found for class %s', get_class($image)));
+		throw new InvalidArgumentException(sprintf('Persister not found for class %s', get_class($image)));
 	}
 
 }

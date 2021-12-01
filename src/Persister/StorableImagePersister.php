@@ -8,6 +8,7 @@ use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\FilterProcessorInterface;
 use Contributte\Imagist\Resolver\FileNameResolverInterface;
+use Contributte\Imagist\Resolver\FilterResolvers\OriginalFilterResolver;
 
 final class StorableImagePersister extends ImagePersisterAbstract
 {
@@ -17,11 +18,12 @@ final class StorableImagePersister extends ImagePersisterAbstract
 	public function __construct(
 		FileFactoryInterface $fileFactory,
 		FilterProcessorInterface $filterProcessor,
-		FileNameResolverInterface $fileNameResolver
+		?FileNameResolverInterface $fileNameResolver = null
 	)
 	{
 		parent::__construct($fileFactory, $filterProcessor);
-		$this->fileNameResolver = $fileNameResolver;
+
+		$this->fileNameResolver = $fileNameResolver ?? new OriginalFilterResolver();
 	}
 
 	public function supports(ImageInterface $image, ContextInterface $context): bool

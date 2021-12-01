@@ -2,7 +2,6 @@
 
 namespace Contributte\Imagist\Storage;
 
-use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Entity\EmptyImage;
 use Contributte\Imagist\Entity\ImageInterface;
 use Contributte\Imagist\Entity\PersistentImage;
@@ -14,16 +13,17 @@ use Contributte\Imagist\Filter\Context\ContextFactoryInterface;
 use Contributte\Imagist\Filter\StringFilter\StringFilterCollectionInterface;
 use Contributte\Imagist\Filter\StringFilter\StringFilterFacade;
 use Contributte\Imagist\ImageStorageInterface;
-use Contributte\Imagist\Persister\PersisterRegistryInterface;
-use Contributte\Imagist\Remover\RemoverRegistryInterface;
+use Contributte\Imagist\Persister\PersisterInterface;
+use Contributte\Imagist\Remover\RemoverInterface;
+use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ImageStorage implements ImageStorageInterface
 {
 
-	private PersisterRegistryInterface $persisterRegistry;
+	private PersisterInterface $persister;
 
-	private RemoverRegistryInterface $removerRegistry;
+	private RemoverInterface $remover;
 
 	private ?EventDispatcherInterface $dispatcher;
 
@@ -32,15 +32,15 @@ class ImageStorage implements ImageStorageInterface
 	private ContextFactoryInterface $contextFactory;
 
 	public function __construct(
-		PersisterRegistryInterface $persisterRegistry,
-		RemoverRegistryInterface $removerRegistry,
+		PersisterInterface $persister,
+		RemoverInterface $remover,
 		?ContextFactoryInterface $contextFactory = null,
 		?StringFilterCollectionInterface $stringFilterCollection = null,
 		?EventDispatcherInterface $dispatcher = null
 	)
 	{
-		$this->persisterRegistry = $persisterRegistry;
-		$this->removerRegistry = $removerRegistry;
+		$this->persister = $persister;
+		$this->remover = $remover;
 		$this->contextFactory = $contextFactory ?? new ContextFactory();
 		$this->stringFilterCollection = $stringFilterCollection;
 		$this->dispatcher = $dispatcher;
@@ -55,7 +55,12 @@ class ImageStorage implements ImageStorageInterface
 
 		$context = $this->contextFactory->create($context);
 		$clone = clone $image;
-		$result = $this->persisterRegistry->persist($image, $context);
+
+		if (!$this->persister->supports($image, $context)) {
+			throw new LogicException('Persister not found.');
+		}
+
+		$result = $this->persister->persist($image, $context);
 		$persistent = new PersistentImage($result->getId());
 
 		if ($clone->getFilter()) {
@@ -80,7 +85,12 @@ class ImageStorage implements ImageStorageInterface
 
 		$context = $this->contextFactory->create($context);
 		$clone = clone $image;
-		$this->removerRegistry->remove($image, $context);
+
+		if (!$this->remover->supports($image, $context)) {
+			throw new LogicException('Remover not found.');
+		}
+
+		$this->remover->remove($image, $context);
 
 		if ($this->dispatcher) {
 			$this->dispatcher->dispatch(new RemovedImageEvent($this, $clone));
