@@ -23,8 +23,6 @@ final class ImageUploadControl extends UploadControl
 
 	private Html $containerPart;
 
-	private ?FileUpload $fileUpload = null;
-
 	private ?Scope $scope = null;
 
 	private ?ImagePreviewInterface $preview = null;
@@ -85,7 +83,6 @@ final class ImageUploadControl extends UploadControl
 			$this->entity = $this->entity->withValue(
 				$image
 			);
-			$this->fileUpload = $value;
 		} elseif ($value instanceof PersistentImageInterface) {
 			$this->entity = $this->entity
 				->withDefault($value)
