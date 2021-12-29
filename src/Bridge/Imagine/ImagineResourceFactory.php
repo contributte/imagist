@@ -19,7 +19,7 @@ final class ImagineResourceFactory implements ResourceFactoryInterface
 
 	public function __construct()
 	{
-		$this->imagine = $imagine ?? $this->createImagine();
+		$this->imagine = $this->createImagine();
 	}
 
 	protected function createImagine(): ImagineInterface

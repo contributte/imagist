@@ -13,7 +13,7 @@ csf:
 	vendor/bin/codefixer src tests
 
 phpstan:
-	vendor/bin/phpstan analyse -l max src
+	vendor/bin/phpstan analyse -l 8 src
 
 tests:
 	vendor/bin/codecept run
