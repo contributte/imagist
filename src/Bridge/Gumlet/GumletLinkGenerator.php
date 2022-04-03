@@ -84,23 +84,28 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 			$domain = sprintf('%s.%s', $this->bucket, $this->domain);
 		}
 
-		return sprintf('https://%s/%s', $domain, $this->createPath($image));
+		return sprintf('https://%s/%s', $domain, $this->createPath($image, $options));
 	}
 
-	private function createPath(PersistentImageInterface $image): string
+	/**
+	 * @param mixed[] $options
+	 */
+	private function createPath(PersistentImageInterface $image, array $options): string
 	{
 		$pathInfo = $this->pathInfoFactory->create($image->getOriginal());
 		$path = $pathInfo->toString($pathInfo::BUCKET | $pathInfo::SCOPE | $pathInfo::IMAGE);
 
-		$options = $this->filterNormalizer->normalize($image, $this->contextFactory->create([
+		$query = $this->filterNormalizer->normalize($image, $this->contextFactory->create([
 			self::GUMLET_CONTEXT_KEY => true,
 		]));
 
-		if (!$options) {
+		$query = array_merge($options['addons'] ?? [], $query);
+
+		if (!$query) {
 			return $this->hashIfNeed($path, true);
 		}
 
-		return $this->hashIfNeed($path . '?' . http_build_query($options), false);
+		return $this->hashIfNeed($path . '?' . http_build_query($query), false);
 	}
 
 	private function hashIfNeed(string $path, bool $questionMark): string
