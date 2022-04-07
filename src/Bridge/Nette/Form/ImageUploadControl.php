@@ -29,6 +29,8 @@ final class ImageUploadControl extends UploadControl
 
 	private ?ImageRemoveInterface $remove = null;
 
+	private ?FileUpload $uploadValue = null;
+
 	public function __construct(?string $label = null)
 	{
 		$this->entity = new UploadControlEntity();
@@ -41,7 +43,7 @@ final class ImageUploadControl extends UploadControl
 	{
 		parent::loadHttpData();
 
-		$this->setValue($this->value);
+		$this->setValue($this->uploadValue = $this->value);
 
 		if ($this->remove) {
 			$removeAnyway = $this->remove->getHttpData($this);
@@ -106,6 +108,11 @@ final class ImageUploadControl extends UploadControl
 	public function getValue(): UploadControlEntity
 	{
 		return $this->entity;
+	}
+
+	public function getUploadValue(): ?FileUpload
+	{
+		return $this->uploadValue;
 	}
 
 	public function getControlPart(): ?Html
