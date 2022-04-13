@@ -53,7 +53,7 @@ use Contributte\Imagist\Storage\ImageStorage;
 use Contributte\Imagist\Transaction\TransactionFactory;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\DI\CompilerExtension;
