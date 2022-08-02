@@ -10,6 +10,7 @@ use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
 use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
+use Contributte\Imagist\Bridge\Nette\Latte\Extension\ImagistExtension;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
@@ -55,7 +56,8 @@ use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Nette\Bridges\ApplicationLatte\ILatteFactory;
+use Latte\Engine;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
@@ -314,7 +316,16 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadLatte(ContainerBuilder $builder): void
 	{
-		$serviceName = $builder->getByType(ILatteFactory::class);
+		if (version_compare(Engine::VERSION, '3', '<')) {
+			$this->loadLatte2($builder);
+		} else {
+			$this->loadLatte3($builder);
+		}
+	}
+
+	private function loadLatte2(ContainerBuilder $builder): void
+	{
+		$serviceName = $builder->getByType(LatteFactory::class);
 		if (!$serviceName) {
 			return;
 		}
@@ -331,6 +342,26 @@ final class ImageStorageExtension extends CompilerExtension
 				ImageMacro::class,
 			])
 			->addSetup('addProvider', ['images', $this->prefix('@latte.provider')]);
+	}
+
+	private function loadLatte3(ContainerBuilder $builder): void
+	{
+		$serviceName = $builder->getByType(LatteFactory::class);
+		if (!$serviceName) {
+			return;
+		}
+
+		$builder->addDefinition($this->prefix('latte.provider'))
+			->setFactory(LatteImageProvider::class);
+
+		$extension = $builder->addDefinition($this->prefix('latte.extension'))
+			->setFactory(ImagistExtension::class);
+
+		$factory = $builder->getDefinition($serviceName);
+		assert($factory instanceof FactoryDefinition);
+
+		$factory->getResultDefinition()
+			->addSetup('addExtension', [$extension]);
 	}
 
 	private function loadPersister(ContainerBuilder $builder): void
