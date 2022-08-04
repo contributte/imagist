@@ -9,6 +9,8 @@ use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
+use Typertion\Php\ArrayTypeAssert;
+use Typertion\Php\TypeAssert;
 
 final class PersistentImageRemover implements RemoverInterface
 {
@@ -44,15 +46,18 @@ final class PersistentImageRemover implements RemoverInterface
 		$path = $this->pathInfoFactory->create($image->withFilter(new VoidFilter('void')));
 
 		foreach ($this->filesystem->listContents($path->toString($path::BUCKET | $path::SCOPE)) as $path) {
-			if ($path['type'] !== 'dir') {
+			$path = TypeAssert::array($path);
+
+			if (ArrayTypeAssert::string($path, 'type') !== 'dir') {
 				continue;
 			}
 
-			if (!$path['filename'] || $path['filename'][0] !== '_') {
+			$filename = isset($path['filename']) ? TypeAssert::string($path['filename']) : '';
+ 			if (!$filename || $filename[0] !== '_') {
 				continue;
 			}
 
-			$this->fileFactory->create($image->withFilter(new VoidFilter(substr($path['filename'], 1))))
+			$this->fileFactory->create($image->withFilter(new VoidFilter(substr($filename, 1))))
 				->delete();
 		}
 	}

@@ -13,6 +13,7 @@ use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use Contributte\Imagist\Resolver\DefaultImageResolverInterface;
 use InvalidArgumentException;
+use Typertion\Php\TypeAssert;
 
 final class GumletLinkGenerator implements LinkGeneratorInterface
 {
@@ -99,7 +100,9 @@ final class GumletLinkGenerator implements LinkGeneratorInterface
 			self::GUMLET_CONTEXT_KEY => true,
 		]));
 
-		$query = array_merge($options['addons'] ?? [], $query);
+		$addons = isset($options['addons']) ? TypeAssert::array($options['addons']) : [];
+
+		$query = array_merge($addons, $query);
 
 		if (!$query) {
 			return $this->hashIfNeed($path, true);

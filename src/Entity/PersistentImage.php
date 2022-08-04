@@ -13,7 +13,7 @@ class PersistentImage extends Image implements PersistentImageInterface
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return array{string, Scope}
 	 */
 	protected function parseId(string $id): array
 	{

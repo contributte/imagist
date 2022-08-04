@@ -6,6 +6,7 @@ use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Resource\ResourceFactoryInterface;
 use Nette\Utils\Image;
+use Typertion\Php\TypeAssert;
 
 final class NetteResourceFactory implements ResourceFactoryInterface
 {
@@ -21,7 +22,10 @@ final class NetteResourceFactory implements ResourceFactoryInterface
 	{
 		assert($resource instanceof Image);
 
-		return $resource->toString($source->getMimeType()->getImageType(), $context->get(self::QUALITY_CONTEXT));
+		return $resource->toString(
+			$source->getMimeType()->getImageType(),
+			TypeAssert::intOrNull($context->get(self::QUALITY_CONTEXT))
+		);
 	}
 
 }

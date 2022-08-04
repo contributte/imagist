@@ -35,7 +35,7 @@ abstract class FilesystemAbstract implements FilesystemInterface
 			'disable_asserts',
 			true,
 			false,
-			fn() => $this->adapter->delete($path->toString())
+			fn(): bool => $this->adapter->delete($path->toString())
 		);
 	}
 
@@ -50,7 +50,7 @@ abstract class FilesystemAbstract implements FilesystemInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function put(PathInfoInterface $path, $content, array $config = []): void
+	public function put(PathInfoInterface $path, string $content, array $config = []): void
 	{
 		$this->adapter->put($path->toString(), $content, $config);
 	}
@@ -58,7 +58,7 @@ abstract class FilesystemAbstract implements FilesystemInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function putWithMkdir(PathInfoInterface $path, $content, array $config = []): void
+	public function putWithMkdir(PathInfoInterface $path, string $content, array $config = []): void
 	{
 		$this->adapter->createDir($path->toString($path::BUCKET | $path::SCOPE | $path::FILTER));
 
@@ -94,9 +94,11 @@ abstract class FilesystemAbstract implements FilesystemInterface
 	}
 
 	/**
+	 * @template T
 	 * @param mixed $value
 	 * @param mixed $default
-	 * @return mixed
+	 * @param callable(): T $callback
+	 * @return T
 	 */
 	protected function withTemporaryConfig(string $name, $value, $default, callable $callback) // phpcs:ignore -- phpcs bug
 	{

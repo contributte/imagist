@@ -19,6 +19,7 @@ final class ImagistBlueScreen
 
 			// phpcs:disable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
 			$expanded = null;
+			/** @var array{file?: string}[] $stack */
 			$stack = $exception->getBackTrace();
 			$dump = $blueScreen->getDumper();
 			foreach ($stack as $key => $trace) {

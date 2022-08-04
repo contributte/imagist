@@ -8,10 +8,9 @@ interface FilesystemInterface
 {
 
 	/**
-	 * @param mixed $content
 	 * @param mixed[] $config
 	 */
-	public function putWithMkdir(PathInfoInterface $path, $content, array $config = []): void; // phpcs:ignore -- cs bug
+	public function putWithMkdir(PathInfoInterface $path, string $content, array $config = []): void; // phpcs:ignore -- cs bug
 
 	public function exists(PathInfoInterface $path): bool;
 
@@ -26,10 +25,9 @@ interface FilesystemInterface
 	public function listContents(string $path): array;
 
 	/**
-	 * @param mixed $content
 	 * @param mixed[] $config
 	 */
-	public function put(PathInfoInterface $path, $content, array $config = []): void; // phpcs:ignore -- cs bug
+	public function put(PathInfoInterface $path, string $content, array $config = []): void; // phpcs:ignore -- cs bug
 
 	public function read(PathInfoInterface $path): string;
 

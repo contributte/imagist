@@ -36,7 +36,7 @@ final class GoogleStorageFilesystem extends FilesystemAbstract
 	/**
 	 * @inheritDoc
 	 */
-	public function putWithMkdir(PathInfoInterface $path, $content, array $config = []): void
+	public function putWithMkdir(PathInfoInterface $path, string $content, array $config = []): void
 	{
 		$this->put($path, $content, $config);
 	}

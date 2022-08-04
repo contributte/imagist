@@ -15,6 +15,7 @@ use LogicException;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Http\FileUpload;
 use Nette\Utils\Html;
+use Typertion\Php\TypeAssert;
 
 final class ImageUploadControl extends UploadControl
 {
@@ -43,7 +44,7 @@ final class ImageUploadControl extends UploadControl
 	{
 		parent::loadHttpData();
 
-		$this->setValue($this->uploadValue = $this->value);
+		$this->setValue($this->uploadValue = TypeAssert::instanceOfOrNull($this->value, FileUpload::class));
 
 		if ($this->remove) {
 			$removeAnyway = $this->remove->getHttpData($this);
@@ -71,7 +72,7 @@ final class ImageUploadControl extends UploadControl
 	public function setValue($value)
 	{
 		if ($value === null) {
-			$this->entity = $this->entity->withValue(null);
+			$this->entity = $this->entity->withValue();
 		} elseif ($value instanceof FileUpload) {
 			$image = null;
 			if ($value->isOk() && $value->isImage()) {
