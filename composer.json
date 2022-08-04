@@ -51,5 +51,11 @@
       "Contributte\\Imagist\\Testing\\Unit\\": "tests/unit",
       "Contributte\\Imagist\\Testing\\Functional\\": "tests/functional"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
   }
 }
