@@ -316,7 +316,7 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadLatte(ContainerBuilder $builder): void
 	{
-		if (version_compare(Engine::VERSION, '3', '<')) {
+		if (version_compare(Engine::VERSION, '3', '<')) { // @phpstan-ignore-line
 			$this->loadLatte2($builder);
 		} else {
 			$this->loadLatte3($builder);

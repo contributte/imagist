@@ -13,7 +13,7 @@ csf:
 	vendor/bin/codefixer src tests
 
 phpstan:
-	vendor/bin/phpstan analyse -l 8 src
+	vendor/bin/phpstan analyse src
 
 tests:
 	vendor/bin/codecept run

@@ -1,0 +1,5 @@
+parameters:
+	level: 8
+	excludePaths:
+		analyse:
+			- src/Bridge/Nette/Macro/ImageMacro.php
