@@ -17,9 +17,16 @@ final class DatabaseConverter implements DatabaseConverterInterface
 
 	private bool $nullable;
 
-	public function __construct(bool $nullable = true)
+	/** @var class-string<PersistentImage> */
+	private string $className;
+
+	/**
+	 * @param class-string<PersistentImage> $className
+	 */
+	public function __construct(bool $nullable = true, string $className = PersistentImage::class)
 	{
 		$this->nullable = $nullable;
+		$this->className = $className;
 	}
 
 	public function convertToDatabase(?ImageInterface $image): ?string
@@ -63,7 +70,7 @@ final class DatabaseConverter implements DatabaseConverterInterface
 			return $nullable ? null : new EmptyImage();
 		}
 
-		return new PersistentImage($value);
+		return new ($this->className)($value);
 	}
 
 }
