@@ -5,6 +5,7 @@ namespace Contributte\Imagist\Bridge\Doctrine;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
 use Contributte\Imagist\Entity\ImageInterface;
+use Contributte\Imagist\Entity\PersistentImage;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
@@ -15,15 +16,17 @@ use LogicException;
 class ImageType extends StringType
 {
 
-	private const TYPE = 'image';
-	private const DB_TYPE = 'db_image';
-
 	private DatabaseConverterInterface $databaseConverter;
+
+	/** @var class-string<PersistentImage> */
+	private string $className = PersistentImage::class;
+
+	private string $name = 'image';
 
 	public function getDatabaseConverter(): DatabaseConverterInterface
 	{
 		if (!isset($this->databaseConverter)) {
-			$this->databaseConverter = new DatabaseConverter();
+			$this->databaseConverter = new DatabaseConverter(true, $this->className);
 		}
 
 		return $this->databaseConverter;
@@ -64,9 +67,9 @@ class ImageType extends StringType
 	/**
 	 * @inheritDoc
 	 */
-	public function getName()
+	public function getName(): string
 	{
-		return 'image';
+		return $this->name;
 	}
 
 	/**
@@ -78,26 +81,37 @@ class ImageType extends StringType
 		return true;
 	}
 
-	public static function register(Connection $connection): void
+	/**
+	 * @param class-string<PersistentImage> $className
+	 */
+	public static function register(Connection $connection, string $name = 'image', string $dbName = 'db_image', string $className = PersistentImage::class): void
 	{
-		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor(self::DB_TYPE)) {
-			self::registerType();
+		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor($dbName)) {
+			self::registerType($name, $className);
 
-			$connection->getDatabasePlatform()->registerDoctrineTypeMapping(self::DB_TYPE, self::TYPE);
+			$connection->getDatabasePlatform()->registerDoctrineTypeMapping($dbName, $name);
 		}
 	}
 
-	public static function registerType(): void
+	/**
+	 * @param class-string<PersistentImage> $className
+	 */
+	public static function registerType(string $name = 'image', string $className = PersistentImage::class): void
 	{
-		if (Type::hasType(self::TYPE)) {
-			$class = Type::getTypesMap()[self::TYPE];
+		if (Type::hasType($name)) {
+			$class = Type::getTypesMap()[$name];
+
 			if ($class !== static::class) {
 				throw new LogicException(
-					sprintf('Doctrine type %s is already registered for class %s', self::TYPE, $class)
+					sprintf('Doctrine type %s is already registered for class %s', $name, $class)
 				);
 			}
 		} else {
-			Type::addType(self::TYPE, static::class);
+			$self = new self();
+			$self->name = $name;
+			$self->className = $className;
+
+			self::getTypeRegistry()->register($name, $self);
 		}
 	}
 
