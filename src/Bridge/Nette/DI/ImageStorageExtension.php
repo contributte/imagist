@@ -17,6 +17,7 @@ use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
+use Contributte\Imagist\Entity\PersistentImage;
 use Contributte\Imagist\File\FileFactory;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
@@ -82,6 +83,11 @@ final class ImageStorageExtension extends CompilerExtension
 				'doctrine' => Expect::structure([
 					'removeEvent' => Expect::bool(false),
 					'promisedPersistEvent' => Expect::bool(false),
+					'types' => Expect::listOf(Expect::structure([
+						'name' => Expect::string()->required(),
+						'databaseName' => Expect::string()->required(),
+						'class' => Expect::string()->required(),
+					])->castTo('array')),
 				]),
 				'gumlet' => Expect::structure([
 					'bucket' => Expect::string(),
@@ -271,8 +277,18 @@ final class ImageStorageExtension extends CompilerExtension
 			return;
 		}
 
-		$this->assertServiceDefinition($builder->getDefinition($serviceName))
-			->addSetup('?::register(?)', [ImageType::class, '@self']);
+		/** @var array{class: string, name: string, databaseName: string}[] $types */
+		$types = array_merge([
+			['class' => PersistentImage::class, 'name' => 'image', 'databaseName' => 'db_image'],
+		], $config->extensions->doctrine->types);
+
+		foreach ($types as $type) {
+			$this->assertServiceDefinition($builder->getDefinition($serviceName))
+				->addSetup(
+					'?::register(?, ?, ?, ?)',
+					[ImageType::class, '@self', $type['name'], $type['databaseName'], $type['class']]
+				);
+		}
 
 		$autoRegistration = (bool) $this->compiler->getExtensions(DbalExtension::class);
 		if ($config->extensions->doctrine->removeEvent) {
