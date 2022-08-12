@@ -3,12 +3,14 @@
 namespace Contributte\Imagist\Remover;
 
 use Contributte\Imagist\Entity\EmptyImageInterface;
+use Contributte\Imagist\Entity\IndelibleImage;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\File\FileFactoryInterface;
 use Contributte\Imagist\Filesystem\FilesystemInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
+use DomainException;
 use Typertion\Php\ArrayTypeAssert;
 use Typertion\Php\TypeAssert;
 
@@ -35,6 +37,10 @@ final class PersistentImageRemover implements RemoverInterface
 
 	public function remove(PersistentImageInterface $image, ContextInterface $context): void
 	{
+		if ($image instanceof IndelibleImage) {
+			throw new DomainException('Cannot delete indelible image.');
+		}
+
 		$this->removeOriginal($image);
 		$this->removeFiltered($image);
 
