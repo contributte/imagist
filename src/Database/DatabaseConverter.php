@@ -70,7 +70,7 @@ final class DatabaseConverter implements DatabaseConverterInterface
 			return $nullable ? null : new EmptyImage();
 		}
 
-		return new $this->className($value); // @phpcs:ignore
+		return new $this->className($value);
 	}
 
 }
