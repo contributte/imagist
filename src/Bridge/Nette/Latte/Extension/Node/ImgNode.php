@@ -41,7 +41,7 @@ final class ImgNode extends StatementNode
 			$attribute = match ($this->element->name) {
 				'img', 'script' => 'src',
 				default => 'href',
-			};
+			}; // @phpcs:ignore
 
 			$code = sprintf('echo \' %s="\' . %s . \'"\';', $attribute, $code);
 		} else {

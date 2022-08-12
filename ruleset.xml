@@ -6,6 +6,7 @@
 		<exclude name="SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable" />
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix" />
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming.SuperfluousSuffix" />
+		<exclude name="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.InvalidFormat" />
 	</rule>
 
 	<!-- Specific rules -->

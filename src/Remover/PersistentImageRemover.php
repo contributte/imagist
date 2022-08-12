@@ -59,7 +59,7 @@ final class PersistentImageRemover implements RemoverInterface
 			}
 
 			$filename = isset($path['filename']) ? TypeAssert::string($path['filename']) : '';
- 			if (!$filename || $filename[0] !== '_') {
+			if (!$filename || $filename[0] !== '_') {
 				continue;
 			}
 
