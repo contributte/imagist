@@ -31,11 +31,28 @@ final class PersisterEvent implements EventSubscriber
 	public function prePersist(LifecycleEventArgs $args): void
 	{
 		$object = $args->getObject();
-		if (!$object instanceof PromisedImagePersister) {
-			return;
+
+		if ($object instanceof PromisedImagePersister) {
+			$this->persistImages($object->_promisedImagesToPersist());
+		} elseif ($object instanceof EntityImages) {
+			$this->persistImages($object->_imagesToProcess());
+		}
+	}
+
+	private function getTransaction(PersistentImageInterface $image): ?TransactionInterface
+	{
+		if ($image instanceof PromisedImageInterface && $image->isPending()) {
+			return $image->getTransaction();
 		}
 
-		$images = $object->_promisedImagesToPersist();
+		return null;
+	}
+
+	/**
+	 * @param array<PersistentImageInterface|null> $images
+	 */
+	private function persistImages(array $images): void
+	{
 		if (!$images) {
 			return;
 		}
@@ -51,15 +68,6 @@ final class PersisterEvent implements EventSubscriber
 				$transaction->commit();
 			}
 		}
-	}
-
-	private function getTransaction(PersistentImageInterface $image): ?TransactionInterface
-	{
-		if ($image instanceof PromisedImageInterface && $image->isPending()) {
-			return $image->getTransaction();
-		}
-
-		return null;
 	}
 
 }

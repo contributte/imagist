@@ -165,7 +165,7 @@ final class Transaction implements TransactionInterface
 
 	private function commitRemove(): void
 	{
-		foreach ($this->remove as $key => $image) {
+		foreach ($this->remove as $image) {
 			try {
 				$this->removed[] = new RemovedImage(
 					clone $image->getSource(),

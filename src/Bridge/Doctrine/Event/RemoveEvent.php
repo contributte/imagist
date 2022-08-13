@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Doctrine\Event;
 
+use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -31,18 +32,26 @@ final class RemoveEvent implements EventSubscriber
 	{
 		$object = $args->getObject();
 
-		if (!$object instanceof ImageCleaner) {
-			return;
+		if ($object instanceof ImageCleaner) {
+			$this->removeImages($object->_imagesToClean());
+		} elseif ($object instanceof EntityImages) {
+			$this->removeImages($object->_imagesToProcess());
 		}
+	}
 
-		$images = array_filter($object->_imagesToClean());
+	/**
+	 * @param array<PersistentImageInterface|null> $images
+	 */
+	private function removeImages(array $images): void
+	{
 		if (!$images) {
 			return;
 		}
 
 		$transaction = $this->transactionFactory->create();
+
 		foreach ($images as $image) {
-			if (!$image->isEmpty()) {
+			if ($image && !$image->isEmpty()) {
 				$transaction->remove($image);
 			}
 		}
