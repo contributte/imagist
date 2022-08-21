@@ -14,6 +14,7 @@ use Contributte\Imagist\Bridge\Nette\Latte\Extension\ImagistExtension;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
 use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
+use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
 use Contributte\Imagist\Database\DatabaseConverterInterface;
@@ -64,8 +65,10 @@ use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nette\DI\MissingServiceException;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use Nette\Utils\Arrays;
 use Nettrine\DBAL\DI\DbalExtension;
 use stdClass;
 use Tracy\Bar;
@@ -73,6 +76,9 @@ use Tracy\BlueScreen;
 
 final class ImageStorageExtension extends CompilerExtension
 {
+
+	/** @var callable[] */
+	private array $onBeforeCompile = [];
 
 	public function getConfigSchema(): Schema
 	{
@@ -160,29 +166,40 @@ final class ImageStorageExtension extends CompilerExtension
 		$this->loadDoctrine($builder);
 		$this->loadGumlet($builder);
 		$this->loadLatte($builder);
+		$this->loadTracy($builder);
+	}
+
+	private function loadTracy(ContainerBuilder $builder): void
+	{
+		$panels[] = $builder->addDefinition($this->prefix('tracy.bar'))
+			->setFactory(ImageBarPanel::class);
+
+		$this->onBeforeCompile[] = function () use ($panels): void {
+			try {
+				$bar = $this->assertServiceDefinition(
+					$this->getContainerBuilder()->getDefinitionByType(Bar::class)
+				);
+			} catch (MissingServiceException $e) {
+				return;
+			}
+
+			foreach ($panels as $panel) {
+				$bar->addSetup('addPanel', [$panel]);
+			}
+		};
 	}
 
 	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
 
-		$serviceName = $builder->getByType(Bar::class);
-		if ($serviceName) {
-			if ($builder->hasDefinition($this->prefix('tracy.bar'))) {
-				$this->assertServiceDefinition($builder->getDefinition($serviceName))
-					->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.bar'))]);
-			}
+		Arrays::invoke($this->onBeforeCompile);
 
-			if ($builder->hasDefinition($this->prefix('tracy.filter.bar'))) {
-				$this->assertServiceDefinition($builder->getDefinition($serviceName))
-					->addSetup('addPanel', [$builder->getDefinition($this->prefix('tracy.filter.bar'))]);
-			}
-		}
-
-		$serviceName = $builder->getByType(BlueScreen::class);
-		if ($serviceName) {
-			$this->assertServiceDefinition($builder->getDefinition($serviceName))
+		try {
+			$this->assertServiceDefinition($builder->getDefinitionByType(BlueScreen::class))
 				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
+		} catch (MissingServiceException $e) {
+			// no need
 		}
 	}
 
