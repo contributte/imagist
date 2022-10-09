@@ -16,6 +16,7 @@ use Contributte\Imagist\ImageStorageInterface;
 use Contributte\Imagist\Persister\PersisterInterface;
 use Contributte\Imagist\Remover\RemoverInterface;
 use LogicException;
+use Nette\Utils\Arrays;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ImageStorage implements ImageStorageInterface
@@ -30,6 +31,12 @@ class ImageStorage implements ImageStorageInterface
 	private ?StringFilterCollectionInterface $stringFilterCollection;
 
 	private ContextFactoryInterface $contextFactory;
+
+	/** @var array<callable(PersistedImageEvent): void> */
+	public array $onPersist = [];
+
+	/** @var array<callable(RemovedImageEvent): void> */
+	public array $onRemove = [];
 
 	public function __construct(
 		PersisterInterface $persister,
@@ -67,9 +74,13 @@ class ImageStorage implements ImageStorageInterface
 			$persistent = $persistent->withFilter($clone->getFilter());
 		}
 
+		$event = new PersistedImageEvent($this, $clone, $persistent);
+
 		if ($this->dispatcher) {
-			$this->dispatcher->dispatch(new PersistedImageEvent($this, $clone, $persistent));
+			$this->dispatcher->dispatch($event);
 		}
+
+		Arrays::invoke($this->onPersist, $event);
 
 		return $persistent;
 	}
@@ -92,9 +103,13 @@ class ImageStorage implements ImageStorageInterface
 
 		$this->remover->remove($image, $context);
 
+		$event = new RemovedImageEvent($this, $clone);
+
 		if ($this->dispatcher) {
 			$this->dispatcher->dispatch(new RemovedImageEvent($this, $clone));
 		}
+
+		Arrays::invoke($this->onRemove, $event);
 
 		return new EmptyImage();
 	}

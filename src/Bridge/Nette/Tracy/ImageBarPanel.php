@@ -6,25 +6,13 @@ use Contributte\Imagist\Bridge\Nette\Tracy\Dto\BarEvent;
 use Contributte\Imagist\Event\PersistedImageEvent;
 use Contributte\Imagist\Event\RemovedImageEvent;
 use LogicException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tracy\IBarPanel;
 
-final class ImageBarPanel implements IBarPanel, EventSubscriberInterface
+final class ImageBarPanel implements IBarPanel
 {
 
 	/** @var BarEvent[] */
 	private array $events = [];
-
-	/**
-	 * @return string[]
-	 */
-	public static function getSubscribedEvents(): array
-	{
-		return [
-			PersistedImageEvent::class => 'persistedEvent',
-			RemovedImageEvent::class => 'removedEvent',
-		];
-	}
 
 	public function persistedEvent(PersistedImageEvent $event): void
 	{

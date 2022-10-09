@@ -171,20 +171,27 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadTracy(ContainerBuilder $builder): void
 	{
-		$panels[] = $builder->addDefinition($this->prefix('tracy.bar'))
+		$panel = $builder->addDefinition($this->prefix('tracy.bar'))
 			->setFactory(ImageBarPanel::class);
 
-		$this->onBeforeCompile[] = function () use ($panels): void {
+		$this->onBeforeCompile[] = function () use ($panel): void {
+			$builder = $this->getContainerBuilder();
+
 			try {
 				$bar = $this->assertServiceDefinition(
-					$this->getContainerBuilder()->getDefinitionByType(Bar::class)
+					$builder->getDefinitionByType(Bar::class)
 				);
 			} catch (MissingServiceException $e) {
 				return;
 			}
 
-			foreach ($panels as $panel) {
-				$bar->addSetup('addPanel', [$panel]);
+			$bar->addSetup('addPanel', [$panel]);
+
+			$imageStorage = $builder->getDefinition($this->prefix('storage'));
+
+			if ($imageStorage instanceof ServiceDefinition && $imageStorage->getEntity() === ImageStorage::class) {
+				$imageStorage->addSetup('?->onPersist[] = [?, "persistedEvent"]', ['@self', $panel]);
+				$imageStorage->addSetup('?->onRemove[] = [?, "removedEvent"]', ['@self', $panel]);
 			}
 		};
 	}
