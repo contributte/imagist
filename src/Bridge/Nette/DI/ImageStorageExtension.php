@@ -104,6 +104,9 @@ final class ImageStorageExtension extends CompilerExtension
 						'enabled' => Expect::bool(true),
 					]),
 				]),
+				'tracy' => Expect::structure([
+					'tabWithName' => Expect::bool(false),
+				]),
 				'imagine' => Expect::structure([
 					'enabled' => Expect::bool(false),
 				]),
@@ -171,8 +174,11 @@ final class ImageStorageExtension extends CompilerExtension
 
 	private function loadTracy(ContainerBuilder $builder): void
 	{
+		/** @var stdClass $config */
+		$config = $this->getConfig();
+
 		$panel = $builder->addDefinition($this->prefix('tracy.bar'))
-			->setFactory(ImageBarPanel::class);
+			->setFactory(ImageBarPanel::class, [$config->extensions->tracy->tabWithName]);
 
 		$this->onBeforeCompile[] = function () use ($panel): void {
 			$builder = $this->getContainerBuilder();

@@ -5,14 +5,21 @@ namespace Contributte\Imagist\Bridge\Nette\Tracy;
 use Contributte\Imagist\Bridge\Nette\Tracy\Dto\BarEvent;
 use Contributte\Imagist\Event\PersistedImageEvent;
 use Contributte\Imagist\Event\RemovedImageEvent;
-use LogicException;
+use Nette\Utils\Helpers;
 use Tracy\IBarPanel;
 
 final class ImageBarPanel implements IBarPanel
 {
 
 	/** @var BarEvent[] */
-	private array $events = [];
+	private array $events = []; // @phpstan-ignore-line -- Used in phtml
+
+	private bool $tabWithName; // @phpstan-ignore-line -- Used in phtml
+
+	public function __construct(bool $tabWithName = false)
+	{
+		$this->tabWithName = $tabWithName;
+	}
 
 	public function persistedEvent(PersistedImageEvent $event): void
 	{
@@ -26,27 +33,16 @@ final class ImageBarPanel implements IBarPanel
 
 	public function getTab(): string
 	{
-		$html = file_get_contents(__DIR__ . '/assets/tab.html');
-
-		return sprintf('%s (%d)', $html, count($this->events));
+		return Helpers::capture(function (): void {
+			require __DIR__ . '/assets/tab.phtml';
+		});
 	}
 
 	public function getPanel(): string
 	{
-		ob_start();
-
-		// phpcs:disable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
-		$events = $this->events;
-		// phpcs:enable SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
-
-		require __DIR__ . '/assets/panel.phtml';
-
-		$contents = ob_get_clean();
-		if ($contents === false) {
-			throw new LogicException('Something gone wrong');
-		}
-
-		return $contents;
+		return Helpers::capture(function (): void {
+			require __DIR__ . '/assets/panel.phtml';
+		});
 	}
 
 }
