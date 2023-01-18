@@ -28,7 +28,7 @@ final class RemoveEvent implements EventSubscriber
 		];
 	}
 
-	public function preRemove(LifecycleEventArgs $args): void
+	public function preRemove(LifecycleEventArgs $args): void // @phpstan-ignore-line -- doctrine v2 does not have PreRemoveEventArgs
 	{
 		$object = $args->getObject();
 

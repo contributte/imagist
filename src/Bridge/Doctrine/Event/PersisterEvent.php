@@ -7,6 +7,7 @@ use Contributte\Imagist\Entity\PromisedImageInterface;
 use Contributte\Imagist\Transaction\TransactionInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 
 final class PersisterEvent implements EventSubscriber
@@ -23,12 +24,12 @@ final class PersisterEvent implements EventSubscriber
 		];
 	}
 
-	public function preUpdate(LifecycleEventArgs $args): void
+	public function preUpdate(PreUpdateEventArgs $args): void
 	{
 		$this->prePersist($args);
 	}
 
-	public function prePersist(LifecycleEventArgs $args): void
+	public function prePersist(LifecycleEventArgs $args): void // @phpstan-ignore-line -- doctrine v2 does not have PrePersistEventArgs
 	{
 		$object = $args->getObject();
 
