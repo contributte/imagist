@@ -1,5 +1,7 @@
 <?php declare(strict_types = 1);
 
+// phpcs:disable Squiz.Commenting.VariableComment.WrongStyle
+
 namespace Contributte\Imagist\Bridge\Nette\Tracy;
 
 use Contributte\Imagist\Bridge\Nette\Tracy\Dto\BarEvent;
