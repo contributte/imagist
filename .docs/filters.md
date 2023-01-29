@@ -36,7 +36,7 @@ Using filter in image is pretty easy, just look at it
 ```php
 use Contributte\Imagist\Filter\Operation\ResizeOperation;
 
-$image->withFilter(new ResizeOperation(20, 20)); // resize operation implements FilterInterface
+$image = $image->withFilter(new ResizeOperation(20, 20)); // resize operation implements FilterInterface
 ```
 
 Multiple filters are supported too
@@ -45,7 +45,7 @@ Multiple filters are supported too
 use Contributte\Imagist\Filter\CompositeFilter;
 use Contributte\Imagist\Filter\Operation\CropOperation;
 
-$image->withFilter(new CompositeFilter(
+$image = $image->withFilter(new CompositeFilter(
     'composite',
     new ResizeOperation(20, 20),
     new CropOperation(20, 20, 20, 20),

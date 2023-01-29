@@ -12,9 +12,7 @@ to string (database value) and converting database value to PersistentImageInter
 class Entity
 {
 
-	/**
-	 * @ORM\Column(type="image", nullable=false)
-	 */
+	#[Column(type: 'image', nullable: false)]
 	protected PersistentImageInterface $image;
 
 }
@@ -32,11 +30,12 @@ use Contributte\Imagist\Bridge\Doctrine\Event\ImageCleaner;use Contributte\Imagi
 class Entity implements ImageCleaner
 {
 
-	/**
-	 * @ORM\Column(type="image", nullable=true)
-	 */
+	#[Column(type: 'image', nullable: true)]
 	protected ?PersistentImageInterface $image = null;
 
+    /**
+     * @return array<PersistentImageInterface|null>
+     */
 	public function _imagesToClean(): array
 	{
         return [$this->image];
@@ -52,11 +51,12 @@ use Contributte\Imagist\Bridge\Doctrine\Event\PromisedImagePersister;
 class Entity implements PromisedImagePersister
 {
 
-	/**
-	 * @ORM\Column(type="image", nullable=true)
-	 */
+	#[Column(type: 'image', nullable: true)]
 	protected ?PersistentImageInterface $image = null;
 
+    /**
+     * @return array<PersistentImageInterface|null>
+     */
 	public function _promisedImagesToPersist(): array
 	{
         return [$this->image];
