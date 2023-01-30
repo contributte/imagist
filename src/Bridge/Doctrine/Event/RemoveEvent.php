@@ -32,8 +32,8 @@ final class RemoveEvent implements EventSubscriber
 	{
 		$object = $args->getObject();
 
-		if ($object instanceof ImageCleaner) {
-			$this->removeImages($object->_imagesToClean());
+		if ($object instanceof DoctrineImageRemover) {
+			$this->removeImages($object->_imagesToRemove());
 		} elseif ($object instanceof EntityImages) {
 			$this->removeImages($object->_imagesToProcess());
 		}

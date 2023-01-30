@@ -4,12 +4,12 @@ namespace Contributte\Imagist\Bridge\Doctrine\Event;
 
 use Contributte\Imagist\Entity\PersistentImageInterface;
 
-interface ImageCleaner
+interface DoctrineImagePersister
 {
 
 	/**
 	 * @return array<PersistentImageInterface|null>
 	 */
-	public function _imagesToClean(): array;
+	public function _imagesToPersist(): array;
 
 }

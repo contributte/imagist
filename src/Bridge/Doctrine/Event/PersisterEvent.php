@@ -33,8 +33,8 @@ final class PersisterEvent implements EventSubscriber
 	{
 		$object = $args->getObject();
 
-		if ($object instanceof PromisedImagePersister) {
-			$this->persistImages($object->_promisedImagesToPersist());
+		if ($object instanceof DoctrineImagePersister) {
+			$this->persistImages($object->_imagesToPersist());
 		} elseif ($object instanceof EntityImages) {
 			$this->persistImages($object->_imagesToProcess());
 		}

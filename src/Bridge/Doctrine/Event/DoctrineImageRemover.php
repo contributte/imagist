@@ -4,12 +4,12 @@ namespace Contributte\Imagist\Bridge\Doctrine\Event;
 
 use Contributte\Imagist\Entity\PersistentImageInterface;
 
-interface PromisedImagePersister
+interface DoctrineImageRemover
 {
 
 	/**
 	 * @return array<PersistentImageInterface|null>
 	 */
-	public function _promisedImagesToPersist(): array;
+	public function _imagesToRemove(): array;
 
 }
