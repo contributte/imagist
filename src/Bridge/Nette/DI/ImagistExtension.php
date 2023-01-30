@@ -90,7 +90,7 @@ use Tracy\BlueScreen;
 			'extensions' => Expect::structure([
 				'doctrine' => Expect::structure([
 					'removeEvent' => Expect::bool(false),
-					'promisedPersistEvent' => Expect::bool(false),
+					'persistEvent' => Expect::bool(false),
 					'types' => Expect::listOf(Expect::structure([
 						'name' => Expect::string()->required(),
 						'databaseName' => Expect::string()->required(),
