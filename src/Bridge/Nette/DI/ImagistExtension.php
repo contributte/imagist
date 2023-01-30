@@ -5,7 +5,6 @@ namespace Contributte\Imagist\Bridge\Nette\DI;
 use Contributte\Imagist\Bridge\Doctrine\Event\PersisterEvent;
 use Contributte\Imagist\Bridge\Doctrine\Event\RemoveEvent;
 use Contributte\Imagist\Bridge\Doctrine\ImageType;
-use Contributte\Imagist\Bridge\Gumlet\GumletLinkGenerator;
 use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
 use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
@@ -97,10 +96,6 @@ use Tracy\BlueScreen;
 						'class' => Expect::string()->required(),
 					])->castTo('array')),
 				]),
-				'gumlet' => Expect::structure([
-					'bucket' => Expect::string(),
-					'token' => Expect::string()->nullable(),
-				]),
 				'nette' => Expect::structure([
 					'filters' => Expect::structure([
 						'enabled' => Expect::bool(true),
@@ -169,7 +164,6 @@ use Tracy\BlueScreen;
 
 		// extensions
 		$this->loadDoctrine($builder);
-		$this->loadGumlet($builder);
 		$this->loadLatte($builder);
 		$this->loadTracy($builder);
 	}
@@ -344,22 +338,6 @@ use Tracy\BlueScreen;
 					->addSetup('?->getEventManager()->addEventSubscriber(?);', ['@self', $service]);
 			}
 		}
-	}
-
-	private function loadGumlet(ContainerBuilder $builder): void
-	{
-		/** @var stdClass $config */
-		$config = $this->getConfig();
-		$config = $config->extensions->gumlet;
-		if (!$config->bucket) {
-			return;
-		}
-
-		$builder->addDefinition($this->prefix('extensions.gumlet.linkGenerator'))
-			->setFactory(GumletLinkGenerator::class, [$config->bucket, $config->token]);
-
-		$builder->getDefinition($this->prefix('linkGenerator'))
-			->setAutowired(false);
 	}
 
 	private function loadLatte(ContainerBuilder $builder): void
