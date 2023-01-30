@@ -453,14 +453,4 @@ use Tracy\BlueScreen;
 		return $definition;
 	}
 
-	/**
-	 * @param mixed[] $array
-	 */
-	private function foreach(array $array, callable $func): void
-	{
-		foreach ($array as $key => $value) {
-			$func($value, $key);
-		}
-	}
-
 }
