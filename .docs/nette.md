@@ -1,132 +1,46 @@
 # Nette
 
-- [DI](#di)
+- [Registration](#registration)
+- [Configuration](#configuration)
 - [Forms](#forms)
 - [Latte](#latte)
 - [Tracy](#tracy)
 
-## DI
-Register extension
+## Registration
+Register extension in neon
 
 ```yaml
 extensions:
-  imagist: Contributte\Imagist\Bridge\Nette\DI\ImageStorageExtension
+  imagist: Contributte\Imagist\Bridge\Nette\DI\ImagistExtension
 ```
 
-## Latte
+## Configuration
 
-Original image:
-```html
-{varType Contributte\Imagist\Entity\PersistentImageInterface $image}
-
-<a n:href="$image">
-  <img n:img="$image">
-</a>
-
-{img $image}
-```
-
-Image with filter
-```html
-{varType Contributte\Imagist\Entity\PersistentImageInterface $image}
-
-<img n:img="$image, filter: new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20)">
-{* or with neon filters *}
-<img n:img="$image, filter: siteXS">
-{* neon filters with arguments *}
-<img n:img="$image, filter: [siteXS, 20, 20]">
-```
-
-Image with custom options
-```html
-{varType Contributte\Imagist\Entity\PersistentImageInterface $image}
-
-<img n:img="$image, scope => 'avatar'">
-{* with filter *}
-<img n:img="$image, filter: new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20), scope => 'avatar'">
-```
-
-same in php
-
-```php
-$linkGenerator->link($image->withFilter(new Contributte\Imagist\Filter\Operation\ResizeOperation(20, 20)), ['scope' => 'avatar']);
-```
-
-## Forms
-
-Add new method to nette forms:
-
-```php
-
-use Contributte\Imagist\Bridge\Nette\Form\ImageUploadControl;
-use Contributte\Imagist\Scope\Scope;
-
-class Form extends \Nette\Application\UI\Form
-{
-
-    public function addImageUpload(string $name, ?string $label = null, ?string $scope = null): ImageUploadControl
-	{
-		$control = $this[$name] = new ImageUploadControl($label);
-		if ($scope) {
-			$control->setScope(new Scope($scope));
-		}
-
-		return $control;
-	}
-
-}
-
-```
-
-Usage:
-```php
-$form = new Form();
-
-$form->addImageUpload('image');
-```
-
-Default value:
-
-```php
-use Contributte\Imagist\Entity\PersistentImage;
-
-$form = new Form();
-
-$form->addImageUpload('image')
-    ->setDefaultValue(new PersistentImage('image.png'));
-
-// or
-
-$form->setDefaults([
-    'image' => new PersistentImage('image.png'),
-]);
-```
-
-Upload with preview:
-
-```php
-use Contributte\Imagist\Entity\PersistentImage;
-
-assert($imagePreviewFactory instanceof Contributte\Imagist\Bridge\Nette\Form\Preview\ImagePreviewFactoryInterface); // inject
-
-$form = new Form();
-
-$form->addImageUpload('image')
-    ->setPreview($imagePreviewFactory->create())
-    ->setDefaultValue(new PersistentImage('image.png'));
-```
-
-Add checkbox for removing image:
-
-```php
-use Contributte\Imagist\Bridge\Nette\Form\Remove\ImageRemove;
-use Contributte\Imagist\Entity\PersistentImage;
-
-$form = new Form();
-
-$form->addImageUpload('image')
-    ->setRemove(new ImageRemove('Check to delete image'))
-    ->setDefaultValue(new PersistentImage('image.png'));
+```neon
+imagist:
+    extensions:
+        doctrine:
+            # Auto-remove images in entity implementing `DoctrineImageRemover`
+            removeEvent: false
+            # Auto-persist images in entity implementing `DoctrineImagePersister`
+            persistEvent: false
+            # Doctrine db types
+            types:
+                # object PersistentImage is created when php retrives id from database
+                - class: Contributte\Imagist\Entity\PersistentImage
+                # Usage in doctrine: #[Column(type: 'image')]
+                  name: image
+                  databaseName: db_image
+    tracy:
+        # Show 'Imagist(1)' instead of '1'
+        tabWithName: false
+    registration:
+        # Loads default image persisters
+        persisters: true
+        # Loads default image persisters
+        removers: true
+    # Absolute path to the root of public (www) directory
+    baseDir: %wwwDir%
 ```
 
 ## Tracy

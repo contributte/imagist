@@ -25,9 +25,9 @@ Sometimes we need persist promised image before entity is persisted (e.g. when w
 Automatically remove image
 
 ```php
-use Contributte\Imagist\Bridge\Doctrine\Event\ImageCleaner;use Contributte\Imagist\Entity\PersistentImageInterface;
+use Contributte\Imagist\Bridge\Doctrine\Event\DoctrineImageRemover;use Contributte\Imagist\Entity\PersistentImageInterface;
 
-class Entity implements ImageCleaner
+class Entity implements DoctrineImageRemover
 {
 
 	#[Column(type: 'image', nullable: true)]
@@ -46,9 +46,9 @@ class Entity implements ImageCleaner
 Automatically persist promised images
 
 ```php
-use Contributte\Imagist\Bridge\Doctrine\Event\PromisedImagePersister;
+use Contributte\Imagist\Bridge\Doctrine\Event\DoctrineImagePersister;
 
-class Entity implements PromisedImagePersister
+class Entity implements DoctrineImagePersister
 {
 
 	#[Column(type: 'image', nullable: true)]
