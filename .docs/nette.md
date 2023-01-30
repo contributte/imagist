@@ -2,8 +2,6 @@
 
 - [Registration](#registration)
 - [Configuration](#configuration)
-- [Forms](#forms)
-- [Latte](#latte)
 - [Tracy](#tracy)
 
 ## Registration
