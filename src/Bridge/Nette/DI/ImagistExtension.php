@@ -328,7 +328,7 @@ use Tracy\BlueScreen;
 			}
 		}
 
-		if ($config->extensions->doctrine->promisedPersistEvent) {
+		if ($config->extensions->doctrine->persistEvent) {
 			$service = $builder->addDefinition($this->prefix('doctrine.events.promisedPersist'))
 				->setFactory(PersisterEvent::class)
 				->setAutowired(false);
