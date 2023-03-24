@@ -57,6 +57,16 @@ class GumletBuilder
 	/**
 	 * @return self
 	 */
+	public function fill(string $fill)
+	{
+		$this->options['fill'] = $fill;
+
+		return $this;
+	}
+
+	/**
+	 * @return self
+	 */
 	public function mask(string $mask)
 	{
 		$this->options['mask'] = $mask;

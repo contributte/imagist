@@ -3,6 +3,7 @@
 namespace Contributte\Imagist\Bridge\Gumlet;
 
 use Contributte\Imagist\Bridge\Gumlet\Operation\GumletCropModeOperation;
+use Contributte\Imagist\Bridge\Gumlet\Operation\GumletFillOperation;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Operation\CropOperation;
 use Contributte\Imagist\Filter\Operation\MaskOperation;
@@ -44,6 +45,10 @@ final class GumletOperationProcessor implements OperationProcessorInterface
 
 		if ($crop = $collection->get(CropOperation::class)) {
 			$builder->extract($crop->getLeft(), $crop->getTop(), $crop->getWidth(), $crop->getHeight());
+		}
+		
+		if ($fill = $collection->get(GumletFillOperation::class)) {
+			$builder->fill($fill->getFill());
 		}
 
 		$resource->merge($builder->build());
