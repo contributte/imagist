@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Nette\Latte\Extension\Node;
 
+use Generator;
 use Latte\Compiler\Nodes\Html\ElementNode;
 use Latte\Compiler\Nodes\Php\Expression\ArrayNode;
 use Latte\Compiler\Nodes\Php\ExpressionNode;
@@ -12,11 +13,11 @@ use Latte\Compiler\Tag;
 final class ImgNode extends StatementNode
 {
 
-	private ?ElementNode $element;
+	public ?ElementNode $element;
 
-	private ExpressionNode $image;
+	public ExpressionNode $image;
 
-	private ArrayNode $arguments;
+	public ArrayNode $arguments;
 
 	public static function create(Tag $tag): self
 	{
@@ -49,6 +50,19 @@ final class ImgNode extends StatementNode
 		}
 
 		return $code;
+	}
+
+	/**
+	 * @return Generator<ElementNode|ExpressionNode>
+	 */
+	public function &getIterator(): Generator
+	{
+		if ($this->element) {
+			yield $this->element;
+		}
+
+		yield $this->image;
+		yield $this->arguments;
 	}
 
 }
