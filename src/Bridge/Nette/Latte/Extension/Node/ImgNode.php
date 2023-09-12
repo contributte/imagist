@@ -57,10 +57,6 @@ final class ImgNode extends StatementNode
 	 */
 	public function &getIterator(): Generator
 	{
-		if ($this->element) {
-			yield $this->element;
-		}
-
 		yield $this->image;
 		yield $this->arguments;
 	}
