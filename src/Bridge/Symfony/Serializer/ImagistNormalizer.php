@@ -14,6 +14,8 @@ final class ImagistNormalizer implements NormalizerInterface
 	public const AS_OBJECT = 'imagist.asObject';
 	public const FILTERS = 'imagist.filters';
 	public const FILTERS_BY_SCOPE = 'imagist.filtersByScope';
+	public const FILTERS_BY_UNIQUE_ID = 'imagist.filtersByUniqueId';
+	public const UNIQUE_ID = 'imagist.uniqueId';
 
 	private LinkGeneratorInterface $linkGenerator;
 
@@ -42,6 +44,12 @@ final class ImagistNormalizer implements NormalizerInterface
 		}
 
 		$filters = ($context[self::FILTERS_BY_SCOPE] ?? [])[$object->getScope()->toString()] ?? [];
+
+		if ($filters) {
+			return $this->applyFilters($object, $filters);
+		}
+
+		$filters = ($context[self::FILTERS_BY_UNIQUE_ID] ?? [])[$context[self::UNIQUE_ID]] ?? [];
 
 		if ($filters) {
 			return $this->applyFilters($object, $filters);
