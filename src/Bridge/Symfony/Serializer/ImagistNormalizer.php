@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 final class ImagistNormalizer implements NormalizerInterface
 {
 
+	public const AS_ID = 'imagist.asId';
 	public const AS_OBJECT = 'imagist.asObject';
 	public const FILTERS = 'imagist.filters';
 	public const FILTERS_BY_SCOPE = 'imagist.filtersByScope';
@@ -37,6 +38,10 @@ final class ImagistNormalizer implements NormalizerInterface
 			return $object;
 		}
 
+		if (($context[self::AS_ID] ?? false) === true) {
+			return $object->getId();
+		}
+
 		$filters = $context[self::FILTERS] ?? [];
 
 		if ($filters) {
@@ -49,10 +54,12 @@ final class ImagistNormalizer implements NormalizerInterface
 			return $this->applyFilters($object, $filters);
 		}
 
-		$filters = ($context[self::FILTERS_BY_UNIQUE_ID] ?? [])[$context[self::UNIQUE_ID]] ?? [];
+		if (isset($context[self::UNIQUE_ID])) {
+			$filters = ($context[self::FILTERS_BY_UNIQUE_ID] ?? [])[$context[self::UNIQUE_ID]] ?? [];
 
-		if ($filters) {
-			return $this->applyFilters($object, $filters);
+			if ($filters) {
+				return $this->applyFilters($object, $filters);
+			}
 		}
 
 		if ($object instanceof EmptyImageInterface) {
