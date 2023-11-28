@@ -39,6 +39,10 @@ final class ImagistNormalizer implements NormalizerInterface
 		}
 
 		if (($context[self::AS_ID] ?? false) === true) {
+			if ($object instanceof EmptyImageInterface) {
+				return null;
+			}
+
 			return $object->getId();
 		}
 
