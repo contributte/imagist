@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Unit;
+namespace Tests\Unit;
 
 use Codeception\Test\Unit;
 use Contributte\Imagist\Entity\PersistentImage;
