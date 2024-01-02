@@ -9,5 +9,5 @@ modules:
   enabled:
     - PhpBrowser:
         url: http://localhost/myapp
-    - Contributte\Tests\Helper\Acceptance
+    - Tests\Helper\Acceptance
   step_decorators: ~

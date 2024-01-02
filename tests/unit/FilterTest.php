@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Unit;
+namespace Tests\Unit;
 
 use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
 use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
@@ -10,9 +10,9 @@ use Contributte\Imagist\Filesystem\LocalFilesystem;
 use Contributte\Imagist\Filter\Context\Context;
 use Contributte\Imagist\Filter\FilterProcessor;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
-use Contributte\Imagist\Testing\FileTestCase;
-use Contributte\Imagist\Testing\Filter\ImagineThumbnailFilter;
 use Contributte\Imagist\Uploader\FilePathUploader;
+use Tests\Testing\FileTestCase;
+use Tests\Testing\Filter\ImagineThumbnailFilter;
 
 class FilterTest extends FileTestCase
 {

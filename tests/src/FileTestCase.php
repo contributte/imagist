@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing;
+namespace Tests\Testing;
 
 use Codeception\Test\Unit;
 use Symfony\Component\Filesystem\Filesystem;

@@ -46,7 +46,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests"
+      "Tests\\Testing\\": "tests/src",
+      "Tests\\Unit\\": "tests/unit",
+      "Tests\\Functional\\": "tests/functional"
     }
   },
   "minimum-stability": "dev",

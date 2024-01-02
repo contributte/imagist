@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Filter;
+namespace Tests\Testing\Filter;
 
 use Contributte\Imagist\Filter\FilterIdentifier;
 use Contributte\Imagist\Filter\FilterInterface;

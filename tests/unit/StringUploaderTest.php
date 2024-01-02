@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Unit;
+namespace Tests\Unit;
 
-use Contributte\Imagist\Testing\FileTestCase;
 use Contributte\Imagist\Uploader\StringUploader;
+use Tests\Testing\FileTestCase;
 
 class StringUploaderTest extends FileTestCase
 {

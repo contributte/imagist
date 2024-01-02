@@ -6,5 +6,5 @@ actor: UnitTester
 modules:
   enabled:
     - Asserts
-    - Contributte\Tests\Helper\Unit
+    - Tests\Helper\Unit
   step_decorators: ~

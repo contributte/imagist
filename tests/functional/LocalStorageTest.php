@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Functional;
+namespace Tests\Functional;
 
 use Contributte\Imagist\Builder\LocalImageStorageBuilder;
 use Contributte\Imagist\Entity\EmptyImage;
@@ -16,9 +16,9 @@ use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\Resolver\DefaultImageResolvers\ScopeDefaultImageResolver;
 use Contributte\Imagist\Scope\Scope;
-use Contributte\Imagist\Testing\FileTestCase;
-use Contributte\Imagist\Testing\Filter\ThumbnailFilter;
+use Tests\Testing\Filter\ThumbnailFilter;
 use Contributte\Imagist\Uploader\FilePathUploader;
+use Tests\Testing\FileTestCase;
 
 class LocalStorageTest extends FileTestCase
 {

@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace Contributte\Imagist\Testing\Functional;
+namespace Tests\Functional;
 
 use Contributte\Imagist\Builder\LocalImageStorageBuilder;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\ImageStorageInterface;
-use Contributte\Imagist\Testing\FileTestCase;
 use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Contributte\Imagist\Uploader\FilePathUploader;
+use Tests\Testing\FileTestCase;
 
 class TransactionTest extends FileTestCase
 {
