@@ -32,9 +32,10 @@ For details on how to use this package, check out our [documentation](.docs).
 
 ## Versions
 
-| State       | Version       | Branch   | Standalone | Symfony | Nette | PHP     |
-|-------------|---------------|----------|------------|---------|-------|---------|
-| dev         | `dev-master`  | `master` | ✓          | 5.2+    | 3.0+  | 7.4+  |
+| State  | Version  | Branch   | Nette | PHP     |
+|--------|----------|----------|-------|---------|
+| dev    | `^2.1.0` | `master` | 3.2+  | `>=8.1` |
+| stable | `^2.0.0` | `master` | 3.2+  | `>=8.1` |
 
 ## Development
 

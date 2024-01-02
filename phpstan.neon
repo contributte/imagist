@@ -1,20 +1,18 @@
+includes:
+	- vendor/contributte/phpstan/phpstan.neon
+
 parameters:
 	level: 9
-	excludePaths:
-		analyse:
-			- src/Bridge/Nette/Macro/ImageMacro.php
+	phpVersion: 80100
+
+	scanDirectories:
+		- src
+
+	fileExtensions:
+		- php
+
+	paths:
+		- src
+		- .docs
+
 	ignoreErrors:
-		-
-			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\GumletImageStorageExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\GumletImagistExtension\\.$#"
-			count: 1
-			path: src/Bridge/Nette/DI/GumletImageStorageExtension.php
-
-		-
-			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImageStorageConfigFiltersExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImagistNeonFiltersExtension\\.$#"
-			count: 1
-			path: src/Bridge/Nette/DI/ImageStorageConfigFiltersExtension.php
-
-		-
-			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImageStorageExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImagistExtension\\.$#"
-			count: 1
-			path: src/Bridge/Nette/DI/ImageStorageExtension.php

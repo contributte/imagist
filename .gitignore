@@ -1,6 +1,14 @@
-## ide
-.idea/
+# IDE
+/.idea
 
-## composer
-composer.lock
-vendor/
+# Composer
+/vendor
+/composer.lock
+
+# Tests
+/tests/tmp
+/coverage.*
+/tests/**/*.log
+/tests/**/*.html
+/tests/**/*.expected
+/tests/**/*.actual
