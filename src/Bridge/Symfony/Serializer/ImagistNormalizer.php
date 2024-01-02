@@ -2,6 +2,7 @@
 
 namespace Contributte\Imagist\Bridge\Symfony\Serializer;
 
+use ArrayObject;
 use Contributte\Imagist\Entity\EmptyImageInterface;
 use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Filter\FilterInterface;
@@ -27,9 +28,9 @@ final class ImagistNormalizer implements NormalizerInterface
 
 	/**
 	 * @param mixed[] $context
-	 * @return PersistentImageInterface|array<string|null>|string|null
+	 * @return mixed
 	 */
-	public function normalize(mixed $object, ?string $format = null, array $context = []): PersistentImageInterface|array|string|null
+	public function normalize(mixed $object, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
 	{
 		assert($object instanceof PersistentImageInterface);
 
@@ -72,9 +73,20 @@ final class ImagistNormalizer implements NormalizerInterface
 		return $this->linkGenerator->link($object);
 	}
 
-	public function supportsNormalization(mixed $data, ?string $format = null): bool
+	/**
+	 * {@inheritDoc}
+	 */
+	public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
 	{
 		return $data instanceof PersistentImageInterface;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getSupportedTypes(?string $format): array
+	{
+		return ['*' => true];
 	}
 
 	/**

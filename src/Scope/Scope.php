@@ -27,7 +27,7 @@ class Scope
 
 	public function isEmpty(): bool
 	{
-		return !$this->scopes;
+		return $this->scopes === [];
 	}
 
 	public function startsWith(string $scope): bool

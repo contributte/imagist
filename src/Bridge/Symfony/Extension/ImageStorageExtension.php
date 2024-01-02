@@ -26,7 +26,7 @@ final class ImageStorageExtension extends Extension
 {
 
 	/**
-	 * @param string[] $configs
+	 * @param mixed[] $configs
 	 */
 	public function load(array $configs, ContainerBuilder $container): void
 	{

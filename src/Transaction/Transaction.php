@@ -103,7 +103,7 @@ final class Transaction implements TransactionInterface
 		$this->persisted = [];
 		$this->removed = [];
 
-		if ($exception) {
+		if ($exception !== null) {
 			throw new RollbackFailedException(
 				sprintf('Rollback failed because of: %s', $exception->getMessage()),
 				0,

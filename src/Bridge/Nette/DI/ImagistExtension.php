@@ -9,9 +9,9 @@ use Contributte\Imagist\Bridge\Imagine\ImagineOperationProcessor;
 use Contributte\Imagist\Bridge\Imagine\ImagineResourceFactory;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteOperationProcessor;
 use Contributte\Imagist\Bridge\Nette\Filter\NetteResourceFactory;
+use Contributte\Imagist\Bridge\Nette\Latte\Extension\ImagistExtension as ImagistExtensionLatte;
 use Contributte\Imagist\Bridge\Nette\Latte\LatteImageProvider;
 use Contributte\Imagist\Bridge\Nette\LinkGenerator;
-use Contributte\Imagist\Bridge\Nette\Macro\ImageMacro;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImageBarPanel;
 use Contributte\Imagist\Bridge\Nette\Tracy\ImagistBlueScreen;
 use Contributte\Imagist\Database\DatabaseConverter;
@@ -56,7 +56,6 @@ use Contributte\Imagist\Transaction\TransactionFactoryInterface;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Latte\Engine;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
@@ -75,7 +74,9 @@ use Tracy\BlueScreen;
 /**
  * @final
  */
-/*final*/ class ImagistExtension extends CompilerExtension
+/*final*/
+
+class ImagistExtension extends CompilerExtension
 {
 
 	/** @var callable[] */
@@ -342,36 +343,6 @@ use Tracy\BlueScreen;
 
 	private function loadLatte(ContainerBuilder $builder): void
 	{
-		if (version_compare(Engine::VERSION, '3', '<')) { // @phpstan-ignore-line
-			$this->loadLatte2($builder);
-		} else {
-			$this->loadLatte3($builder);
-		}
-	}
-
-	private function loadLatte2(ContainerBuilder $builder): void
-	{
-		$serviceName = $builder->getByType(LatteFactory::class);
-		if (!$serviceName) {
-			return;
-		}
-
-		$builder->addDefinition($this->prefix('latte.provider'))
-			->setFactory(LatteImageProvider::class);
-
-		$factory = $builder->getDefinition($serviceName);
-		assert($factory instanceof FactoryDefinition);
-
-		$factory->getResultDefinition()
-			->addSetup('?->onCompile[] = function ($engine) { ?::install($engine->getCompiler()); }', [
-				'@self',
-				ImageMacro::class,
-			])
-			->addSetup('addProvider', ['images', $this->prefix('@latte.provider')]);
-	}
-
-	private function loadLatte3(ContainerBuilder $builder): void
-	{
 		$serviceName = $builder->getByType(LatteFactory::class);
 		if (!$serviceName) {
 			return;
@@ -381,7 +352,7 @@ use Tracy\BlueScreen;
 			->setFactory(LatteImageProvider::class);
 
 		$extension = $builder->addDefinition($this->prefix('latte.extension'))
-			->setFactory(\Contributte\Imagist\Bridge\Nette\Latte\Extension\ImagistExtension::class);
+			->setFactory(ImagistExtensionLatte::class);
 
 		$factory = $builder->getDefinition($serviceName);
 		assert($factory instanceof FactoryDefinition);

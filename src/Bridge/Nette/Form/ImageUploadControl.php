@@ -68,7 +68,7 @@ final class ImageUploadControl extends UploadControl
 	/**
 	 * @return static
 	 */
-	public function setValue(FileUpload|PersistentImageInterface|string|null $value): static
+	public function setValue(mixed $value): static
 	{
 		if ($value === null) {
 			$this->entity = $this->entity->withValue();
@@ -94,7 +94,6 @@ final class ImageUploadControl extends UploadControl
 				->withDefault(new PersistentImage($value))
 				->withValue(null);
 		} else {
-			// @phpstan-ignore-next-line $value is mixed
 			$type = is_object($value) ? $value::class : gettype($value);
 
 			throw new InvalidArgumentException(

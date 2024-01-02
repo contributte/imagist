@@ -31,7 +31,7 @@ class EmptyImage extends Image implements EmptyImageInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function getOriginal()
+	public function getOriginal(): static
 	{
 		throw new EmptyImageException(sprintf('Cannot call %s on empty image', __METHOD__));
 	}

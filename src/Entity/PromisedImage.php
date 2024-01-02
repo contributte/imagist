@@ -66,7 +66,7 @@ final class PromisedImage implements PromisedImageInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function withScope(Scope $scope): PersistentImageInterface
+	public function withScope(Scope $scope): static
 	{
 		return $this->getResult()->withScope($scope);
 	}
@@ -74,7 +74,7 @@ final class PromisedImage implements PromisedImageInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function withName(string $name): PersistentImageInterface
+	public function withName(string $name): static
 	{
 		return $this->getResult()->withName($name);
 	}
@@ -82,12 +82,12 @@ final class PromisedImage implements PromisedImageInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function withFilter(?FilterInterface $filter): PersistentImageInterface
+	public function withFilter(?FilterInterface $filter): static
 	{
 		return $this->getResult()->withFilter($filter);
 	}
 
-	public function getOriginal(): PersistentImageInterface
+	public function getOriginal(): static
 	{
 		return $this->getResult()->getOriginal();
 	}
@@ -144,7 +144,7 @@ final class PromisedImage implements PromisedImageInterface
 
 	public function getResult(): PersistentImageInterface
 	{
-		if (!$this->result) {
+		if ($this->result === null) {
 			throw new PromiseException('Promise is still pending');
 		}
 

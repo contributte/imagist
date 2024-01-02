@@ -1,8 +1,12 @@
 includes:
-	- vendor/contributte/phpstan/phpstan.neon
+	#- vendor/contributte/phpstan/phpstan.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/rules.neon
+	#- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-	level: 9
+	level: 8
 	phpVersion: 80100
 
 	scanDirectories:
@@ -16,3 +20,72 @@ parameters:
 		- .docs
 
 	ignoreErrors:
+		-
+			message: """
+				#^Call to deprecated method getName\\(\\) of class Contributte\\\\Imagist\\\\Bridge\\\\Doctrine\\\\ImageType\\:
+				this method will be removed in Doctrine DBAL 4\\.0,
+				            use \\{@see TypeRegistry\\:\\:lookupName\\(\\)\\} instead\\.$#
+			"""
+			count: 2
+			path: src/Bridge/Doctrine/ImageType.php
+
+		-
+			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\GumletImageStorageExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\GumletImagistExtension\\.$#"
+			count: 1
+			path: src/Bridge/Nette/DI/GumletImageStorageExtension.php
+
+		-
+			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImageStorageConfigFiltersExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImagistNeonFiltersExtension\\.$#"
+			count: 1
+			path: src/Bridge/Nette/DI/ImageStorageConfigFiltersExtension.php
+
+		-
+			message: "#^Class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImageStorageExtension extends @final class Contributte\\\\Imagist\\\\Bridge\\\\Nette\\\\DI\\\\ImagistExtension\\.$#"
+			count: 1
+			path: src/Bridge/Nette/DI/ImageStorageExtension.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Bridge\\\\Symfony\\\\Serializer\\\\ImagistNormalizer\\:\\:normalize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Bridge\\\\Symfony\\\\Serializer\\\\ImagistNormalizer\\:\\:normalize\\(\\) return type with generic class ArrayObject does not specify its types\\: TKey, TValue$#"
+			count: 1
+			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Bridge\\\\Symfony\\\\Serializer\\\\ImagistNormalizer\\:\\:normalize\\(\\) should return array\\|ArrayObject\\|bool\\|float\\|int\\|string\\|null but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
+			count: 1
+			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Bridge\\\\Symfony\\\\Serializer\\\\ImagistNormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
+
+		-
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\|ArrayObject\\|bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Entity\\\\PromisedImage\\:\\:getOriginal\\(\\) should return Contributte\\\\Imagist\\\\Entity\\\\PromisedImage but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
+			count: 1
+			path: src/Entity/PromisedImage.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Entity\\\\PromisedImage\\:\\:withFilter\\(\\) should return Contributte\\\\Imagist\\\\Entity\\\\PromisedImage but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
+			count: 1
+			path: src/Entity/PromisedImage.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Entity\\\\PromisedImage\\:\\:withName\\(\\) should return Contributte\\\\Imagist\\\\Entity\\\\PromisedImage but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
+			count: 1
+			path: src/Entity/PromisedImage.php
+
+		-
+			message: "#^Method Contributte\\\\Imagist\\\\Entity\\\\PromisedImage\\:\\:withScope\\(\\) should return Contributte\\\\Imagist\\\\Entity\\\\PromisedImage but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
+			count: 1
+			path: src/Entity/PromisedImage.php
+

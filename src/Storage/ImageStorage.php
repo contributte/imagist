@@ -70,13 +70,13 @@ class ImageStorage implements ImageStorageInterface
 		$result = $this->persister->persist($image, $context);
 		$persistent = new PersistentImage($result->getId());
 
-		if ($clone->getFilter()) {
+		if ($clone->getFilter() !== null) {
 			$persistent = $persistent->withFilter($clone->getFilter());
 		}
 
 		$event = new PersistedImageEvent($this, $clone, $persistent);
 
-		if ($this->dispatcher) {
+		if ($this->dispatcher !== null) {
 			$this->dispatcher->dispatch($event);
 		}
 
