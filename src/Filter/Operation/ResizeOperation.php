@@ -8,19 +8,13 @@ use Nette\Utils\Image;
 final class ResizeOperation extends OperationAsFilter
 {
 
-	/** @var int|string|null */
-	private $width;
+	private int|string|null $width = null;
 
-	/** @var int|string|null */
-	private $height;
+	private int|string|null $height = null;
 
 	private ?string $mode;
 
-	/**
-	 * @param int|string|null $width
-	 * @param int|string|null $height
-	 */
-	public function __construct($width, $height, ?string $mode = null)
+	public function __construct(int|string|null $width, int|string|null $height, ?string $mode = null)
 	{
 		$this->width = $width;
 		$this->height = $height;
@@ -32,18 +26,12 @@ final class ResizeOperation extends OperationAsFilter
 		return new FilterIdentifier('resize', [$this->width, $this->height, $this->mode]);
 	}
 
-	/**
-	 * @return int|string|null
-	 */
-	public function getWidth()
+	public function getWidth(): int|string|null
 	{
 		return $this->width;
 	}
 
-	/**
-	 * @return int|string|null
-	 */
-	public function getHeight()
+	public function getHeight(): int|string|null
 	{
 		return $this->height;
 	}

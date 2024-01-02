@@ -35,7 +35,7 @@ final class ChainImageRemover implements RemoverInterface
 			}
 		}
 
-		throw new InvalidArgumentException(sprintf('Remover not found for class %s', get_class($image)));
+		throw new InvalidArgumentException(sprintf('Remover not found for class %s', $image::class));
 	}
 
 }

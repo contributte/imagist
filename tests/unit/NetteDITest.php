@@ -20,6 +20,12 @@ final class NetteDITest extends Unit
 
 	private Container $container;
 
+	public function testCompilerClasses(): void
+	{
+		$this->assertInstanceOf(LinkGenerator::class, $this->container->getByType(LinkGeneratorInterface::class));
+		$this->assertInstanceOf(FilterProcessorInterface::class, $this->container->getByType(FilterProcessorInterface::class));
+	}
+
 	protected function _before(): void
 	{
 		$this->tempDir = new TemporaryDirectory(__DIR__ . '/_tmp');
@@ -42,12 +48,6 @@ final class NetteDITest extends Unit
 	protected function _after(): void
 	{
 		$this->tempDir->delete();
-	}
-
-	public function testCompilerClasses(): void
-	{
-		$this->assertInstanceOf(LinkGenerator::class, $this->container->getByType(LinkGeneratorInterface::class));
-		$this->assertInstanceOf(FilterProcessorInterface::class, $this->container->getByType(FilterProcessorInterface::class));
 	}
 
 }

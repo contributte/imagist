@@ -35,7 +35,7 @@ abstract class FilesystemAbstract implements FilesystemInterface
 			'disable_asserts',
 			true,
 			false,
-			fn(): bool => $this->adapter->delete($path->toString())
+			fn (): bool => $this->adapter->delete($path->toString())
 		);
 	}
 

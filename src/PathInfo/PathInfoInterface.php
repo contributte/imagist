@@ -5,7 +5,7 @@ namespace Contributte\Imagist\PathInfo;
 /**
  * %publicDir%/media-bucket/scope/_filter/imageName.png
  *            \-----------/\-----/\------/\-----------/
- *                bucket    scope  filter   imageName
+ *                bucket scope filter imageName
  */
 interface PathInfoInterface
 {

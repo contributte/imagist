@@ -8,25 +8,15 @@ use Nette\Utils\Image;
 final class CropOperation extends OperationAsFilter
 {
 
-	/** @var int|string */
-	private $left;
+	private int|string $left;
 
-	/** @var int|string */
-	private $top;
+	private int|string $top;
 
-	/** @var int|string */
-	private $width;
+	private int|string $width;
 
-	/** @var int|string */
-	private $height;
+	private int|string $height;
 
-	/**
-	 * @param int|string $left
-	 * @param int|string $top
-	 * @param int|string $width
-	 * @param int|string $height
-	 */
-	public function __construct($left, $top, $width, $height)
+	public function __construct(int|string $left, int|string $top, int|string $width, int|string $height)
 	{
 		$this->left = $left;
 		$this->top = $top;
@@ -39,34 +29,22 @@ final class CropOperation extends OperationAsFilter
 		return new FilterIdentifier('crop', [$this->left, $this->top, $this->width, $this->height]);
 	}
 
-	/**
-	 * @return int|string
-	 */
-	public function getTop()
+	public function getTop(): int|string
 	{
 		return $this->top;
 	}
 
-	/**
-	 * @return int|string
-	 */
-	public function getLeft()
+	public function getLeft(): int|string
 	{
 		return $this->left;
 	}
 
-	/**
-	 * @return int|string
-	 */
-	public function getWidth()
+	public function getWidth(): int|string
 	{
 		return $this->width;
 	}
 
-	/**
-	 * @return int|string
-	 */
-	public function getHeight()
+	public function getHeight(): int|string
 	{
 		return $this->height;
 	}
@@ -74,7 +52,7 @@ final class CropOperation extends OperationAsFilter
 	/**
 	 * @return array{int, int, int, int}
 	 */
-	public function calculate(int $srcWidth, int $srcHeight)
+	public function calculate(int $srcWidth, int $srcHeight): array
 	{
 		/** @var array{int, int, int, int} $calculated */
 		$calculated = Image::calculateCutout(

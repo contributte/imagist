@@ -19,10 +19,7 @@ final class BarEvent
 
 	private ?string $entrypoint = null;
 
-	/**
-	 * @param PersistedImageEvent|RemovedImageEvent $event
-	 */
-	public function __construct($event)
+	public function __construct(PersistedImageEvent|RemovedImageEvent $event)
 	{
 		if ($event instanceof RemovedImageEvent) {
 			$this->action = '<span style="color:red">remove</span>';
@@ -34,7 +31,7 @@ final class BarEvent
 			$this->action = $filter ? '<span style="color:blue">filtering</span>' : '<span style="color:green">persist</span>';
 
 			$this->result = $event->getResult()->getId();
-			$this->filter = $filter ? get_class($filter) : '<span style="color:grey">none</span>';
+			$this->filter = $filter ? $filter::class : '<span style="color:grey">none</span>';
 			$this->source = $event->getSource()->getId();
 		}
 

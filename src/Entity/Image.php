@@ -86,7 +86,7 @@ abstract class Image implements ImageInterface
 	/**
 	 * @return static
 	 */
-	public function withScope(Scope $scope)
+	public function withScope(Scope $scope): static
 	{
 		$this->throwIfClosed();
 
@@ -99,7 +99,7 @@ abstract class Image implements ImageInterface
 	/**
 	 * @return static
 	 */
-	public function withName(string $name)
+	public function withName(string $name): static
 	{
 		$this->throwIfClosed();
 
@@ -112,7 +112,7 @@ abstract class Image implements ImageInterface
 	/**
 	 * @return static
 	 */
-	public function withFilter(?FilterInterface $filter)
+	public function withFilter(?FilterInterface $filter): static
 	{
 		$this->throwIfClosed();
 
@@ -125,7 +125,7 @@ abstract class Image implements ImageInterface
 	/**
 	 * @return static
 	 */
-	public function getOriginal()
+	public function getOriginal(): static
 	{
 		$clone = clone $this;
 		$clone->filter = null;

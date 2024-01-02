@@ -63,21 +63,21 @@ interface ImageInterface
 	 *
 	 * @return static
 	 */
-	public function getOriginal();
+	public function getOriginal(): static;
 
 	/**
 	 * @return static
 	 */
-	public function withName(string $name);
+	public function withName(string $name): static;
 
 	/**
 	 * @return static
 	 */
-	public function withScope(Scope $scope);
+	public function withScope(Scope $scope): static;
 
 	/**
 	 * @return static
 	 */
-	public function withFilter(?FilterInterface $filter);
+	public function withFilter(?FilterInterface $filter): static;
 
 }

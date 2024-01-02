@@ -59,7 +59,7 @@ final class OperationCollection
 		$reports = [];
 		foreach ($this->operations as $operation) {
 			if (!$operation instanceof SilentOperationInterface) {
-				$reports[] = get_class($operation);
+				$reports[] = $operation::class;
 			}
 		}
 

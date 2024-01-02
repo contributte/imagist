@@ -16,9 +16,9 @@ use Contributte\Imagist\LinkGeneratorInterface;
 use Contributte\Imagist\PathInfo\PathInfoFactory;
 use Contributte\Imagist\Resolver\DefaultImageResolvers\ScopeDefaultImageResolver;
 use Contributte\Imagist\Scope\Scope;
-use Tests\Testing\Filter\ThumbnailFilter;
 use Contributte\Imagist\Uploader\FilePathUploader;
 use Tests\Testing\FileTestCase;
+use Tests\Testing\Filter\ThumbnailFilter;
 
 class LocalStorageTest extends FileTestCase
 {
@@ -28,19 +28,6 @@ class LocalStorageTest extends FileTestCase
 	private LinkGeneratorInterface $linkGenerator;
 
 	private FileFactory $fileFactory;
-
-	protected function _before(): void
-	{
-		parent::_before();
-
-		$builder = new LocalImageStorageBuilder($this->getAbsolutePath());
-		$builder->withNetteFilterProcessor();
-		$result = $builder->build();
-
-		$this->fileFactory = new FileFactory(new LocalFilesystem($this->getAbsolutePath()), new PathInfoFactory());
-		$this->storage = $result->getImageStorage();
-		$this->linkGenerator = $result->getLinkGenerator();
-	}
 
 	public function testPersist(): void
 	{
@@ -198,6 +185,19 @@ class LocalStorageTest extends FileTestCase
 		]));
 
 		$this->assertNull($linkGenerator->link(new PersistentImage('foo/bar.png')));
+	}
+
+	protected function _before(): void
+	{
+		parent::_before();
+
+		$builder = new LocalImageStorageBuilder($this->getAbsolutePath());
+		$builder->withNetteFilterProcessor();
+		$result = $builder->build();
+
+		$this->fileFactory = new FileFactory(new LocalFilesystem($this->getAbsolutePath()), new PathInfoFactory());
+		$this->storage = $result->getImageStorage();
+		$this->linkGenerator = $result->getLinkGenerator();
 	}
 
 	private function createStorable(string $name = 'name.jpg'): StorableImageInterface

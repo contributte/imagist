@@ -14,6 +14,9 @@ final class ThumbnailFilter implements FilterInterface
 		return new FilterIdentifier('thumbnail');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOperations(): array
 	{
 		return [

@@ -17,14 +17,14 @@ class StorableImage extends Image implements StorableImageInterface
 		parent::__construct($name, $scope);
 	}
 
-	public function getUploader(): UploaderInterface
-	{
-		return $this->uploader;
-	}
-
 	final public function close(?string $reason = null): void
 	{
 		$this->setClosed($reason);
+	}
+
+	public function getUploader(): UploaderInterface
+	{
+		return $this->uploader;
 	}
 
 }

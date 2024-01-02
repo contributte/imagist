@@ -22,6 +22,18 @@ final class ImagineResourceFactory implements ResourceFactoryInterface
 		$this->imagine = $this->createImagine();
 	}
 
+	public function create(FileInterface $source, ContextInterface $context): ImageInterface
+	{
+		return $this->imagine->load($source->getContent());
+	}
+
+	public function toString(object $resource, FileInterface $source, ContextInterface $context): string
+	{
+		assert($resource instanceof ImageInterface);
+
+		return $resource->get($source->getMimeType()->toSuffix());
+	}
+
 	protected function createImagine(): ImagineInterface
 	{
 		if (extension_loaded('imagick')) {
@@ -37,18 +49,6 @@ final class ImagineResourceFactory implements ResourceFactoryInterface
 		}
 
 		throw new RuntimeException('PHP extension not found, need imagick or gd or gmagick');
-	}
-
-	public function create(FileInterface $source, ContextInterface $context): ImageInterface
-	{
-		return $this->imagine->load($source->getContent());
-	}
-
-	public function toString(object $resource, FileInterface $source, ContextInterface $context): string
-	{
-		assert($resource instanceof ImageInterface);
-
-		return $resource->get($source->getMimeType()->toSuffix());
 	}
 
 }

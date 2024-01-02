@@ -46,7 +46,7 @@ final class GumletOperationProcessor implements OperationProcessorInterface
 		if ($crop = $collection->get(CropOperation::class)) {
 			$builder->extract($crop->getLeft(), $crop->getTop(), $crop->getWidth(), $crop->getHeight());
 		}
-		
+
 		if ($fill = $collection->get(GumletFillOperation::class)) {
 			$builder->fill($fill->getFill());
 		}

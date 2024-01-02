@@ -22,6 +22,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class ImageStorage implements ImageStorageInterface
 {
 
+	/** @var array<callable(PersistedImageEvent): void> */
+	public array $onPersist = [];
+
+	/** @var array<callable(RemovedImageEvent): void> */
+	public array $onRemove = [];
+
 	private PersisterInterface $persister;
 
 	private RemoverInterface $remover;
@@ -31,12 +37,6 @@ class ImageStorage implements ImageStorageInterface
 	private ?StringFilterCollectionInterface $stringFilterCollection;
 
 	private ContextFactoryInterface $contextFactory;
-
-	/** @var array<callable(PersistedImageEvent): void> */
-	public array $onPersist = [];
-
-	/** @var array<callable(RemovedImageEvent): void> */
-	public array $onRemove = [];
 
 	public function __construct(
 		PersisterInterface $persister,

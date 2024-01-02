@@ -28,6 +28,11 @@ final class PromisedImage implements PromisedImageInterface
 		$this->remove = $remove;
 	}
 
+	public static function getSourceId(PromisedImage $image): string
+	{
+		return $image->source->getId();
+	}
+
 	public function getId(): string
 	{
 		return $this->getResult()->getId();
@@ -159,11 +164,6 @@ final class PromisedImage implements PromisedImageInterface
 	public function close(?string $reason = null): void
 	{
 		$this->getResult()->close($reason);
-	}
-
-	public static function getSourceId(PromisedImage $image): string
-	{
-		return $image->source->getId();
 	}
 
 }

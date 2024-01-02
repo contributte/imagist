@@ -12,6 +12,11 @@ class PersistentImage extends Image implements PersistentImageInterface
 		parent::__construct(...$this->parseId($id));
 	}
 
+	public function close(?string $reason = null): void
+	{
+		$this->setClosed($reason);
+	}
+
 	/**
 	 * @return array{string, Scope}
 	 */
@@ -23,11 +28,6 @@ class PersistentImage extends Image implements PersistentImageInterface
 		unset($explode[$last]);
 
 		return [$name, new Scope(...$explode)];
-	}
-
-	public function close(?string $reason = null): void
-	{
-		$this->setClosed($reason);
 	}
 
 }

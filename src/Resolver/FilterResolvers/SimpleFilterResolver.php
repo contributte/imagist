@@ -33,6 +33,8 @@ final class SimpleFilterResolver implements FilterResolverInterface
 	private function parseArguments(array $options): array
 	{
 		$listKey = 0;
+
+		// @phpcs:ignore
 		foreach ($options as $key => &$value) {
 			if ($key !== $listKey) {
 				throw new LogicException(

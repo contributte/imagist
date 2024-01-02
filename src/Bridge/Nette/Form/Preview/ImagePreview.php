@@ -44,7 +44,7 @@ class ImagePreview implements ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setFilter(FilterInterface $filter)
+	public function setFilter(FilterInterface $filter): static
 	{
 		$this->filter = $filter;
 
@@ -54,7 +54,7 @@ class ImagePreview implements ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setPlaceholderLink(?string $link)
+	public function setPlaceholderLink(?string $link): static
 	{
 		if ($this->placeholder) {
 			throw new LogicException('Cannot set placeholder with placeholder link');
@@ -68,7 +68,7 @@ class ImagePreview implements ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setPlaceholder(?PersistentImageInterface $placeholder)
+	public function setPlaceholder(?PersistentImageInterface $placeholder): static
 	{
 		if ($this->placeholderLink) {
 			throw new LogicException('Cannot set placeholder with placeholder link');

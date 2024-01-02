@@ -168,6 +168,20 @@ use Tracy\BlueScreen;
 		$this->loadTracy($builder);
 	}
 
+	public function beforeCompile(): void
+	{
+		$builder = $this->getContainerBuilder();
+
+		Arrays::invoke($this->onBeforeCompile);
+
+		try {
+			$this->assertServiceDefinition($builder->getDefinitionByType(BlueScreen::class))
+				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
+		} catch (MissingServiceException $e) {
+			// no need
+		}
+	}
+
 	private function loadTracy(ContainerBuilder $builder): void
 	{
 		/** @var stdClass $config */
@@ -196,20 +210,6 @@ use Tracy\BlueScreen;
 				$imageStorage->addSetup('?->onRemove[] = [?, "removedEvent"]', ['@self', $panel]);
 			}
 		};
-	}
-
-	public function beforeCompile(): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		Arrays::invoke($this->onBeforeCompile);
-
-		try {
-			$this->assertServiceDefinition($builder->getDefinitionByType(BlueScreen::class))
-				->addSetup('?::install(?);', [ImagistBlueScreen::class, '@self']);
-		} catch (MissingServiceException $e) {
-			// no need
-		}
 	}
 
 	private function loadFilesystem(ContainerBuilder $builder): void

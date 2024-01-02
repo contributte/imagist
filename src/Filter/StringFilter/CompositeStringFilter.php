@@ -16,10 +16,7 @@ final class CompositeStringFilter implements FilterInterface
 	/** @var OperationInterface[] */
 	private array $operations = [];
 
-	/**
-	 * @param OperationInterface|FilterInterface ...$operations
-	 */
-	public function __construct(...$operations)
+	public function __construct(OperationInterface|FilterInterface ...$operations)
 	{
 		foreach ($operations as $operation) {
 			if ($operation instanceof OperationInterface) {
@@ -35,6 +32,9 @@ final class CompositeStringFilter implements FilterInterface
 		throw new LogicException('CompositeStringFilter is incorrectly used.');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOperations(): array
 	{
 		return $this->operations;

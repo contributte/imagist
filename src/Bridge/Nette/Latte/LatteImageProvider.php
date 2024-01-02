@@ -22,10 +22,9 @@ final class LatteImageProvider
 	}
 
 	/**
-	 * @param string|PersistentImageInterface|null $id
 	 * @param mixed[] $options
 	 */
-	public function link($id, array $options = []): ?string
+	public function link(string|PersistentImageInterface|null $id, array $options = []): ?string
 	{
 		if (is_string($id)) {
 			$image = new PersistentImage($id);

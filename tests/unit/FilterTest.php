@@ -19,16 +19,6 @@ class FilterTest extends FileTestCase
 
 	private FilterProcessor $processor;
 
-	protected function _before(): void
-	{
-		parent::_before();
-
-		$this->processor = new FilterProcessor(
-			new ImagineResourceFactory(),
-			[new ImagineOperationProcessor()],
-		);
-	}
-
 	public function testFilter(): void
 	{
 		$image = new StorableImage(
@@ -48,6 +38,16 @@ class FilterTest extends FileTestCase
 		$size = getimagesizefromstring($content);
 		$this->assertSame(15, $size[0]);
 		$this->assertSame(15, $size[1]);
+	}
+
+	protected function _before(): void
+	{
+		parent::_before();
+
+		$this->processor = new FilterProcessor(
+			new ImagineResourceFactory(),
+			[new ImagineOperationProcessor()],
+		);
 	}
 
 }

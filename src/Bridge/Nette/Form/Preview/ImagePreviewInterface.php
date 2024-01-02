@@ -17,12 +17,12 @@ interface ImagePreviewInterface
 	/**
 	 * @return static
 	 */
-	public function setPlaceholder(?PersistentImageInterface $placeholder);
+	public function setPlaceholder(?PersistentImageInterface $placeholder): static;
 
 	/**
 	 * @return static
 	 */
-	public function setFilter(FilterInterface $filter);
+	public function setFilter(FilterInterface $filter): static;
 
 	public function getHtml(ImageUploadControl $input): ?Html;
 

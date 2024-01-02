@@ -14,10 +14,7 @@ interface FilesystemInterface
 
 	public function exists(PathInfoInterface $path): bool;
 
-	/**
-	 * @return mixed
-	 */
-	public function delete(PathInfoInterface $path);
+	public function delete(PathInfoInterface $path): mixed;
 
 	/**
 	 * @return mixed[]

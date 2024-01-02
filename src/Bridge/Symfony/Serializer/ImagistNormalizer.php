@@ -26,11 +26,10 @@ final class ImagistNormalizer implements NormalizerInterface
 	}
 
 	/**
-	 * @param mixed $object
 	 * @param mixed[] $context
 	 * @return PersistentImageInterface|array<string|null>|string|null
 	 */
-	public function normalize($object, string $format = null, array $context = [])
+	public function normalize(mixed $object, ?string $format = null, array $context = []): PersistentImageInterface|array|string|null
 	{
 		assert($object instanceof PersistentImageInterface);
 
@@ -73,6 +72,11 @@ final class ImagistNormalizer implements NormalizerInterface
 		return $this->linkGenerator->link($object);
 	}
 
+	public function supportsNormalization(mixed $data, ?string $format = null): bool
+	{
+		return $data instanceof PersistentImageInterface;
+	}
+
 	/**
 	 * @param array<string, FilterInterface> $filters
 	 * @return array<string|null>
@@ -86,14 +90,6 @@ final class ImagistNormalizer implements NormalizerInterface
 		}
 
 		return $links;
-	}
-
-	/**
-	 * @param mixed $data
-	 */
-	public function supportsNormalization($data, string $format = null): bool
-	{
-		return $data instanceof PersistentImageInterface;
 	}
 
 }

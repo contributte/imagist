@@ -58,7 +58,7 @@ final class ImageUploadControl extends UploadControl
 	/**
 	 * @return static
 	 */
-	public function setScope(?Scope $scope)
+	public function setScope(?Scope $scope): static
 	{
 		$this->scope = $scope;
 
@@ -66,10 +66,9 @@ final class ImageUploadControl extends UploadControl
 	}
 
 	/**
-	 * @param FileUpload|PersistentImageInterface|string|null $value
 	 * @return static
 	 */
-	public function setValue($value)
+	public function setValue(FileUpload|PersistentImageInterface|string|null $value): static
 	{
 		if ($value === null) {
 			$this->entity = $this->entity->withValue();
@@ -96,7 +95,7 @@ final class ImageUploadControl extends UploadControl
 				->withValue(null);
 		} else {
 			// @phpstan-ignore-next-line $value is mixed
-			$type = is_object($value) ? get_class($value) : gettype($value);
+			$type = is_object($value) ? $value::class : gettype($value);
 
 			throw new InvalidArgumentException(
 				sprintf('Value must be %s|%s|string|null, %s given', FileUpload::class, PersistentImageInterface::class, $type)
@@ -183,7 +182,7 @@ final class ImageUploadControl extends UploadControl
 	/**
 	 * @return static
 	 */
-	public function setPreview(?ImagePreviewInterface $preview)
+	public function setPreview(?ImagePreviewInterface $preview): static
 	{
 		$this->preview = $preview;
 
@@ -193,7 +192,7 @@ final class ImageUploadControl extends UploadControl
 	/**
 	 * @return static
 	 */
-	public function setRemove(?ImageRemoveInterface $remove)
+	public function setRemove(?ImageRemoveInterface $remove): static
 	{
 		$this->remove = $remove;
 

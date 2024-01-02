@@ -10,20 +10,12 @@ class GumletBuilder
 	/** @var mixed[] */
 	private array $options = [];
 
-	/**
-	 * @return self
-	 */
-	public static function create()
+	public static function create(): self
 	{
 		return new self();
 	}
 
-	/**
-	 * @param int|string|null $width
-	 * @param int|string|null $height
-	 * @return self
-	 */
-	public function resize($width = null, $height = null, ?string $mode = null)
+	public function resize(int|string|null $width = null, int|string|null $height = null, ?string $mode = null): self
 	{
 		if (($width ?? $height) === null) {
 			throw new InvalidArgumentException('Height or width must be set');
@@ -44,43 +36,28 @@ class GumletBuilder
 		return $this;
 	}
 
-	/**
-	 * @return self
-	 */
-	public function crop(string $mode)
+	public function crop(string $mode): self
 	{
 		$this->options['crop'] = $mode;
 
 		return $this;
 	}
 
-	/**
-	 * @return self
-	 */
-	public function fill(string $fill)
+	public function fill(string $fill): self
 	{
 		$this->options['fill'] = $fill;
 
 		return $this;
 	}
 
-	/**
-	 * @return self
-	 */
-	public function mask(string $mask)
+	public function mask(string $mask): self
 	{
 		$this->options['mask'] = $mask;
 
 		return $this;
 	}
 
-	/**
-	 * @param int|string $left
-	 * @param int|string $top
-	 * @param int|string $width
-	 * @param int|string $height
-	 */
-	public function extract($left, $top, $width, $height): self
+	public function extract(int|string $left, int|string $top, int|string $width, int|string $height): self
 	{
 		$this->options['extract'] = implode(',', [$left, $top, $width, $height]);
 

@@ -18,11 +18,7 @@ final class ArrayResource
 		return $this;
 	}
 
-	/**
-	 * @param int|string $key
-	 * @param mixed $value
-	 */
-	public function add($key, $value): self
+	public function add(int|string $key, mixed $value): self
 	{
 		$this->array[$key] = $value;
 

@@ -36,6 +36,9 @@ final class ParsedStringFilter implements FilterInterface
 		return new FilterIdentifier($this->name, $this->arguments);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOperations(): array
 	{
 		return $this->operations;

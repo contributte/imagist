@@ -14,7 +14,7 @@ final class StringFilterCollection implements StringFilterCollectionInterface
 	/**
 	 * @param FilterInterface|DynamicFilterFactory<FilterInterface> $filter
 	 */
-	public function add($filter, ?string $name = null): self
+	public function add(FilterInterface|DynamicFilterFactory $filter, ?string $name = null): self
 	{
 		if ($name === null) {
 			if (!$filter instanceof FilterInterface) {
@@ -50,7 +50,7 @@ final class StringFilterCollection implements StringFilterCollectionInterface
 			throw new LogicException(
 				sprintf(
 					'Cannot pass arguments to %s, passing arguments are allowed only for class of type %s.',
-					get_class($filter),
+					$filter::class,
 					DynamicFilterFactory::class
 				)
 			);

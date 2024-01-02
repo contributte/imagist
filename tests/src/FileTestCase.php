@@ -8,13 +8,13 @@ use Symfony\Component\Filesystem\Filesystem;
 abstract class FileTestCase extends Unit
 {
 
+	protected string $imageJpg = __DIR__ . '/../_data/tmp-image.jpg';
+
 	private Filesystem $filesystem;
 
 	private string $path;
 
 	private string $origImageJpg = __DIR__ . '/../_data/image.jpg';
-
-	protected string $imageJpg = __DIR__ . '/../_data/tmp-image.jpg';
 
 	protected function _before(): void
 	{

@@ -16,18 +16,6 @@ class TransactionTest extends FileTestCase
 
 	private ImageStorageInterface $storage;
 
-	protected function _before(): void
-	{
-		parent::_before();
-
-		$builder = new LocalImageStorageBuilder($this->getAbsolutePath());
-		$builder->withNetteFilterProcessor();
-		$result = $builder->build();
-
-		$this->storage = $result->getImageStorage();
-		$this->transactionFactory = $result->getTransactionFactory();
-	}
-
 	public function testPreCommit(): void
 	{
 		$transaction = $this->transactionFactory->create();
@@ -118,6 +106,18 @@ class TransactionTest extends FileTestCase
 		$transaction->commit();
 
 		$this->assertTempFileExists('media/image.jpg');
+	}
+
+	protected function _before(): void
+	{
+		parent::_before();
+
+		$builder = new LocalImageStorageBuilder($this->getAbsolutePath());
+		$builder->withNetteFilterProcessor();
+		$result = $builder->build();
+
+		$this->storage = $result->getImageStorage();
+		$this->transactionFactory = $result->getTransactionFactory();
 	}
 
 }

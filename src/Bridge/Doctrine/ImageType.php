@@ -23,6 +23,40 @@ class ImageType extends StringType
 
 	private string $name = 'image';
 
+	/**
+	 * @param class-string<PersistentImage> $className
+	 */
+	public static function register(Connection $connection, string $name = 'image', string $dbName = 'db_image', string $className = PersistentImage::class): void
+	{
+		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor($dbName)) {
+			self::registerType($name, $className);
+
+			$connection->getDatabasePlatform()->registerDoctrineTypeMapping($dbName, $name);
+		}
+	}
+
+	/**
+	 * @param class-string<PersistentImage> $className
+	 */
+	public static function registerType(string $name = 'image', string $className = PersistentImage::class): void
+	{
+		if (Type::hasType($name)) {
+			$class = Type::getTypesMap()[$name];
+
+			if ($class !== static::class) {
+				throw new LogicException(
+					sprintf('Doctrine type %s is already registered for class %s', $name, $class)
+				);
+			}
+		} else {
+			$self = new self();
+			$self->name = $name;
+			$self->className = $className;
+
+			self::getTypeRegistry()->register($name, $self);
+		}
+	}
+
 	public function getDatabaseConverter(): DatabaseConverterInterface
 	{
 		if (!isset($this->databaseConverter)) {
@@ -79,40 +113,6 @@ class ImageType extends StringType
 	public function requiresSQLCommentHint(AbstractPlatform $platform): bool
 	{
 		return true;
-	}
-
-	/**
-	 * @param class-string<PersistentImage> $className
-	 */
-	public static function register(Connection $connection, string $name = 'image', string $dbName = 'db_image', string $className = PersistentImage::class): void
-	{
-		if (!$connection->getDatabasePlatform()->hasDoctrineTypeMappingFor($dbName)) {
-			self::registerType($name, $className);
-
-			$connection->getDatabasePlatform()->registerDoctrineTypeMapping($dbName, $name);
-		}
-	}
-
-	/**
-	 * @param class-string<PersistentImage> $className
-	 */
-	public static function registerType(string $name = 'image', string $className = PersistentImage::class): void
-	{
-		if (Type::hasType($name)) {
-			$class = Type::getTypesMap()[$name];
-
-			if ($class !== static::class) {
-				throw new LogicException(
-					sprintf('Doctrine type %s is already registered for class %s', $name, $class)
-				);
-			}
-		} else {
-			$self = new self();
-			$self->name = $name;
-			$self->className = $className;
-
-			self::getTypeRegistry()->register($name, $self);
-		}
 	}
 
 }

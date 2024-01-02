@@ -41,6 +41,9 @@ final class StringFilter implements FilterInterface
 		return $this->arguments;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOperations(): array
 	{
 		throw new LogicException(

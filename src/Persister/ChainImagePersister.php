@@ -33,7 +33,7 @@ final class ChainImagePersister implements PersisterInterface
 			}
 		}
 
-		throw new InvalidArgumentException(sprintf('Persister not found for class %s', get_class($image)));
+		throw new InvalidArgumentException(sprintf('Persister not found for class %s', $image::class));
 	}
 
 }

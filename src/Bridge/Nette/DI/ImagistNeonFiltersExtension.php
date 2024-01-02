@@ -27,7 +27,7 @@ use stdClass;
 		]);
 	}
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
 
@@ -36,7 +36,7 @@ use stdClass;
 			->setFactory(StringFilterCollection::class);
 	}
 
-	public function beforeCompile()
+	public function beforeCompile(): void
 	{
 		/** @var stdClass $config */
 		$config = $this->getConfig();
@@ -67,11 +67,7 @@ use stdClass;
 		$return = [];
 
 		foreach ($statements as $name => $statement) {
-			if (is_string($statement)) {
-				$statement = new Statement($statement);
-			} else {
-				$statement = $this->processStatement($statement, $aliases);
-			}
+			$statement = is_string($statement) ? new Statement($statement) : $this->processStatement($statement, $aliases);
 
 			if (!is_string($name)) {
 				$name = null;
@@ -86,9 +82,7 @@ use stdClass;
 	}
 
 	/**
-	 * @param Statement $statement
 	 * @param array<string, string> $aliases
-	 * @return Statement
 	 */
 	private function processStatement(Statement $statement, array $aliases): Statement
 	{

@@ -12,10 +12,7 @@ final class CompositeFilter implements FilterInterface
 	/** @var OperationInterface[] */
 	private array $operations = [];
 
-	/**
-	 * @param OperationInterface|FilterInterface ...$operations
-	 */
-	public function __construct(string $name, ...$operations)
+	public function __construct(string $name, OperationInterface|FilterInterface ...$operations)
 	{
 		$this->name = $name;
 
@@ -33,6 +30,9 @@ final class CompositeFilter implements FilterInterface
 		return new FilterIdentifier($this->name);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOperations(): array
 	{
 		return $this->operations;
