@@ -5,8 +5,8 @@ namespace Contributte\Imagist\Bridge\Nette\Filter;
 use Contributte\Imagist\File\FileInterface;
 use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Resource\ResourceFactoryInterface;
+use InvalidArgumentException;
 use Nette\Utils\Image;
-use Typertion\Php\TypeAssert;
 
 final class NetteResourceFactory implements ResourceFactoryInterface
 {
@@ -22,10 +22,13 @@ final class NetteResourceFactory implements ResourceFactoryInterface
 	{
 		assert($resource instanceof Image);
 
-		return $resource->toString(
-			$source->getMimeType()->getImageType(),
-			TypeAssert::intOrNull($context->get(self::QUALITY_CONTEXT))
-		);
+		$quality = $context->get(self::QUALITY_CONTEXT);
+
+		if (!is_int($quality) && $quality !== null) {
+			throw new InvalidArgumentException(sprintf('Quality must be int or null, %s given', get_debug_type($quality)));
+		}
+
+		return $resource->toString($source->getMimeType()->getImageType(), $quality);
 	}
 
 }

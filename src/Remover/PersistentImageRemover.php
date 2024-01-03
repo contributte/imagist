@@ -11,8 +11,6 @@ use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use DomainException;
-use Typertion\Php\ArrayTypeAssert;
-use Typertion\Php\TypeAssert;
 
 final class PersistentImageRemover implements RemoverInterface
 {
@@ -52,14 +50,19 @@ final class PersistentImageRemover implements RemoverInterface
 		$path = $this->pathInfoFactory->create($image->withFilter(new VoidFilter('void')));
 
 		foreach ($this->filesystem->listContents($path->toString($path::BUCKET | $path::SCOPE)) as $path) {
-			$path = TypeAssert::array($path);
-
-			if (ArrayTypeAssert::string($path, 'type') !== 'dir') {
+			if (!is_array($path)) {
 				continue;
 			}
 
-			$filename = isset($path['filename']) ? TypeAssert::string($path['filename']) : '';
-			if (!$filename || $filename[0] !== '_') {
+			$pathType = $path['type'] ?? '';
+
+			if (!is_string($pathType) || $pathType !== 'dir') {
+				continue;
+			}
+
+			$filename = $path['filename'] ?? '';
+
+			if (!is_string($filename) || !$filename || $filename[0] !== '_') {
 				continue;
 			}
 
