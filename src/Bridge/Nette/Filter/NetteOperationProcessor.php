@@ -20,7 +20,7 @@ final class NetteOperationProcessor implements OperationProcessorInterface
 		}
 
 		if ($resize = $collection->get(ResizeOperation::class)) {
-			$resource->resize($resize->getWidth(), $resize->getHeight(), $this->getIntMode($resize->getMode()));
+			$resource->resize($resize->getWidth(), $resize->getHeight(), $this->getIntMode($resize->getMode())); // @phpstan-ignore-line
 		}
 
 		if ($crop = $collection->get(CropOperation::class)) {
@@ -36,15 +36,15 @@ final class NetteOperationProcessor implements OperationProcessorInterface
 	{
 		switch ($mode) {
 			case 'fill':
-				return Image::FILL;
+				return Image::OrBigger;
 			case 'exact':
-				return Image::EXACT;
+				return Image::Cover;
 			case 'shrink_only':
-				return Image::SHRINK_ONLY;
+				return Image::ShrinkOnly;
 			case 'stretch':
-				return Image::STRETCH;
+				return Image::Stretch;
 			default:
-				return Image::FIT;
+				return Image::OrSmaller;
 		}
 	}
 

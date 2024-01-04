@@ -28,7 +28,7 @@ final class NetteResourceFactory implements ResourceFactoryInterface
 			throw new InvalidArgumentException(sprintf('Quality must be int or null, %s given', get_debug_type($quality)));
 		}
 
-		return $resource->toString($source->getMimeType()->getImageType(), $quality);
+		return $resource->toString($source->getMimeType()->getImageType(), $quality); // @phpstan-ignore-line
 	}
 
 }

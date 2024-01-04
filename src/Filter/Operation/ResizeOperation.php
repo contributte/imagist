@@ -52,7 +52,7 @@ final class ResizeOperation extends OperationAsFilter
 			$srcHeight,
 			$this->width,
 			$this->height,
-			$this->getIntMode($this->mode)
+			$this->getIntMode($this->mode) // @phpstan-ignore-line
 		);
 
 		return $calculated;
@@ -70,15 +70,15 @@ final class ResizeOperation extends OperationAsFilter
 	{
 		switch ($mode) {
 			case 'fill':
-				return Image::FILL;
+				return Image::OrBigger;
 			case 'exact':
-				return Image::EXACT;
+				return Image::Cover;
 			case 'shrink_only':
-				return Image::SHRINK_ONLY;
+				return Image::ShrinkOnly;
 			case 'stretch':
-				return Image::STRETCH;
+				return Image::Stretch;
 			default:
-				return Image::FIT;
+				return Image::OrSmaller;
 		}
 	}
 
