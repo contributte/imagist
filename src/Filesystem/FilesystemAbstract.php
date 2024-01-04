@@ -3,116 +3,104 @@
 namespace Contributte\Imagist\Filesystem;
 
 use Contributte\Imagist\Exceptions\FileException;
+use Contributte\Imagist\Exceptions\FileNotFoundException;
 use Contributte\Imagist\PathInfo\PathInfoInterface;
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\Filesystem;
-use League\Flysystem\FilesystemInterface as LeagueFilesystemInterface;
+use League\Flysystem\Config;
+use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\StorageAttributes;
+use League\Flysystem\UnableToDeleteFile;
+use League\Flysystem\UnableToReadFile;
+use League\Flysystem\UnableToRetrieveMetadata;
 
 abstract class FilesystemAbstract implements FilesystemInterface
 {
 
-	protected LeagueFilesystemInterface $adapter;
+	protected FilesystemAdapter $adapter;
 
-	public function __construct(LeagueFilesystemInterface $adapter)
+	public function __construct(FilesystemAdapter $adapter)
 	{
 		$this->adapter = $adapter;
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function exists(PathInfoInterface $path): bool
 	{
-		return $this->adapter->has($path->toString());
+		return $this->adapter->fileExists($path->toString());
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function delete(PathInfoInterface $path): bool
 	{
-		return $this->withTemporaryConfig(
-			'disable_asserts',
-			true,
-			false,
-			fn (): bool => $this->adapter->delete($path->toString())
-		);
+		try {
+			$this->adapter->delete($path->toString());
+		} catch (UnableToDeleteFile $e) {
+			throw new FileException(sprintf('Cannot delete file %s', $path->toString()), 0, $e);
+		}
+
+		return true;
 	}
 
 	/**
-	 * @inheritDoc
+	 * @return array<StorageAttributes>
 	 */
-	public function listContents(string $path): array
+	public function listContents(string $path): iterable
 	{
-		return $this->adapter->listContents($path);
+		return $this->adapter->listContents($path, false);
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function put(PathInfoInterface $path, string $content, array $config = []): void
 	{
-		$this->adapter->put($path->toString(), $content, $config);
+		$this->adapter->write($path->toString(), $content, new Config($config));
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function putWithMkdir(PathInfoInterface $path, string $content, array $config = []): void
 	{
-		$this->adapter->createDir($path->toString($path::BUCKET | $path::SCOPE | $path::FILTER));
+		$this->adapter->createDirectory($path->toString($path::BUCKET | $path::SCOPE | $path::FILTER), new Config());
 
 		$this->put($path, $content, $config);
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function read(PathInfoInterface $path): string
 	{
 		try {
 			$content = $this->adapter->read($path->toString());
-		} catch (FileNotFoundException $exception) {
-			throw new \Contributte\Imagist\Exceptions\FileNotFoundException($exception->getMessage());
-		}
-
-		if ($content === false) {
-			throw new FileException(sprintf('Cannot read file %s', $path->toString()));
+		} catch (UnableToReadFile $e) {
+			throw new FileNotFoundException(sprintf('Cannot read file %s', $path->toString()), 0, $e);
+		} catch (FilesystemException $e) {
+			throw new FileNotFoundException($e->getMessage(), 0, $e);
 		}
 
 		return $content;
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function mimeType(PathInfoInterface $path): ?string
 	{
-		$mimeType = $this->adapter->getMimetype($path->toString());
-
-		return $mimeType === false ? null : $mimeType;
-	}
-
-	/**
-	 * @template T
-	 * @param mixed $value
-	 * @param mixed $default
-	 * @param callable(): T $callback
-	 * @return T
-	 */
-	protected function withTemporaryConfig(string $name, $value, $default, callable $callback) // phpcs:ignore -- phpcs bug
-	{
-		if (!$this->adapter instanceof Filesystem) {
-			return $callback();
+		try {
+			$mimeType = $this->adapter->mimeType($path->toString());
+		} catch (UnableToRetrieveMetadata $e) {
+			throw new FileException(sprintf('Cannot get mime type of file %s', $path->toString()), 0, $e);
+		} catch (FilesystemException $e) {
+			throw new FileNotFoundException($e->getMessage(), 0, $e);
 		}
 
-		$default = $this->adapter->getConfig()->get($name, $default);
-
-		$this->adapter->getConfig()->set($name, $value);
-		$result = $callback();
-		$this->adapter->getConfig()->set($name, $default);
-
-		return $result;
+		return $mimeType->mimeType();
 	}
 
 }

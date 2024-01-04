@@ -11,6 +11,7 @@ use Contributte\Imagist\Filter\Context\ContextInterface;
 use Contributte\Imagist\Filter\Internal\VoidFilter;
 use Contributte\Imagist\PathInfo\PathInfoFactoryInterface;
 use DomainException;
+use League\Flysystem\StorageAttributes;
 
 final class PersistentImageRemover implements RemoverInterface
 {
@@ -50,6 +51,10 @@ final class PersistentImageRemover implements RemoverInterface
 		$path = $this->pathInfoFactory->create($image->withFilter(new VoidFilter('void')));
 
 		foreach ($this->filesystem->listContents($path->toString($path::BUCKET | $path::SCOPE)) as $path) {
+			if ($path instanceof StorageAttributes) {
+				$path = $path->jsonSerialize();
+			}
+
 			if (!is_array($path)) {
 				continue;
 			}
@@ -60,7 +65,7 @@ final class PersistentImageRemover implements RemoverInterface
 				continue;
 			}
 
-			$filename = $path['filename'] ?? '';
+			$filename = isset($path['path']) ? basename($path['path']) : '';
 
 			if (!is_string($filename) || !$filename || $filename[0] !== '_') {
 				continue;

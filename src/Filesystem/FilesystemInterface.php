@@ -19,7 +19,7 @@ interface FilesystemInterface
 	/**
 	 * @return mixed[]
 	 */
-	public function listContents(string $path): array;
+	public function listContents(string $path): iterable;
 
 	/**
 	 * @param mixed[] $config

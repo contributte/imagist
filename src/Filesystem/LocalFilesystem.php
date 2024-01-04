@@ -2,15 +2,14 @@
 
 namespace Contributte\Imagist\Filesystem;
 
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 final class LocalFilesystem extends FilesystemAbstract
 {
 
 	public function __construct(string $root)
 	{
-		parent::__construct(new Filesystem(new Local($root)));
+		parent::__construct(new LocalFilesystemAdapter($root));
 	}
 
 }
