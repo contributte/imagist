@@ -31,7 +31,7 @@ final class ImageUploadControl extends UploadControl
 
 	private ?FileUpload $uploadValue = null;
 
-	public function __construct(?string $label = null)
+	public function __construct(string|object|null $label = null)
 	{
 		$this->entity = new UploadControlEntity();
 		$this->containerPart = Html::el('div', ['class' => 'image-upload-container']);
