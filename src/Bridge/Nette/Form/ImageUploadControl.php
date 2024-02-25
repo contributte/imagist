@@ -15,6 +15,7 @@ use LogicException;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Http\FileUpload;
 use Nette\Utils\Html;
+use Stringable;
 
 final class ImageUploadControl extends UploadControl
 {
@@ -31,7 +32,7 @@ final class ImageUploadControl extends UploadControl
 
 	private ?FileUpload $uploadValue = null;
 
-	public function __construct(string|object|null $label = null)
+	public function __construct(string|Stringable|null $label = null)
 	{
 		$this->entity = new UploadControlEntity();
 		$this->containerPart = Html::el('div', ['class' => 'image-upload-container']);

@@ -47,7 +47,7 @@ class ImageRemove implements ImageRemoveInterface
 		$form = $input->getForm();
 		assert($form !== null);
 
-		return (bool) $form->getHttpData(Form::DATA_TEXT, $input->getName() . '_remove');
+		return (bool) $form->getHttpData(Form::DataText, $input->getName() . '_remove');
 	}
 
 	public function getHtml(ImageUploadControl $input): ?Html
