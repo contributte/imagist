@@ -12,12 +12,16 @@ use Contributte\Imagist\Entity\PersistentImageInterface;
 use Contributte\Imagist\Entity\StorableImage;
 use Contributte\Imagist\Scope\Scope;
 use LogicException;
+use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\UploadControl;
+use Nette\Forms\Form;
+use Nette\Forms\Helpers;
+use Nette\Forms\Validator;
 use Nette\Http\FileUpload;
 use Nette\Utils\Html;
 use Stringable;
 
-final class ImageUploadControl extends UploadControl
+final class ImageUploadControl extends BaseControl
 {
 
 	private UploadControlEntity $entity;
@@ -38,17 +42,46 @@ final class ImageUploadControl extends UploadControl
 		$this->containerPart = Html::el('div', ['class' => 'image-upload-container']);
 
 		parent::__construct($label);
+
+		$this->control->type = 'file';
+		$this->setOption('type', 'file');
+		$this->addCondition(true) // not to block the export of rules to JS
+		->addRule($this->isOk(...), Validator::$messages[UploadControl::Valid]);
+		$this->addRule(Form::MaxFileSize, null, Helpers::iniGetSize('upload_max_filesize'));
+
+		$this->monitor(Form::class, function (Form $form): void {
+			if (!$form->isMethod('post')) {
+				throw new InvalidArgumentException('File upload requires method POST.');
+			}
+
+			$form->getElementPrototype()->enctype = 'multipart/form-data';
+		});
+	}
+
+	public function isFilled(): bool
+	{
+		return (bool) $this->value;
+	}
+
+	private function isOk(): bool
+	{
+		return match (true) {
+			!$this->uploadValue => false,
+			default => $this->uploadValue->isOk(),
+		};
 	}
 
 	public function loadHttpData(): void
 	{
-		parent::loadHttpData();
+		$value = $this->getHttpData(Form::DataFile);
 
-		if (!$this->value instanceof FileUpload) {
-			throw new LogicException(sprintf('Value must be %s, %s given', FileUpload::class, get_debug_type($this->value)));
+		if (!$value instanceof FileUpload && $value !== null) {
+			throw new LogicException(sprintf('Value must be %s, %s given', FileUpload::class, get_debug_type($value)));
 		}
 
-		$this->setValue($this->uploadValue = $this->value);
+		$this->uploadValue = $value;
+
+		$this->setValue($value);
 
 		if ($this->remove) {
 			$removeAnyway = $this->remove->getHttpData($this);
