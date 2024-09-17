@@ -46,8 +46,8 @@ final class ImageUploadControl extends BaseControl
 		$this->control->type = 'file';
 		$this->setOption('type', 'file');
 		$this->addCondition(true) // not to block the export of rules to JS
-		->addRule($this->isOk(...), Validator::$messages[UploadControl::Valid]);
-		$this->addRule(Form::MaxFileSize, null, Helpers::iniGetSize('upload_max_filesize'));
+			->addRule($this->isOk(...), Validator::$messages[UploadControl::Valid]);
+		$this->addRule(sprintf('%s::%s', self::class, 'validateFileSize'), Validator::$messages[Form::MaxFileSize], Helpers::iniGetSize('upload_max_filesize'));
 
 		$this->monitor(Form::class, function (Form $form): void {
 			if (!$form->isMethod('post')) {
@@ -56,6 +56,21 @@ final class ImageUploadControl extends BaseControl
 
 			$form->getElementPrototype()->enctype = 'multipart/form-data';
 		});
+	}
+
+	public static function validateFileSize(ImageUploadControl $control, int|float $limit): bool
+	{
+		$file = $control->getUploadValue();
+
+		if ($file === null) {
+			return true;
+		}
+
+		if ($file->getSize() > $limit || $file->getError() === UPLOAD_ERR_INI_SIZE) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function isFilled(): bool
