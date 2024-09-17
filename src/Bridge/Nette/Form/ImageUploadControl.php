@@ -75,7 +75,7 @@ final class ImageUploadControl extends BaseControl
 
 	public function isFilled(): bool
 	{
-		return (bool) $this->value;
+		return $this->value || $this->uploadValue;
 	}
 
 	private function isOk(): bool
