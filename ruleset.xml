@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="Contributte" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
 	<!-- Rulesets -->
-	<rule ref="./vendor/contributte/qa/ruleset-8.0.xml">
+	<rule ref="./vendor/contributte/qa/ruleset-8.2.xml">
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix"/>
 		<exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming.SuperfluousSuffix"/>
 		<exclude name="SlevomatCodingStandard.PHP.DisallowReference.DisallowedReturningReference"/>
@@ -12,11 +12,7 @@
 		<properties>
 			<property name="rootNamespaces" type="array">
 				<element key="src" value="Contributte\Imagist"/>
-				<element key="tests/src" value="Tests\Testing"/>
-				<element key="tests/unit" value="Tests\Unit"/>
-				<element key="tests/functional" value="Tests\Functional"/>
-				<element key="tests/_support/Helper" value="Tests\Helper"/>
-				<element key="tests/_support" value="Tests"/>
+				<element key="tests" value="Tests"/>
 			</property>
 			<property name="extensions" type="array">
 				<element key="php" value="php"/>
@@ -26,5 +22,5 @@
 	</rule>
 
 	<!-- Excludes -->
-	<exclude-pattern>/tests</exclude-pattern>
+	<exclude-pattern>/tests/tmp</exclude-pattern>
 </ruleset>

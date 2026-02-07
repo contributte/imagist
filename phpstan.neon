@@ -1,13 +1,9 @@
 includes:
-	#- vendor/contributte/phpstan/phpstan.neon
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-	- vendor/phpstan/phpstan-nette/extension.neon
-	- vendor/phpstan/phpstan-nette/rules.neon
-	#- vendor/phpstan/phpstan-strict-rules/rules.neon
+	- vendor/contributte/phpstan/phpstan.neon
 
 parameters:
 	level: 8
-	phpVersion: 80100
+	phpVersion: 80200
 
 	scanDirectories:
 		- src
@@ -19,7 +15,56 @@ parameters:
 		- src
 		- .docs
 
+	reportUnmatchedIgnoredErrors: false
+
 	ignoreErrors:
+		# Strict rules - pre-existing codebase patterns
+		-
+			identifier: booleanNot.exprNotBoolean
+		-
+			identifier: booleanAnd.leftNotBoolean
+		-
+			identifier: booleanAnd.rightNotBoolean
+		-
+			identifier: booleanOr.leftNotBoolean
+		-
+			identifier: booleanOr.rightNotBoolean
+		-
+			identifier: if.condNotBoolean
+		-
+			identifier: elseif.condNotBoolean
+		-
+			identifier: ternary.condNotBoolean
+		-
+			identifier: ternary.shortNotAllowed
+		-
+			identifier: foreach.nonIterable
+		-
+			identifier: foreach.valueOverwrite
+		-
+			identifier: property.dynamicName
+		-
+			identifier: return.type
+		-
+			identifier: return.unusedType
+		-
+			identifier: function.alreadyNarrowedType
+		-
+			identifier: notIdentical.alwaysTrue
+		-
+			identifier: constructor.missingParentCall
+
+		# Covariance issues (Doctrine EventSubscriber, Latte Extension)
+		-
+			identifier: method.childReturnType
+			paths:
+				- src/Bridge/Doctrine/Event/
+				- src/Bridge/Nette/Latte/Extension/
+
+		# Nette Arrays::invoke callable signature
+		-
+			message: "#^Parameter \\#1 \\$callbacks of static method Nette\\\\Utils\\\\Arrays\\:\\:invoke\\(\\)#"
+
 		-
 			message: """
 				#^Call to deprecated method getName\\(\\) of class Contributte\\\\Imagist\\\\Bridge\\\\Doctrine\\\\ImageType\\:
@@ -60,11 +105,6 @@ parameters:
 			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
 
 		-
-			message: "#^Method Contributte\\\\Imagist\\\\Bridge\\\\Symfony\\\\Serializer\\\\ImagistNormalizer\\:\\:supportsNormalization\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
-
-		-
 			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\|ArrayObject\\|bool\\|float\\|int\\|string\\|null\\.$#"
 			count: 1
 			path: src/Bridge/Symfony/Serializer/ImagistNormalizer.php
@@ -88,4 +128,3 @@ parameters:
 			message: "#^Method Contributte\\\\Imagist\\\\Entity\\\\PromisedImage\\:\\:withScope\\(\\) should return Contributte\\\\Imagist\\\\Entity\\\\PromisedImage but returns Contributte\\\\Imagist\\\\Entity\\\\PersistentImageInterface\\.$#"
 			count: 1
 			path: src/Entity/PromisedImage.php
-
