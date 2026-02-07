@@ -66,24 +66,12 @@ final class ImageUploadControl extends BaseControl
 			return true;
 		}
 
-		if ($file->getSize() > $limit || $file->getError() === UPLOAD_ERR_INI_SIZE) {
-			return false;
-		}
-
-		return true;
+		return $file->getSize() <= $limit && $file->getError() !== UPLOAD_ERR_INI_SIZE;
 	}
 
 	public function isFilled(): bool
 	{
 		return $this->value || $this->uploadValue;
-	}
-
-	private function isOk(): bool
-	{
-		return match (true) {
-			!$this->uploadValue => false,
-			default => $this->uploadValue->isOk(),
-		};
 	}
 
 	public function loadHttpData(): void
@@ -248,6 +236,14 @@ final class ImageUploadControl extends BaseControl
 		$this->remove = $remove;
 
 		return $this;
+	}
+
+	private function isOk(): bool
+	{
+		return match (true) {
+			!$this->uploadValue => false,
+			default => $this->uploadValue->isOk(),
+		};
 	}
 
 }
