@@ -54,6 +54,14 @@ parameters:
 		-
 			identifier: constructor.missingParentCall
 
+		# Tracy BlueScreen callable type mismatch
+		-
+			identifier: argument.type
+			path: src/Bridge/Nette/Tracy/ImagistBlueScreen.php
+		-
+			identifier: arguments.count
+			path: src/Bridge/Nette/Tracy/ImagistBlueScreen.php
+
 		# Covariance issues (Doctrine EventSubscriber, Latte Extension)
 		-
 			identifier: method.childReturnType
