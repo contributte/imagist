@@ -37,11 +37,93 @@ composer require contributte/imagist
 
 ## Setup
 
+### Nette
+
+Register the extension in your NEON configuration:
+
+```neon
+extensions:
+  imagist: Contributte\Imagist\Bridge\Nette\DI\ImagistExtension
+```
+
+Minimal configuration needs the absolute path to the public directory:
+
+```neon
+imagist:
+  baseDir: %wwwDir%
+```
+
+### Standalone
+
+For standalone usage, build the local image storage services explicitly:
+
+```php
+use Contributte\Imagist\Builder\LocalImageStorageBuilder;
+
+$builder = new LocalImageStorageBuilder(__DIR__ . '/path/to/www/dir');
+$builder->withImagineFilterProcessor();
+$result = $builder->build();
+
+$imageStorage = $result->getImageStorage();
+$linkGenerator = $result->getLinkGenerator();
+```
+
+More setup guides:
+
 - [Nette](.docs/nette.md)
 - [Symfony](.docs/symfony.md)
 - [Standalone](.docs/standalone.md)
 
 ## Usage
+
+Persist an image through an uploader and then generate a public link for the persisted image:
+
+```php
+use Contributte\Imagist\Entity\StorableImage;
+use Contributte\Imagist\ImageStorageInterface;
+use Contributte\Imagist\LinkGeneratorInterface;
+use Contributte\Imagist\Uploader\FilePathUploader;
+
+/** @var ImageStorageInterface $imageStorage */
+/** @var LinkGeneratorInterface $linkGenerator */
+$image = $imageStorage->persist(new StorableImage(
+    new FilePathUploader('path/to/image.png'),
+    'image.png',
+));
+
+echo $linkGenerator->link($image);
+```
+
+## Configuration
+
+Nette integrations can enable extensions such as Doctrine support, Tracy integration and default image persisters/removers:
+
+```neon
+imagist:
+  extensions:
+    doctrine:
+      removeEvent: false
+      persistEvent: false
+  tracy:
+    tabWithName: false
+  registration:
+    persisters: true
+    removers: true
+  baseDir: %wwwDir%
+```
+
+Nette image filters can also be configured from NEON:
+
+```neon
+extensions:
+  imagist.filters: Contributte\Imagist\Bridge\Nette\DI\ImageStorageConfigFiltersExtension
+
+imagist.filters:
+  filters:
+    thumbnail: Contributte\Imagist\Filter\Operation\ResizeOperation(100, 100)
+```
+
+Detailed usage guides:
 
 - [Uploading](.docs/uploading.md)
   - [Scopes](.docs/scopes.md)
